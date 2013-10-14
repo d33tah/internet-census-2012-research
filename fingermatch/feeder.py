@@ -48,7 +48,7 @@ while True:
   p.stdin.flush()
   p.stdin.close()
 
-  program_output = p.stdout.read()
+  program_output = p.stdout.readline()
 
   error_output = p.stderr.read()
   if error_output != '':
