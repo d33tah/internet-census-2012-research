@@ -366,7 +366,6 @@ int readFP(FILE *filep, char *FP, int FPsz ) {
           // the line is start with "OS:"
           if(!isInWrappedFP) {
                 // just enter a wrapped fp area
-                oneFP = dst;
                 isInWrappedFP = true;
           }
           p += 3;
