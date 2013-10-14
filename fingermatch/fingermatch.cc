@@ -1,4 +1,3 @@
-
 /***************************************************************************
  * fingermatch.cc -- A relatively simple utility for determining whether a *
  * given Nmap fingerprint matches (or comes close to matching) any of the  *
@@ -29,7 +28,7 @@
  *   nmap-os-db or nmap-service-probes.                                    *
  * o Executes Nmap and parses the results (as opposed to typical shell or  *
  *   execution-menu apps, which simply display raw Nmap output and so are  *
- *   not derivative works.)                                                * 
+ *   not derivative works.)                                                *
  * o Integrates/includes/aggregates Nmap into a proprietary executable     *
  *   installer, such as those produced by InstallShield.                   *
  * o Links to a library or executes a program that does any of the above   *
@@ -134,7 +133,7 @@ int main(int argc, char *argv[]) {
   /* First we read in the fingerprint file provided on the command line */
   fingerfile = argv[1];
   reference_FPs = parse_fingerprint_file(fingerfile);
-  if (reference_FPs == NULL) 
+  if (reference_FPs == NULL)
     fatal("Could not open or parse Fingerprint file given on the command line: %s", fingerfile);
 
 
@@ -148,7 +147,7 @@ int main(int argc, char *argv[]) {
   if (!testFP) fatal("Sorry -- failed to parse the so-called fingerprint you entered");
 
   if ((rc = remove_duplicate_tests(testFP))) {
- printf("[WARN] Adjusted fingerprint due to %d duplicated tests (we only look at the one with the most attributes).\n", rc);
+    printf("[WARN] Adjusted fingerprint due to %d duplicated tests (we only look at the one with the most attributes).\n", rc);
   }
 
   /* Now we find the matches! */
@@ -162,11 +161,11 @@ int main(int argc, char *argv[]) {
   case OSSCAN_SUCCESS:
     if (FPR.num_perfect_matches > 0) {
       printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfile);
-      printf("Accu Line# OS (classification)\n");      
+      printf("Accu Line# OS (classification)\n");
       for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++)
         print_match(FPR, i);
       printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfile);
-      printf("Accu Line# OS (classification)\n");      
+      printf("Accu Line# OS (classification)\n");
       n = 0;
       for(i=0; i < 10 && i < FPR.num_matches && n < MAX_ADDITIONAL_GUESSES; i++) {
         if (FPR.accuracy[i] < 1) {
