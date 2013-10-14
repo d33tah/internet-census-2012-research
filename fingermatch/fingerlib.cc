@@ -318,7 +318,6 @@ int readFP(FILE *filep, char *FP, int FPsz ) {
   int linelen = 0;
   int lineno = 0;
   char *p, *q;
-  char *oneFP;
   char *dst = FP;
   char tmp[16];
   int i;
