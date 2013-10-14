@@ -75,6 +75,7 @@ LINGUAS ?= $(ALL_LINGUAS)
 DESTDIR =
 
 TARGET = nmap
+FINGERMATCH = fingermatch
 INSTALLNSE=@INSTALLNSE@
 BUILDZENMAP=@BUILDZENMAP@
 BUILDNDIFF=@BUILDNDIFF@
@@ -102,6 +103,8 @@ export HDRS = charpool.h FingerPrintResults.h FPEngine.h global_structures.h idl
 
 OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o main.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS)
 
+FINGERMATCH_OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS) fingermatch.o fingerlib.o
+
 # %.o : %.cc -- nope this is a GNU extension
 .cc.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
@@ -112,12 +115,17 @@ OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLooku
 FPModel.o: CXXFLAGS += -g0
 
 all: @LUA_BUILD@ @LIBLINEAR_BUILD@ @PCAP_BUILD@ @PCRE_BUILD@ @DNET_BUILD@ @NBASE_BUILD@ @NSOCK_BUILD@ @NCAT_BUILD@ @NMAP_UPDATE_BUILD@ netutil_build
-	$(MAKE) $(TARGET) $(BUILDZENMAP) $(BUILDNDIFF) $(BUILDNPING)
+	$(MAKE) $(TARGET) $(FINGERMATCH) $(BUILDZENMAP) $(BUILDNDIFF) $(BUILDNPING)
 
 $(TARGET): @LUA_DEPENDS@ @LIBLINEAR_DEPENDS@ @PCAP_DEPENDS@ @PCRE_DEPENDS@ @DNET_DEPENDS@ $(NBASEDIR)/libnbase.a $(NSOCKDIR)/src/libnsock.a libnetutil/libnetutil.a $(OBJS)
 	@echo Compiling nmap
 	rm -f $@
 	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+$(FINGERMATCH): @LUA_DEPENDS@ @LIBLINEAR_DEPENDS@ @PCAP_DEPENDS@ @PCRE_DEPENDS@ @DNET_DEPENDS@ $(NBASEDIR)/libnbase.a $(NSOCKDIR)/src/libnsock.a libnetutil/libnetutil.a $(FINGERMATCH_OBJS)
+	@echo Compiling fingermatch
+	rm -f $@
+	$(CXX) $(LDFLAGS) -o $@ $(FINGERMATCH_OBJS) $(LIBS)
 
 build-%: %/Makefile
 	cd $* && $(MAKE)
