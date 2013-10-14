@@ -100,7 +100,7 @@
 
 #define HIGHEST_GOOD_DISTANCE 5
 
-static bool check_SCAN(const FingerTest *ft) {
+static bool check_SCAN(const FingerTest *ft, int quiet) {
   std::vector<struct AVal>::const_iterator av;
   u8 macprefix[3];
   unsigned int i;
@@ -120,13 +120,15 @@ static bool check_SCAN(const FingerTest *ft) {
           ft->name, av->attribute, av->value);
         found_error = true;
       } else if (distance > HIGHEST_GOOD_DISTANCE) {
-        printf("[WARN] Network distance (%ld hops) is greater than %d\n",
-          distance, HIGHEST_GOOD_DISTANCE);
+        if (!quiet)
+          error("[WARN] Network distance (%ld hops) is greater than %d",
+            distance, HIGHEST_GOOD_DISTANCE);
       }
     } else if (strcmp(av->attribute, "G") == 0) {
       seen_G = true;
       if (strcmp(av->value, "Y") != 0) {
-        printf("[WARN] Fingerprint classified NOT SUITABLE FOR SUBMISSION\n");
+        if (!quiet)
+          error("[WARN] Fingerprint classified NOT SUITABLE FOR SUBMISSION");
         found_error = true;
       }
     } else if (strcmp(av->attribute, "M") == 0) {
@@ -154,7 +156,7 @@ static bool check_SCAN(const FingerTest *ft) {
   return found_error;
 }
 
-static bool check_IE(const FingerTest *ft) {
+static bool check_IE(const FingerTest *ft, int quiet) {
   std::vector<struct AVal>::const_iterator av;
   bool found_error = false;
 
@@ -163,7 +165,8 @@ static bool check_IE(const FingerTest *ft) {
   for (av = ft->results.begin(); av != ft->results.end(); av++) {
     if (strcmp(ft->name, "IE") == 0 && strcmp(av->attribute, "R") == 0
       && strcmp(av->value, "Y") != 0) {
-      printf("[WARN] Target failed to respond to ICMP ping\n");
+      if (!quiet)
+        error("[WARN] Target failed to respond to ICMP ping");
       found_error = true;
     }
   }
@@ -265,7 +268,7 @@ static bool check_empty_values(const FingerTest *ft) {
 
 /* Checks a fingerprint and prints warnings to the screen if anything is
    strange. */
-static bool checkFP(const FingerPrint *fp) {
+static bool checkFP(const FingerPrint *fp, int quiet) {
   /* This data structure just keeps track of which tests have been seen. */
   struct {
     const char *name;
@@ -292,9 +295,9 @@ static bool checkFP(const FingerPrint *fp) {
     }
 
     if (strcmp(ft->name, "SCAN") == 0)
-      found_error |= check_SCAN(&*ft);
+      found_error |= check_SCAN(&*ft, quiet);
     else if (strcmp(ft->name, "IE") == 0)
-      found_error |= check_IE(&*ft);
+      found_error |= check_IE(&*ft, quiet);
 
     found_error |= check_empty_values(&*ft);
   }
@@ -312,7 +315,7 @@ static bool checkFP(const FingerPrint *fp) {
 /* Reads a fingerprint in from the filep file descriptor.  The FP may
    be in wrapped or unwrapped format.  Wrapped prints are unrapped
    before being returned in FP.  Returns -1 or exits if it fails. */
-int readFP(FILE *filep, char *FP, int FPsz ) {
+int readFP(FILE *filep, char *FP, int FPsz, int quiet) {
   char line[2048];
   char extraline[4096];
   int linelen = 0;
@@ -430,7 +433,7 @@ int readFP(FILE *filep, char *FP, int FPsz ) {
      return a string, not a parsed fingerprint. */
   FingerPrint *fp = parse_single_fingerprint(FP);
   if (fp != NULL) {
-    checkFP(fp);
+    checkFP(fp, quiet);
     delete fp;
     /* Print a blank line after checkFP's messages. */
     printf("\n");

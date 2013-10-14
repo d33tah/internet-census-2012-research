@@ -94,7 +94,7 @@
 /* Reads a fingerprint in from the filep file descriptor.  The FP may
    be in wrapped or unwrapped format.  Wrapped prints are unrapped
    before being returned in FP.  Returns -1 or exits if it fails. */
-int readFP(FILE *filep, char *FP, int FPsz );
+int readFP(FILE *filep, char *FP, int FPsz, int quiet);
 
 /* When Nmap prints a fingerprint for submission, it sometimes
    includes duplicates of tests because 1 or more elements of that

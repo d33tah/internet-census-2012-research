@@ -173,10 +173,12 @@ int main(int argc, char *argv[]) {
     fatal("Could not open or parse Fingerprint file given on the command line: %s", fingerfile);
 
 
-  /* Now we read in the user-provided fingerprint */
-  printf("Enter the fingerprint you would like to match, followed by a blank single-dot line:\n");
+  if (!quiet_flag) {
+    /* Now we read in the user-provided fingerprint */
+    printf("Enter the fingerprint you would like to match, followed by a blank single-dot line:\n");
+  }
 
-  if (readFP(stdin, fprint, sizeof(fprint)) == -1)
+  if (readFP(stdin, fprint, sizeof(fprint), quiet_flag) == -1)
     fatal("[ERROR] Failed to read in supposed fingerprint from stdin\n");
 
   testFP = parse_single_fingerprint(fprint);
@@ -195,6 +197,13 @@ int main(int argc, char *argv[]) {
     break;
   case OSSCAN_TOOMANYMATCHES:
   case OSSCAN_SUCCESS:
+    if (quiet_flag) {
+      if (FPR.num_perfect_matches > 0)
+        print_match(FPR, 0);
+      else
+        printf("No matches");
+      break;
+    }
     if (FPR.num_perfect_matches > 0) {
       printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfile);
       printf("Accu Line# OS (classification)\n");
