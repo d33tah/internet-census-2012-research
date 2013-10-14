@@ -116,7 +116,7 @@ static bool check_SCAN(const FingerTest *ft, int quiet) {
       errno = 0;
       distance = strtol(av->value, &tail, 10);
       if (errno != 0 || *tail != '\0') {
-        printf("[WARN] Unparseable value for %s.%s: %s\n",
+        error("[WARN] Unparseable value for %s.%s: %s",
           ft->name, av->attribute, av->value);
         found_error = true;
       } else if (distance > HIGHEST_GOOD_DISTANCE) {
@@ -134,7 +134,7 @@ static bool check_SCAN(const FingerTest *ft, int quiet) {
     } else if (strcmp(av->attribute, "M") == 0) {
       for(i = 0; i < 6; i++) {
         if(av->value[i] == '\0' || !isxdigit(av->value[i])) {
-          printf("[WARN] Invalid value (%s) occurs in SCAN.M\n", av->value);
+          error("[WARN] Invalid value (%s) occurs in SCAN.M", av->value);
           found_error = true;
           break;
         }
@@ -144,12 +144,12 @@ static bool check_SCAN(const FingerTest *ft, int quiet) {
         macprefix[0] = i >> 16;
         macprefix[1] = (i >> 8) & 0xFF;
         macprefix[2] = i & 0xFF;
-        printf("[INFO] Vendor Info: %s\n", MACPrefix2Corp(macprefix));
+        error("[INFO] Vendor Info: %s", MACPrefix2Corp(macprefix));
       }
     }
   }
   if (!seen_G) {
-    printf("[WARN] Attribute G is missing in SCAN line\n");
+    error("[WARN] Attribute G is missing in SCAN line");
     found_error = true;
   }
 
@@ -206,12 +206,12 @@ static bool check_T_attr(const FingerPrint *fp) {
               value = tail + 1;
           } while (errno == 0 && *tail == '|');
           if (errno != 0 || *tail != '\0') {
-            printf("[WARN] Unparseable value for %s.%s: %s\n",
+            error("[WARN] Unparseable value for %s.%s: %s",
               ft->name, av->attribute, av->value);
             return true;
           } else if (max_ttl > 0xFF) {
             if (count == 0) {
-              printf(
+              error(
 "[WARN] This fingerprint contains T attributes whose value is greater than 0xFF.\n"
 "       Some operating systems (particularly Cisco IOS) seem to cause this to\n"
 "       happen often enough that their reference fingerprints should include such\n"
@@ -219,9 +219,9 @@ static bool check_T_attr(const FingerPrint *fp) {
 "       conditions unrelated to the operating system, so be careful.\n"
 "       This is true for these tests: ");
             } else {
-              printf(", ");
+              log_vwrite(LOG_NORMAL|LOG_STDERR, ", "); /* WTF? */
             }
-            printf("%s.%s (%s)", ft->name, av->attribute, av->value);
+            error("%s.%s (%s)", ft->name, av->attribute, av->value);
             count++;
           }
         }
@@ -256,7 +256,7 @@ static bool check_empty_values(const FingerTest *ft) {
     for (av = ft->results.begin(); av != ft->results.end(); av++) {
       if (strcmp(av->attribute, VALUE_REQUIRED[i].attribute) == 0
         && *av->value == '\0') {
-        printf("[WARN] Illegal empty value for the response test %s.%s\n",
+        error("[WARN] Illegal empty value for the response test %s.%s",
           VALUE_REQUIRED[i].name, VALUE_REQUIRED[i].attribute);
         found_error = true;
       }
@@ -304,7 +304,7 @@ static bool checkFP(const FingerPrint *fp, int quiet) {
 
   for (i = 0; i < sizeof(tests_seen) / sizeof(*tests_seen); i++) {
     if (!tests_seen[i].seen) {
-      printf("[WARN] %s line is missing\n", tests_seen[i].name);
+      error("[WARN] %s line is missing", tests_seen[i].name);
       found_error = true;
     }
   }
@@ -424,7 +424,7 @@ int readFP(FILE *filep, char *FP, int FPsz, int quiet) {
         } else if(strchr(p, '(')) {
           while(*p) *dst++ = toupper(*p++);
         } else {
-          printf("[WARN] Skip bogus line: %s\n", p);
+          error("[WARN] Skip bogus line: %s\n", p);
           continue;
         }
   }
