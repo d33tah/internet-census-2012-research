@@ -21,7 +21,7 @@ while True:
   line = f.readline()
   if line == '':
     break
-  p = subprocess.Popen(["./fingermatch", "-f", "../nmap-os-db"],
+  p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE)
   fingerprint_column = line.split("\t")[2]
