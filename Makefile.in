@@ -191,7 +191,7 @@ release-rpms:
 web:
 	cd $(NMAPDEVDIR) && $(MAKE) web
 
-clean: @LUA_CLEAN@ @LIBLINEAR_CLEAN@ @PCAP_CLEAN@ @PCRE_CLEAN@ @DNET_CLEAN@ nsock_clean nbase_clean netutil_clean my_clean @NPING_CLEAN@ @ZENMAP_CLEAN@ @NCAT_CLEAN@ @NMAP_UPDATE_CLEAN@
+clean: @LUA_CLEAN@ @LIBLINEAR_CLEAN@ @PCAP_CLEAN@ @PCRE_CLEAN@ @DNET_CLEAN@ nsock_clean nbase_clean netutil_clean my_clean fingermatch_clean @NPING_CLEAN@ @ZENMAP_CLEAN@ @NCAT_CLEAN@ @NMAP_UPDATE_CLEAN@
 
 my_clean:
 	rm -f dependencies.mk
@@ -251,6 +251,8 @@ nping_dist_clean:
 	-cd $(NPINGDIR) && $(MAKE) distclean
 debugclean:
 	rm -f *.gcov *.gcda *.gcno gmon.out
+fingermatch_clean:
+	rm -f $(FINGERMATCH_OBJS) $(FINGERMATCH)
 
 distclean: my_clean my_distclean @LUA_DIST_CLEAN@ @LIBLINEAR_DIST_CLEAN@ @PCAP_DIST_CLEAN@ @PCRE_DIST_CLEAN@ @DNET_DIST_CLEAN@ @NPING_DIST_CLEAN@ @ZENMAP_DIST_CLEAN@ @NCAT_DIST_CLEAN@ @NMAP_UPDATE_DIST_CLEAN@ nsock_dist_clean nbase_dist_clean netutil_dist_clean
 
