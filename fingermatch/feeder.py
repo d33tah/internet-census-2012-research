@@ -61,5 +61,5 @@ while True:
       sys.stderr.write('Warning: %s\n' % error_output)
       sys.stderr.flush()
 
-  print("%s\t%s" % (columns[0], program_output.strip()))
+  print("%s\t%s" % (columns[0], program_output))
   p.terminate()

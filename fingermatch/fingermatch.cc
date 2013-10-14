@@ -117,7 +117,7 @@ void usage() {
   exit(0);
 }
 
-static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i);
+static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i, int quiet_flag);
 
 
 int main(int argc, char *argv[]) {
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
   case OSSCAN_SUCCESS:
     if (quiet_flag) {
       if (FPR.num_perfect_matches > 0)
-        print_match(FPR, 0);
+        print_match(FPR, 0, quiet_flag);
       else
         printf("No matches");
       break;
@@ -211,13 +211,13 @@ int main(int argc, char *argv[]) {
       printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfile);
       printf("Accu Line# OS (classification)\n");
       for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++)
-        print_match(FPR, i);
+        print_match(FPR, i, quiet_flag);
       printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfile);
       printf("Accu Line# OS (classification)\n");
       n = 0;
       for(i=0; i < 10 && i < FPR.num_matches && n < MAX_ADDITIONAL_GUESSES; i++) {
         if (FPR.accuracy[i] < 1) {
-          print_match(FPR, i);
+          print_match(FPR, i, quiet_flag);
           n++;
         }
       }
@@ -225,7 +225,7 @@ int main(int argc, char *argv[]) {
       printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfile);
       printf("Accu Line# OS (classification)\n");
       for(i=0; i < MAX_GUESSES && i < FPR.num_matches; i++)
-        print_match(FPR, i);
+        print_match(FPR, i, quiet_flag);
     }
     printf("\n");
     break;
@@ -237,7 +237,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i) {
+static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i, int quiet_flag) {
   struct OS_Classification& OS_class = FPR.matches[i]->OS_class[0];
 
   printf("%3.f%% %5d %s (", floor(FPR.accuracy[i] * 100), FPR.matches[i]->line, FPR.matches[i]->OS_name);
@@ -252,5 +252,8 @@ static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i) {
   printf("|");
   if (OS_class.Device_Type != NULL)
     printf(" %s", OS_class.Device_Type);
-  printf(")\n");
+  printf(")");
+
+  if (!quiet_flag)
+    printf("\n");
 }
