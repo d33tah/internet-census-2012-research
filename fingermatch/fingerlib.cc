@@ -95,6 +95,7 @@
 #include "fingerlib.h"
 #include "osscan.h"
 #include "MACLookup.h"
+#include "output.h"
 
 #include <errno.h>
 
@@ -219,7 +220,7 @@ static bool check_T_attr(const FingerPrint *fp) {
 "       conditions unrelated to the operating system, so be careful.\n"
 "       This is true for these tests: ");
             } else {
-              log_vwrite(LOG_NORMAL|LOG_STDERR, ", "); /* WTF? */
+              log_write(LOG_NORMAL|LOG_STDERR, ", "); /* WTF? */
             }
             error("%s.%s (%s)", ft->name, av->attribute, av->value);
             count++;
