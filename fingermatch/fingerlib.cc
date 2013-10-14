@@ -229,9 +229,6 @@ static bool check_T_attr(const FingerPrint *fp) {
     }
   }
 
-  if (count > 0)
-    printf("\n");
-
   return count > 0;
 }
 
@@ -363,7 +360,7 @@ int readFP(FILE *filep, char *FP, int FPsz, int quiet) {
           continue; // skip the comment line
 
         if (dst - FP + linelen >= FPsz - 5)
-          fatal("[ERRO] Overflow!\n");
+          fatal("[ERRO] Overflow!");
 
         if(strncmp(p, "OS:", 3) == 0) {
           // the line is start with "OS:"
@@ -436,7 +433,6 @@ int readFP(FILE *filep, char *FP, int FPsz, int quiet) {
     checkFP(fp, quiet);
     delete fp;
     /* Print a blank line after checkFP's messages. */
-    printf("\n");
   }
 
   if (dst - FP < 1)
