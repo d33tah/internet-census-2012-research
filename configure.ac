@@ -84,6 +84,8 @@ AC_PATH_TOOL([STRIP], [strip], [/bin/true])
 
 needs_cpp_precomp=no
 
+CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)"
+
 LUA_CFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN"
 
 case "$host" in

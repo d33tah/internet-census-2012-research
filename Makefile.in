@@ -75,7 +75,7 @@ LINGUAS ?= $(ALL_LINGUAS)
 DESTDIR =
 
 TARGET = nmap
-FINGERMATCH = fingermatch
+FINGERMATCH = fingermatch/fingermatch
 INSTALLNSE=@INSTALLNSE@
 BUILDZENMAP=@BUILDZENMAP@
 BUILDNDIFF=@BUILDNDIFF@
@@ -103,7 +103,7 @@ export HDRS = charpool.h FingerPrintResults.h FPEngine.h global_structures.h idl
 
 OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o main.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS)
 
-FINGERMATCH_OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS) fingermatch.o fingerlib.o
+FINGERMATCH_OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS) fingermatch/fingermatch.o fingermatch/fingerlib.o
 
 # %.o : %.cc -- nope this is a GNU extension
 .cc.o:
