@@ -10,8 +10,6 @@ it with the TCP/IP fingerprints, parsing the fingermatch's output.
 import subprocess
 import sys
 import re
-import threading
-from Queue import Queue
 
 if len(sys.argv) != 2:
   usage = """Usage: %s <internetcensusfile>
@@ -33,7 +31,10 @@ ignored_warnings = [
 #ignored_warnings_re = map(lambda x: re.compile(x, flags=re.MULTILINE), ignored_warnings)
 ignored_warnings_re = map(re.compile, ignored_warnings)
 
-def process_line(line):
+while True:
+  line = f.readline()
+  if line == '':
+    break
   p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
@@ -61,26 +62,4 @@ def process_line(line):
       sys.stderr.flush()
 
   print("%s\t%s" % (columns[0], program_output.strip()))
-  # TODO: This should be called even if there was an exception.
   p.terminate()
-
-q = Queue(maxsize=10)
-def worker():
-  while True:
-    line = q.get(10)
-    process_line(line)
-    q.task_done()
-
-for i in range(8):
-    t = threading.Thread(target=worker)
-    t.start()
-
-while True:
-  line = f.readline()
-  if line == '':
-    break
-  q.put(line)
-
-sys.stderr.write('Waiting for the remaining tasks to finish...')
-sys.stderr.flush()
-q.join()
