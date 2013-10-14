@@ -27,7 +27,7 @@
  *   nmap-os-db or nmap-service-probes.                                    *
  * o Executes Nmap and parses the results (as opposed to typical shell or  *
  *   execution-menu apps, which simply display raw Nmap output and so are  *
- *   not derivative works.)                                                * 
+ *   not derivative works.)                                                *
  * o Integrates/includes/aggregates Nmap into a proprietary executable     *
  *   installer, such as those produced by InstallShield.                   *
  * o Links to a library or executes a program that does any of the above   *
@@ -322,8 +322,8 @@ int readFP(FILE *filep, char *FP, int FPsz ) {
   char tmp[16];
   int i;
   bool isInWrappedFP = false; // whether we are currently reading in a
-							  // wrapped fingerprint
-  
+                              // wrapped fingerprint
+
   if(FPsz < 50) return -1;
   FP[0] = '\0';
   extraline[0] = '\0';
@@ -332,99 +332,99 @@ int readFP(FILE *filep, char *FP, int FPsz ) {
     /* The extraline stuff is a hack to fix a very common
        cut-and-paste problem where two lines are concatenated
        together */
-	if (*extraline) {
-	  Strncpy(line, extraline, sizeof(line));
-	  extraline[0] = '\0';
-	}
-	if (strlen(line) >= FP_RESULT_WRAP_LINE_LEN + 4) {
-	  if (strncmp(line + FP_RESULT_WRAP_LINE_LEN + 1, "OS:", 3) == 0) {
-	    Strncpy(extraline, line + FP_RESULT_WRAP_LINE_LEN + 1, sizeof(extraline));
-	    line[FP_RESULT_WRAP_LINE_LEN + 1] = '\n';
-	    line[FP_RESULT_WRAP_LINE_LEN + 2] = '\0';
-	  }
-	}
-	lineno++;
-	linelen = strlen(line);
-	p = line;
-	if (dst > FP && (*p == '\n' || *p == '.')) {
-	  // end of input
-	  *dst = '\0';	  
+        if (*extraline) {
+          Strncpy(line, extraline, sizeof(line));
+          extraline[0] = '\0';
+        }
+        if (strlen(line) >= FP_RESULT_WRAP_LINE_LEN + 4) {
+          if (strncmp(line + FP_RESULT_WRAP_LINE_LEN + 1, "OS:", 3) == 0) {
+            Strncpy(extraline, line + FP_RESULT_WRAP_LINE_LEN + 1, sizeof(extraline));
+            line[FP_RESULT_WRAP_LINE_LEN + 1] = '\n';
+            line[FP_RESULT_WRAP_LINE_LEN + 2] = '\0';
+          }
+        }
+        lineno++;
+        linelen = strlen(line);
+        p = line;
+        if (dst > FP && (*p == '\n' || *p == '.')) {
+          // end of input
+          *dst = '\0';
 
-	  if(isInWrappedFP)
-	    // We have just completed reading in a wrapped fp.
-	    isInWrappedFP = false;
-	  break;
-	}
-	while(*p && isspace(*p)) p++;
-	if (*p == '#') 
-	  continue; // skip the comment line
+          if(isInWrappedFP)
+            // We have just completed reading in a wrapped fp.
+            isInWrappedFP = false;
+          break;
+        }
+        while(*p && isspace(*p)) p++;
+        if (*p == '#')
+          continue; // skip the comment line
 
-	if (dst - FP + linelen >= FPsz - 5)
-	  fatal("[ERRO] Overflow!\n");
-	
-	if(strncmp(p, "OS:", 3) == 0) {
-	  // the line is start with "OS:"
-	  if(!isInWrappedFP) {
-		// just enter a wrapped fp area
-		oneFP = dst;
-		isInWrappedFP = true;
-	  }
-	  p += 3;
-	  while(*p != '\r' && *p != '\n') {
-	    *dst++ = toupper(*p);
-	    if(*p == ')') *dst++ = '\n';
-	    p++;
-	  }
-	  continue;
-	}
+        if (dst - FP + linelen >= FPsz - 5)
+          fatal("[ERRO] Overflow!\n");
 
-	// this line is not start with "OS:"
-	if(isInWrappedFP) {
-	  // We have just completed reading in a wrapped fp.
-	  *dst = '\0';
-	  isInWrappedFP = false;
-	}
+        if(strncmp(p, "OS:", 3) == 0) {
+          // the line is start with "OS:"
+          if(!isInWrappedFP) {
+                // just enter a wrapped fp area
+                oneFP = dst;
+                isInWrappedFP = true;
+          }
+          p += 3;
+          while(*p != '\r' && *p != '\n') {
+            *dst++ = toupper(*p);
+            if(*p == ')') *dst++ = '\n';
+            p++;
+          }
+          continue;
+        }
 
-	q = p; i = 0;
-	while(q && *q && i<12)
-	  tmp[i++] = toupper(*q++);
-	tmp[i] = '\0';
-	if(strncmp(tmp, "FINGERPRINT", 11) == 0) {
-	  q = p + 11;
-	  while(*q && isspace(*q)) q++;
-	  if (*q) { // this fingeprint line is not empty
-		strncpy(dst, "Fingerprint", 11);
-		dst += 11;
-		p += 11;
-		while(*p) *dst++ = *p++;
-	  }
-	  continue;
-	} else if(strncmp(tmp, "MATCHPOINTS", 11) == 0) {
-	  q = p + 11;
-	  while(*q && isspace(*q)) q++;
-	  if (*q) { // this matchpoints line is not empty
-		strncpy(dst, "Fingerprint", 11);
-		dst += 11;
-		p += 11;
-		while(*p) *dst++ = *p++;
-	  }
-	  continue;
-	} else if(strncmp(tmp, "CLASS", 5) == 0) {
-	  q = p + 5;
-	  while(*q && isspace(*q)) q++;
-	  if (*q) {// this class line is not empty
-		strncpy(dst, "Class", 5);
-		dst += 5;
-		p += 5;
-		while(*p) *dst++ = *p++;
-	  }
-	  continue;
-	} else if(strchr(p, '(')) {
-	  while(*p) *dst++ = toupper(*p++);
-	} else {
-	  printf("[WARN] Skip bogus line: %s\n", p);
-	  continue;
-	}
+        // this line is not start with "OS:"
+        if(isInWrappedFP) {
+          // We have just completed reading in a wrapped fp.
+          *dst = '\0';
+          isInWrappedFP = false;
+        }
+
+        q = p; i = 0;
+        while(q && *q && i<12)
+          tmp[i++] = toupper(*q++);
+        tmp[i] = '\0';
+        if(strncmp(tmp, "FINGERPRINT", 11) == 0) {
+          q = p + 11;
+          while(*q && isspace(*q)) q++;
+          if (*q) { // this fingeprint line is not empty
+                strncpy(dst, "Fingerprint", 11);
+                dst += 11;
+                p += 11;
+                while(*p) *dst++ = *p++;
+          }
+          continue;
+        } else if(strncmp(tmp, "MATCHPOINTS", 11) == 0) {
+          q = p + 11;
+          while(*q && isspace(*q)) q++;
+          if (*q) { // this matchpoints line is not empty
+                strncpy(dst, "Fingerprint", 11);
+                dst += 11;
+                p += 11;
+                while(*p) *dst++ = *p++;
+          }
+          continue;
+        } else if(strncmp(tmp, "CLASS", 5) == 0) {
+          q = p + 5;
+          while(*q && isspace(*q)) q++;
+          if (*q) {// this class line is not empty
+                strncpy(dst, "Class", 5);
+                dst += 5;
+                p += 5;
+                while(*p) *dst++ = *p++;
+          }
+          continue;
+        } else if(strchr(p, '(')) {
+          while(*p) *dst++ = toupper(*p++);
+        } else {
+          printf("[WARN] Skip bogus line: %s\n", p);
+          continue;
+        }
   }
 
   /* Parse the fingerprint so we can check it and print warnings. Note that we
@@ -466,16 +466,16 @@ int remove_duplicate_tests(FingerPrint *FP) {
       prev--;
 
       if (strcmp(outer->name, inner->name) == 0) {
-	/* DUPLICATE FOUND!  REMOVE THE ONE W/THE FEWEST ATTRIBUTES */
-	int outeratts = outer->results.size();
-	int inneratts = inner->results.size();
-	if (inneratts > outeratts) {
-	  /* We do a swap of members because we can't change the address of 'FP' */
+        /* DUPLICATE FOUND!  REMOVE THE ONE W/THE FEWEST ATTRIBUTES */
+        int outeratts = outer->results.size();
+        int inneratts = inner->results.size();
+        if (inneratts > outeratts) {
+          /* We do a swap of members because we can't change the address of 'FP' */
           tmp = *outer;
           *outer = *inner;
           *inner = tmp;
-	}
-	dupsfound++;
+        }
+        dupsfound++;
         FP->tests.erase(inner);
       }
 
