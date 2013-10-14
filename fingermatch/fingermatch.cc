@@ -98,6 +98,8 @@
 #include "osscan.h"
 #include "fingerlib.h"
 
+#include <getopt.h>
+
 void set_program_name(const char *name);
 
 #define FINGERMATCH_GUESS_THRESHOLD 0.80 /* How low we will still show guesses for */
@@ -108,10 +110,11 @@ void set_program_name(const char *name);
 #define MAX_ADDITIONAL_GUESSES 10
 
 void usage() {
-  printf("Usage: fingermatch <fingerprintfilename>\n"
-         "(You will be prompted for the fingerprint data)\n"
+  printf("Usage: fingermatch [--fp-file <fingerprintfilename>] [--quiet]\n"
+         "(The fingerprint data will be read from the standard input)\n"
+         "TODO: add more documentation. In the meantime, see the source code.\n"
          "\n");
-  exit(1);
+  exit(0);
 }
 
 static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i);
@@ -123,15 +126,48 @@ int main(int argc, char *argv[]) {
   FingerPrint *testFP;
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
-  int i, rc, n;
+  int i, rc, n, c, option_index;
+  int quiet_flag = 0;
 
   set_program_name(argv[0]);
 
-  if (argc != 2)
-    usage();
+  while (1) {
+    static struct option long_options[] = {
+      {"help",    no_argument,        0, 'h'},
+      {"fp-file", required_argument,  0, 'f'},
+      {"quiet",   no_argument,        0, 'q'},
+    };
+    c = getopt_long (argc, argv, "hf:q", long_options, &option_index);
+    /* Detect the end of the options. */
+    if (c == -1)
+      break;
+    switch (c) {
+      case 'f':
+        fingerfile = optarg;
+        break;
+      case 'h':
+        usage();
+        break;
+      case 'q':
+        if (quiet_flag)
+          error("[WARN] --quiet already specified!");
+        quiet_flag = 1;
+        break;
+      case '?':
+        /* getopt_long already printed an error message. */
+        fatal("Try `--help' for more information, usage options and help.");
+        break;
+      default:
+        fatal("FIXME: hit an option specified in getopt_long but not implemented.");
+    }
+  }
+
+  if (fingerfile == NULL) {
+    error("[ERROR] No fingerprint database specified!");
+    fatal("Try `--help' for more information, usage options and help.");
+  }
 
   /* First we read in the fingerprint file provided on the command line */
-  fingerfile = argv[1];
   reference_FPs = parse_fingerprint_file(fingerfile);
   if (reference_FPs == NULL)
     fatal("Could not open or parse Fingerprint file given on the command line: %s", fingerfile);
