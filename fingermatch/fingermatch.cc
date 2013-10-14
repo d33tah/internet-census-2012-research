@@ -193,7 +193,10 @@ int main(int argc, char *argv[]) {
 
   switch(FPR.overall_results) {
   case OSSCAN_NOMATCHES:
-    printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfile);
+    if (quiet_flag)
+        printf("No matches");
+    else
+        printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfile);
     break;
   case OSSCAN_TOOMANYMATCHES:
   case OSSCAN_SUCCESS:
