@@ -111,7 +111,7 @@ void set_program_name(const char *name);
 void usage() {
   printf("Usage: fingermatch <fingerprintfilename>\n"
          "(You will be prompted for the fingerprint data)\n"
-	 "\n");
+         "\n");
   exit(1);
 }
 
