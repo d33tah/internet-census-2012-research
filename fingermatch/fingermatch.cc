@@ -188,8 +188,6 @@ int main(int argc, char *argv[]) {
     if (readFP(stdin, fprint, sizeof(fprint), quiet_flag) == -1)
       fatal("[ERROR] Failed to read in supposed fingerprint from stdin\n");
 
-    fprintf(stderr, "after readFP\n");
-
     testFP = parse_single_fingerprint(fprint);
     if (!testFP) fatal("Sorry -- failed to parse the so-called fingerprint you entered");
 
@@ -199,7 +197,6 @@ int main(int argc, char *argv[]) {
 
     /* Now we find the matches! */
     match_fingerprint(testFP, &FPR, reference_FPs, FINGERMATCH_GUESS_THRESHOLD);
-    fprintf(stderr, "after match_fingerprint. FPR.num_perfect_matches=%d\n", FPR.num_perfect_matches);
 
     switch(FPR.overall_results) {
     case OSSCAN_NOMATCHES:
