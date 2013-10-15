@@ -85,7 +85,7 @@ def worker():
 if __name__ == "__main__":
 
   if len(sys.argv) < 2 or len(sys.argv) > 3:
-    usage = """Usage: %s <internetcensusfile> <maxthreads>
+    usage = """Usage: %s <internetcensusfile> <maxthreads-optional>
     """ % sys.argv[0]
     sys.exit(usage)
 
