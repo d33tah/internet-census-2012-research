@@ -183,11 +183,13 @@ int main(int argc, char *argv[]) {
 
   if (fingerfilename == NULL) {
     FILE* fingerfile = fopen("nmap-os-db", "r");
-    if (fingerfilename == NULL) {
+    if (fingerfile == NULL) {
       error("[ERROR] No fingerprint database specified!");
       fatal("Try `--help' for more information, usage options and help.");
     } else {
       error("[WARN] No fingerprint database specified, trying nmap-os-db...");
+      fclose(fingerfile);
+      fingerfilename = "nmap-os-db";
     }
   }
 
