@@ -28,6 +28,8 @@ ignored_warnings = [
 #ignored_warnings_re = map(lambda x: re.compile(x, flags=re.MULTILINE), ignored_warnings)
 ignored_warnings_re = map(re.compile, ignored_warnings)
 
+stdout_lock = threading.Lock()
+
 def process_line(line, p):
 
   columns = line.split("\t")
@@ -55,7 +57,9 @@ def process_line(line, p):
       sys.stderr.write('Warning: %s\n' % error_output)
       sys.stderr.flush()
 
+  stdout_lock.acquire()
   print("%s\t%s" % (columns[0], program_output))
+  stdout_lock.release()
 
 q = Queue(maxsize=max_threads + 2)
 
