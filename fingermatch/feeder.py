@@ -3,8 +3,8 @@
 """
 Fingermatch
 
-A helper tool used to extract Internet Census 2012. Runs fingermatch and feeds
-it with the TCP/IP fingerprints, parsing the fingermatch's output.
+A helper tool used to extract Internet Census 2012 data. Runs fingermatch and
+feeds it with the TCP/IP fingerprints, parsing the fingermatch's output.
 """
 
 import subprocess
