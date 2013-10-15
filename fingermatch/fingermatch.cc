@@ -109,11 +109,16 @@ void set_program_name(const char *name);
    match. */
 #define MAX_ADDITIONAL_GUESSES 10
 
-void usage() {
-  printf("Usage: fingermatch [--fp-file <fingerprintfilename>] [--quiet]\n"
-         "(The fingerprint data will be read from the standard input)\n"
-         "TODO: add more documentation. In the meantime, see the source code.\n"
-         "\n");
+void usage(char *argv0) {
+  printf(
+"Usage: %s [options]\n"
+"\n"
+"The fingerprint data in Nmap format will be read from the standard input.\n"
+"  -f, --fp-file <filename>   Use the specified Nmap fingerprint database\n"
+"  -h, --help                 Display this help screen\n"
+"  -g, --guess-threshold <n>  Set the guess threshold to n percent (0 < n < 100)\n"
+"  -q  --quiet                Display one line of output per fingerprint\n"
+, argv0);
   exit(0);
 }
 
@@ -153,7 +158,7 @@ int main(int argc, char *argv[]) {
           fatal("Invalid guess threshold. Please enter a number between 1 and 100.");
         break;
       case 'h':
-        usage();
+        usage(argv[0]);
         break;
       case 'q':
         if (quiet_flag)
