@@ -116,7 +116,7 @@ void usage(char *argv0) {
 "The fingerprint data in Nmap format will be read from the standard input.\n"
 "  -f, --fp-file <filename>   Use the specified Nmap fingerprint database\n"
 "  -h, --help                 Display this help screen\n"
-"  -g, --guess-threshold <n>  Set the guess threshold to n percent (0 < n < 100)\n"
+"  -g, --match <n>            Set the guess threshold to n percent (0 < n < 100)\n"
 "  -q  --quiet                Display one line of output per fingerprint\n"
 , argv0);
   exit(0);
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
   while (1) {
     static struct option long_options[] = {
       {"fp-file",           required_argument,  0, 'f'},
-      {"guess-threshold",   required_argument,  0, 'g'},
+      {"match",             required_argument,  0, 'm'},
       {"help",              no_argument,        0, 'h'},
       {"quiet",             no_argument,        0, 'q'},
       {0, 0, 0, 0}
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
       case 'f':
         fingerfilename = optarg;
         break;
-      case 'g':
+      case 'm':
         if (guess_threshold_percent != -1)
           error("[WARN] guess threshold already specified!");
         guess_threshold_percent = atoi(optarg);
