@@ -93,17 +93,18 @@ def worker():
   p.stdin.close()
   p.terminate()
 
-for i in range(max_threads):
-  t = threading.Thread(target=worker)
-  t.daemon = True
-  t.start()
+if __name__ == "__main__":
+  for i in range(max_threads):
+    t = threading.Thread(target=worker)
+    t.daemon = True
+    t.start()
 
-while True:
-  line = f.readline()
-  if line == '':
-    break
-  q.put(line)
+  while True:
+    line = f.readline()
+    if line == '':
+      break
+    q.put(line)
 
-sys.stderr.write('Waiting for the remaining tasks to finish...')
-sys.stderr.flush()
-q.join()
+  sys.stderr.write('Waiting for the remaining tasks to finish...')
+  sys.stderr.flush()
+  q.join()
