@@ -10,6 +10,8 @@ it with the TCP/IP fingerprints, parsing the fingermatch's output.
 import subprocess
 import sys
 import re
+import fcntl
+import os
 
 if len(sys.argv) != 2:
   usage = """Usage: %s <internetcensusfile>
@@ -37,6 +39,11 @@ p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
                      stderr=subprocess.PIPE
 )
 
+# Switch the process's stderr to non-blocking mode - might not work on Windows
+fd = p.stderr.fileno()
+fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
 while True:
   line = f.readline()
   if line == '':
@@ -52,7 +59,10 @@ while True:
 
   program_output = p.stdout.readline().rstrip("\r\n")
 
-  error_output = p.stderr.read()
+  try:
+    error_output = p.stderr.read()
+  except IOError:
+    error_output = ''
   if error_output != '':
     is_ignored = False
     for ignored_warning in ignored_warnings_re:
