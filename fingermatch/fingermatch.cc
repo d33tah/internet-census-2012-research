@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
   FingerPrint *testFP;
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
-  int i, rc, n, c, option_index, guess_threshold_percent = -1;
+  int i, rc, c, option_index, guess_threshold_percent = -1;
   int quiet_flag = 0;
   double guess_threshold;
 
@@ -251,12 +251,8 @@ int main(int argc, char *argv[]) {
           print_match(FPR, i, quiet_flag);
         printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfilename);
         printf("Accu Line# OS (classification)\n");
-        n = 0;
-        for(i=0; i < 10 && i < FPR.num_matches && n < MAX_ADDITIONAL_GUESSES; i++) {
-          if (FPR.accuracy[i] < 1) {
-            print_match(FPR, i, quiet_flag);
-            n++;
-          }
+        for(i=0; i < 10 && i < FPR.num_matches && FPR.accuracy[i] >= guess_threshold && FPR.accuracy[i] < 1; i++) {
+          print_match(FPR, i, quiet_flag);
         }
       } else {
         printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfilename);
