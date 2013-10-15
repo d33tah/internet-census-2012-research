@@ -42,18 +42,8 @@ ignored_warnings = [
 #ignored_warnings_re = map(lambda x: re.compile(x, flags=re.MULTILINE), ignored_warnings)
 ignored_warnings_re = map(re.compile, ignored_warnings)
 
-p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
-                     stdin=subprocess.PIPE,
-                     stdout=subprocess.PIPE,
-                     stderr=subprocess.PIPE
-)
+def process_line(line, p):
 
-# Switch the process's stderr to non-blocking mode - might not work on Windows
-fd = p.stderr.fileno()
-fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
-
-def process_line(line):
   columns = line.split("\t")
   fingerprint_column = columns[2]
   ip_column = columns[0]
@@ -83,13 +73,28 @@ def process_line(line):
 
 q = Queue(maxsize=max_threads + 2)
 def worker():
+  p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
+                       stdin=subprocess.PIPE,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE
+  )
+
+  # Switch the process's stderr to non-blocking mode - might not work on Windows
+  fd = p.stderr.fileno()
+  fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+  fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
   while True:
     line = q.get()
-    process_line(line)
+    process_line(line, p)
     q.task_done()
+
+  p.stdin.close()
+  p.terminate()
 
 for i in range(max_threads):
   t = threading.Thread(target=worker)
+  t.daemon = True
   t.start()
 
 while True:
@@ -101,6 +106,3 @@ while True:
 sys.stderr.write('Waiting for the remaining tasks to finish...')
 sys.stderr.flush()
 q.join()
-
-p.stdin.close()
-p.terminate()
