@@ -31,24 +31,28 @@ ignored_warnings = [
 #ignored_warnings_re = map(lambda x: re.compile(x, flags=re.MULTILINE), ignored_warnings)
 ignored_warnings_re = map(re.compile, ignored_warnings)
 
+p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
+                     stdin=subprocess.PIPE,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.PIPE
+)
+
+f2 = open("output", "w")
+
 while True:
   line = f.readline()
   if line == '':
     break
-  p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
-                       stdin=subprocess.PIPE,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE)
   columns = line.split("\t")
   fingerprint_column = columns[2]
   ip_column = columns[0]
   fingerprint = fingerprint_column.replace(",", "\n")
 
   p.stdin.write(fingerprint)
+  p.stdin.write("\n")
   p.stdin.flush()
-  p.stdin.close()
 
-  program_output = p.stdout.readline()
+  program_output = p.stdout.readline().rstrip("\r\n")
 
   error_output = p.stderr.read()
   if error_output != '':
@@ -62,4 +66,4 @@ while True:
       sys.stderr.flush()
 
   print("%s\t%s" % (columns[0], program_output))
-  p.terminate()
+p.terminate()
