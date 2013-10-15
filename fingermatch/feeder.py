@@ -37,8 +37,6 @@ p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
                      stderr=subprocess.PIPE
 )
 
-f2 = open("output", "w")
-
 while True:
   line = f.readline()
   if line == '':
