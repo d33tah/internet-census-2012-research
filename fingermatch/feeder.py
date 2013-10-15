@@ -12,13 +12,19 @@ import sys
 import re
 import fcntl
 import os
+import threading
+from Queue import Queue
 
-if len(sys.argv) != 2:
-  usage = """Usage: %s <internetcensusfile>
+if len(sys.argv) < 2 or len(sys.argv) > 3:
+  usage = """Usage: %s <internetcensusfile> <maxthreads>
   """ % sys.argv[0]
   sys.exit(usage)
 
 f = open(sys.argv[1])
+if len(sys.argv) == 3:
+  max_threads = int(sys.argv[3])
+else:
+  max_threads = int(subprocess.check_output("nproc"))
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
@@ -44,10 +50,7 @@ fd = p.stderr.fileno()
 fl = fcntl.fcntl(fd, fcntl.F_GETFL)
 fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
-while True:
-  line = f.readline()
-  if line == '':
-    break
+def process_line(line):
   columns = line.split("\t")
   fingerprint_column = columns[2]
   ip_column = columns[0]
@@ -74,4 +77,27 @@ while True:
       sys.stderr.flush()
 
   print("%s\t%s" % (columns[0], program_output))
+
+q = Queue(maxsize=max_threads + 2)
+def worker():
+  while True:
+    line = q.get()
+    process_line(line)
+    q.task_done()
+
+for i in range(max_threads):
+  t = threading.Thread(target=worker)
+  t.start()
+
+while True:
+  line = f.readline()
+  if line == '':
+    break
+  q.put(line)
+
+sys.stderr.write('Waiting for the remaining tasks to finish...')
+sys.stderr.flush()
+q.join()
+
+p.stdin.close()
 p.terminate()
