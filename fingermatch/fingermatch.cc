@@ -132,7 +132,6 @@ static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i, int q
 int main(int argc, char *argv[]) {
   char *fingerfilename = NULL;
   FingerPrintDB *reference_FPs = NULL;
-  FingerPrint *testFP;
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
   int i, rc, c, option_index, guess_threshold_percent = 0;
