@@ -140,12 +140,12 @@ int main(int argc, char *argv[]) {
   while (1) {
     static struct option long_options[] = {
       {"fp-file",           required_argument,  0, 'f'},
-      {"match",             required_argument,  0, 'm'},
       {"help",              no_argument,        0, 'h'},
+      {"match",             required_argument,  0, 'm'},
       {"quiet",             no_argument,        0, 'q'},
       {0, 0, 0, 0}
     };
-    c = getopt_long(argc, argv, "f:g:hq", long_options, &option_index);
+    c = getopt_long(argc, argv, "f:hm:q", long_options, &option_index);
     /* Detect the end of the options. */
     if (c == -1)
       break;
@@ -153,15 +153,15 @@ int main(int argc, char *argv[]) {
       case 'f':
         fingerfilename = optarg;
         break;
+      case 'h':
+        usage(argv[0]);
+        break;
       case 'm':
         if (guess_threshold_percent != -1)
           error("[WARN] guess threshold already specified!");
         guess_threshold_percent = atoi(optarg);
         if (guess_threshold_percent <= 0 || guess_threshold_percent > 100)
           fatal("Invalid guess threshold. Please enter a number between 1 and 100.");
-        break;
-      case 'h':
-        usage(argv[0]);
         break;
       case 'q':
         if (quiet_flag)
