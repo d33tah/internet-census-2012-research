@@ -143,6 +143,7 @@ int main(int argc, char *argv[]) {
       {"guess-threshold",   required_argument,  0, 'g'},
       {"help",              no_argument,        0, 'h'},
       {"quiet",             no_argument,        0, 'q'},
+      {0, 0, 0, 0}
     };
     c = getopt_long(argc, argv, "f:ghq", long_options, &option_index);
     /* Detect the end of the options. */
