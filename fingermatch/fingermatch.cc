@@ -234,10 +234,14 @@ int main(int argc, char *argv[]) {
     case OSSCAN_TOOMANYMATCHES:
     case OSSCAN_SUCCESS:
       if (quiet_flag) {
-        if (FPR.num_perfect_matches > 0)
-          print_match(FPR, 0, quiet_flag);
-        else
-          printf("No matches\n");
+        if (guess_threshold_percent == 100) {
+          if (FPR.num_perfect_matches > 0)
+            print_match(FPR, 0, quiet_flag);
+          else
+            printf("No matches\n");
+        } else {
+            print_match(FPR, 0, quiet_flag);
+        }
         break;
       }
       if (FPR.num_perfect_matches > 0) {
