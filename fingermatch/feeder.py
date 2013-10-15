@@ -15,20 +15,6 @@ import os
 import threading
 from Queue import Queue
 
-if len(sys.argv) < 2 or len(sys.argv) > 3:
-  usage = """Usage: %s <internetcensusfile> <maxthreads>
-  """ % sys.argv[0]
-  sys.exit(usage)
-
-f = open(sys.argv[1])
-if len(sys.argv) == 3:
-  max_threads = int(sys.argv[3])
-else:
-  # not using check_output to make it compatible with Python 2.6
-  nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
-  nproc_p.wait()
-  max_threads = int(nproc_p.stdout.read())
-
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
 
@@ -94,6 +80,21 @@ def worker():
   p.terminate()
 
 if __name__ == "__main__":
+
+  if len(sys.argv) < 2 or len(sys.argv) > 3:
+    usage = """Usage: %s <internetcensusfile> <maxthreads>
+    """ % sys.argv[0]
+    sys.exit(usage)
+
+  f = open(sys.argv[1])
+  if len(sys.argv) == 3:
+    max_threads = int(sys.argv[3])
+  else:
+    # not using check_output to make it compatible with Python 2.6
+    nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
+    nproc_p.wait()
+    max_threads = int(nproc_p.stdout.read())
+
   for i in range(max_threads):
     t = threading.Thread(target=worker)
     t.daemon = True
