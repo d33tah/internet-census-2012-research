@@ -24,7 +24,10 @@ f = open(sys.argv[1])
 if len(sys.argv) == 3:
   max_threads = int(sys.argv[3])
 else:
-  max_threads = int(subprocess.check_output("nproc"))
+  # not using check_output to make it compatible with Python 2.6
+  nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
+  nproc_p.wait()
+  max_threads = int(nproc_p.stdout.read())
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
