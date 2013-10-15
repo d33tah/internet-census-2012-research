@@ -126,24 +126,31 @@ int main(int argc, char *argv[]) {
   FingerPrint *testFP;
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
-  int i, rc, n, c, option_index;
+  int i, rc, n, c, option_index, guess_threshold_percent = -1;
   int quiet_flag = 0;
+  double guess_threshold;
 
   set_program_name(argv[0]);
 
   while (1) {
     static struct option long_options[] = {
-      {"help",    no_argument,        0, 'h'},
-      {"fp-file", required_argument,  0, 'f'},
-      {"quiet",   no_argument,        0, 'q'},
+      {"guess-threshold",   required_argument,  0, 'g'},
+      {"help",              no_argument,        0, 'h'},
+      {"fp-file",           required_argument,  0, 'f'},
+      {"quiet",             no_argument,        0, 'q'},
     };
-    c = getopt_long (argc, argv, "hf:q", long_options, &option_index);
+    c = getopt_long (argc, argv, "hf:gq", long_options, &option_index);
     /* Detect the end of the options. */
     if (c == -1)
       break;
     switch (c) {
       case 'f':
         fingerfile = optarg;
+        break;
+      case 'g':
+        guess_threshold_percent = atoi(optarg);
+        if (guess_threshold_percent <= 0 || guess_threshold_percent > 100)
+          fatal("Invalid guess threshold. Please enter a number between 1 and 100.");
         break;
       case 'h':
         usage();
@@ -161,6 +168,10 @@ int main(int argc, char *argv[]) {
         fatal("FIXME: hit an option specified in getopt_long but not implemented.");
     }
   }
+
+  if (guess_threshold_percent == -1)
+    guess_threshold_percent = 100;
+  guess_threshold = guess_threshold_percent / 100.0;
 
   if (fingerfile == NULL) {
     error("[ERROR] No fingerprint database specified!");
