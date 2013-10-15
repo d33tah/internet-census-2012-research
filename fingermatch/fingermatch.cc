@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
   FingerPrint *testFP;
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
-  int i, rc, c, option_index, guess_threshold_percent = -1;
+  int i, rc, c, option_index, guess_threshold_percent = 0;
   int quiet_flag = 0, line_numbers_only = 0;
   double guess_threshold;
 
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
           error("[WARN] --line-numbers-only already specified!");
         line_numbers_only = 1;
       case 'm':
-        if (guess_threshold_percent != -1)
+        if (guess_threshold_percent)
           error("[WARN] guess threshold already specified!");
         guess_threshold_percent = atoi(optarg);
         if (guess_threshold_percent <= 0 || guess_threshold_percent > 100)
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (guess_threshold_percent == -1)
+  if (guess_threshold_percent == 0)
     guess_threshold_percent = 100;
   guess_threshold = guess_threshold_percent / 100.0;
 
