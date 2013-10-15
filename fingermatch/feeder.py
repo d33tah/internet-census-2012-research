@@ -61,7 +61,6 @@ def process_line(line, p):
   print("%s\t%s" % (columns[0], program_output))
   stdout_lock.release()
 
-q = Queue(maxsize=max_threads + 2)
 
 def worker():
   p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
@@ -98,6 +97,8 @@ if __name__ == "__main__":
     nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
     nproc_p.wait()
     max_threads = int(nproc_p.stdout.read())
+
+  q = Queue(maxsize=max_threads + 2)
 
   for i in range(max_threads):
     t = threading.Thread(target=worker)
