@@ -126,7 +126,7 @@ static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i, int q
 
 
 int main(int argc, char *argv[]) {
-  char *fingerfile = NULL;
+  char *fingerfilename = NULL;
   FingerPrintDB *reference_FPs = NULL;
   FingerPrint *testFP;
   struct FingerPrintResultsIPv4 FPR;
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
       break;
     switch (c) {
       case 'f':
-        fingerfile = optarg;
+        fingerfilename = optarg;
         break;
       case 'g':
         if (guess_threshold_percent != -1)
@@ -181,15 +181,20 @@ int main(int argc, char *argv[]) {
     guess_threshold_percent = 100;
   guess_threshold = guess_threshold_percent / 100.0;
 
-  if (fingerfile == NULL) {
-    error("[ERROR] No fingerprint database specified!");
-    fatal("Try `--help' for more information, usage options and help.");
+  if (fingerfilename == NULL) {
+    FILE* fingerfile = fopen("nmap-os-db", "r");
+    if (fingerfilename == NULL) {
+      error("[ERROR] No fingerprint database specified!");
+      fatal("Try `--help' for more information, usage options and help.");
+    } else {
+      error("[WARN] No fingerprint database specified, trying nmap-os-db...");
+    }
   }
 
   /* First we read in the fingerprint file provided on the command line */
-  reference_FPs = parse_fingerprint_file(fingerfile);
+  reference_FPs = parse_fingerprint_file(fingerfilename);
   if (reference_FPs == NULL)
-    fatal("Could not open or parse Fingerprint file given on the command line: %s", fingerfile);
+    fatal("Could not open or parse Fingerprint file given on the command line: %s", fingerfilename);
 
   for (;;) {
 
@@ -222,7 +227,7 @@ int main(int argc, char *argv[]) {
       if (quiet_flag)
           printf("No matches\n");
       else
-          printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfile);
+          printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfilename);
       break;
     case OSSCAN_TOOMANYMATCHES:
     case OSSCAN_SUCCESS:
@@ -234,11 +239,11 @@ int main(int argc, char *argv[]) {
         break;
       }
       if (FPR.num_perfect_matches > 0) {
-        printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfile);
+        printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfilename);
         printf("Accu Line# OS (classification)\n");
         for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++)
           print_match(FPR, i, quiet_flag);
-        printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfile);
+        printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfilename);
         printf("Accu Line# OS (classification)\n");
         n = 0;
         for(i=0; i < 10 && i < FPR.num_matches && n < MAX_ADDITIONAL_GUESSES; i++) {
@@ -248,7 +253,7 @@ int main(int argc, char *argv[]) {
           }
         }
       } else {
-        printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfile);
+        printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfilename);
         printf("Accu Line# OS (classification)\n");
         for(i=0; i < MAX_GUESSES && i < FPR.num_matches; i++)
           print_match(FPR, i, quiet_flag);
