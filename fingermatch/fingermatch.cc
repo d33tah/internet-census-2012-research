@@ -100,6 +100,9 @@
 
 #include <getopt.h>
 
+#include <vector>
+#include <algorithm>
+
 void set_program_name(const char *name);
 
 #define FINGERMATCH_GUESS_THRESHOLD 0.80 /* How low we will still show guesses for */
@@ -116,6 +119,7 @@ void usage(char *argv0) {
 "The fingerprint data in Nmap format will be read from the standard input.\n"
 "  -f, --fp-file <filename>   Use the specified Nmap fingerprint database\n"
 "  -h, --help                 Display this help screen\n"
+"  -l, --line-numbers-only    Print comma-separated line numbers from the database\n"
 "  -g, --match <n>            Set the guess threshold to n percent (0 < n < 100)\n"
 "  -q  --quiet                Display one line of output per fingerprint\n"
 , argv0);
@@ -132,7 +136,7 @@ int main(int argc, char *argv[]) {
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
   int i, rc, c, option_index, guess_threshold_percent = -1;
-  int quiet_flag = 0;
+  int quiet_flag = 0, line_numbers_only = 0;
   double guess_threshold;
 
   set_program_name(argv[0]);
@@ -140,6 +144,7 @@ int main(int argc, char *argv[]) {
   while (1) {
     static struct option long_options[] = {
       {"fp-file",           required_argument,  0, 'f'},
+      {"line-numbers-only", no_argument,        0, 'l'},
       {"help",              no_argument,        0, 'h'},
       {"match",             required_argument,  0, 'm'},
       {"quiet",             no_argument,        0, 'q'},
@@ -156,6 +161,10 @@ int main(int argc, char *argv[]) {
       case 'h':
         usage(argv[0]);
         break;
+      case 'l':
+        if (line_numbers_only)
+          error("[WARN] --line-numbers-only already specified!");
+        line_numbers_only = 1;
       case 'm':
         if (guess_threshold_percent != -1)
           error("[WARN] guess threshold already specified!");
@@ -227,20 +236,43 @@ int main(int argc, char *argv[]) {
     switch(FPR.overall_results) {
     case OSSCAN_NOMATCHES:
       if (quiet_flag)
-          printf("No matches\n");
+          if (line_numbers_only)
+            printf("0\n");
+          else
+            printf("No matches\n");
       else
           printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfilename);
       break;
     case OSSCAN_TOOMANYMATCHES:
     case OSSCAN_SUCCESS:
       if (quiet_flag) {
-        if (guess_threshold_percent == 100) {
-          if (FPR.num_perfect_matches > 0)
-            print_match(FPR, 0, quiet_flag);
-          else
-            printf("No matches\n");
+        if (line_numbers_only) {
+          int num_printed = 0;
+          std::vector<int> line_numbers;
+          bool first = true;
+          for(i=0; i < FPR.num_matches && FPR.accuracy[i] >= guess_threshold; i++) {
+            if (std::find(line_numbers.begin(),line_numbers.end(), FPR.matches[i]->line) == line_numbers.end()) {
+              line_numbers.push_back(FPR.matches[i]->line);
+              if (first)
+                first = false;
+              else
+                printf(",");
+              printf("%d", FPR.matches[i]->line);
+              num_printed++;
+            }
+          }
+          if (num_printed == 0)
+            printf("0");
+          printf("\n");
         } else {
-            print_match(FPR, 0, quiet_flag);
+          if (guess_threshold_percent == 100) {
+            if (FPR.num_perfect_matches > 0)
+              print_match(FPR, 0, quiet_flag);
+            else
+              printf("No matches\n");
+          } else {
+              print_match(FPR, 0, quiet_flag);
+          }
         }
         break;
       }
