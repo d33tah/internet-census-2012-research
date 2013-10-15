@@ -172,66 +172,80 @@ int main(int argc, char *argv[]) {
   if (reference_FPs == NULL)
     fatal("Could not open or parse Fingerprint file given on the command line: %s", fingerfile);
 
+  for (;;) {
 
-  if (!quiet_flag) {
-    /* Now we read in the user-provided fingerprint */
-    printf("Enter the fingerprint you would like to match, followed by a blank single-dot line:\n");
-  }
+    FingerPrint *testFP;
+    struct FingerPrintResultsIPv4 FPR;
 
-  if (readFP(stdin, fprint, sizeof(fprint), quiet_flag) == -1)
-    fatal("[ERROR] Failed to read in supposed fingerprint from stdin\n");
+    if (!quiet_flag) {
+      /* Now we read in the user-provided fingerprint */
+      printf("Enter the fingerprint you would like to match, followed by a blank single-dot line:\n");
+    }
 
-  testFP = parse_single_fingerprint(fprint);
-  if (!testFP) fatal("Sorry -- failed to parse the so-called fingerprint you entered");
+    if (feof(stdin))
+      break;
 
-  if ((rc = remove_duplicate_tests(testFP))) {
-    error("[WARN] Adjusted fingerprint due to %d duplicated tests (we only look at the one with the most attributes).\n", rc);
-  }
+    if (readFP(stdin, fprint, sizeof(fprint), quiet_flag) == -1)
+      fatal("[ERROR] Failed to read in supposed fingerprint from stdin\n");
 
-  /* Now we find the matches! */
-  match_fingerprint(testFP, &FPR, reference_FPs, FINGERMATCH_GUESS_THRESHOLD);
+    fprintf(stderr, "after readFP\n");
 
-  switch(FPR.overall_results) {
-  case OSSCAN_NOMATCHES:
-    if (quiet_flag)
-        printf("No matches");
-    else
-        printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfile);
-    break;
-  case OSSCAN_TOOMANYMATCHES:
-  case OSSCAN_SUCCESS:
-    if (quiet_flag) {
-      if (FPR.num_perfect_matches > 0)
-        print_match(FPR, 0, quiet_flag);
+    testFP = parse_single_fingerprint(fprint);
+    if (!testFP) fatal("Sorry -- failed to parse the so-called fingerprint you entered");
+
+    if ((rc = remove_duplicate_tests(testFP))) {
+      error("[WARN] Adjusted fingerprint due to %d duplicated tests (we only look at the one with the most attributes).\n", rc);
+    }
+
+    /* Now we find the matches! */
+    match_fingerprint(testFP, &FPR, reference_FPs, FINGERMATCH_GUESS_THRESHOLD);
+    fprintf(stderr, "after match_fingerprint. FPR.num_perfect_matches=%d\n", FPR.num_perfect_matches);
+
+    switch(FPR.overall_results) {
+    case OSSCAN_NOMATCHES:
+      if (quiet_flag)
+          printf("No matches\n");
       else
-        printf("No matches");
+          printf("**NO MATCHES** found for the entered fingerprint in %s\n", fingerfile);
+      break;
+    case OSSCAN_TOOMANYMATCHES:
+    case OSSCAN_SUCCESS:
+      if (quiet_flag) {
+        if (FPR.num_perfect_matches > 0)
+          print_match(FPR, 0, quiet_flag);
+        else
+          printf("No matches\n");
+        break;
+      }
+      if (FPR.num_perfect_matches > 0) {
+        printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfile);
+        printf("Accu Line# OS (classification)\n");
+        for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++)
+          print_match(FPR, i, quiet_flag);
+        printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfile);
+        printf("Accu Line# OS (classification)\n");
+        n = 0;
+        for(i=0; i < 10 && i < FPR.num_matches && n < MAX_ADDITIONAL_GUESSES; i++) {
+          if (FPR.accuracy[i] < 1) {
+            print_match(FPR, i, quiet_flag);
+            n++;
+          }
+        }
+      } else {
+        printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfile);
+        printf("Accu Line# OS (classification)\n");
+        for(i=0; i < MAX_GUESSES && i < FPR.num_matches; i++)
+          print_match(FPR, i, quiet_flag);
+      }
+      printf("\n");
+      break;
+    default:
+      fatal("Bogus error.");
       break;
     }
-    if (FPR.num_perfect_matches > 0) {
-      printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfile);
-      printf("Accu Line# OS (classification)\n");
-      for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++)
-        print_match(FPR, i, quiet_flag);
-      printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfile);
-      printf("Accu Line# OS (classification)\n");
-      n = 0;
-      for(i=0; i < 10 && i < FPR.num_matches && n < MAX_ADDITIONAL_GUESSES; i++) {
-        if (FPR.accuracy[i] < 1) {
-          print_match(FPR, i, quiet_flag);
-          n++;
-        }
-      }
-    } else {
-      printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfile);
-      printf("Accu Line# OS (classification)\n");
-      for(i=0; i < MAX_GUESSES && i < FPR.num_matches; i++)
-        print_match(FPR, i, quiet_flag);
-    }
-    printf("\n");
-    break;
-  default:
-    fatal("Bogus error.");
-    break;
+
+    fflush(stdout);
+
   }
 
   return 0;
@@ -252,8 +266,5 @@ static void print_match(const FingerPrintResultsIPv4& FPR, unsigned int i, int q
   printf("|");
   if (OS_class.Device_Type != NULL)
     printf(" %s", OS_class.Device_Type);
-  printf(")");
-
-  if (!quiet_flag)
-    printf("\n");
+  printf(")\n");
 }
