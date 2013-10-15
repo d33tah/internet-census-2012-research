@@ -134,12 +134,12 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     static struct option long_options[] = {
+      {"fp-file",           required_argument,  0, 'f'},
       {"guess-threshold",   required_argument,  0, 'g'},
       {"help",              no_argument,        0, 'h'},
-      {"fp-file",           required_argument,  0, 'f'},
       {"quiet",             no_argument,        0, 'q'},
     };
-    c = getopt_long (argc, argv, "hf:gq", long_options, &option_index);
+    c = getopt_long (argc, argv, "f:ghq", long_options, &option_index);
     /* Detect the end of the options. */
     if (c == -1)
       break;
