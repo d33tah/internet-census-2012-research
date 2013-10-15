@@ -72,6 +72,7 @@ def process_line(line, p):
   print("%s\t%s" % (columns[0], program_output))
 
 q = Queue(maxsize=max_threads + 2)
+
 def worker():
   p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
                        stdin=subprocess.PIPE,
