@@ -154,6 +154,8 @@ int main(int argc, char *argv[]) {
         fingerfile = optarg;
         break;
       case 'g':
+        if (guess_threshold_percent != -1)
+          error("[WARN] guess threshold already specified!");
         guess_threshold_percent = atoi(optarg);
         if (guess_threshold_percent <= 0 || guess_threshold_percent > 100)
           fatal("Invalid guess threshold. Please enter a number between 1 and 100.");
