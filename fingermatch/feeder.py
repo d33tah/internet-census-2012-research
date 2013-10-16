@@ -121,11 +121,15 @@ if __name__ == "__main__":
                       help="Maximum time to parse a fingerprint")
   parser.add_argument('--match', metavar='N', type=percent_type, default=100,
                       help="Set the guess threshold to n percent")
-  parser.add_argument('nmap-os-db-file')
+  parser.add_argument('internet-census-file')
   args = parser.parse_args()
   args_dict = vars(args)
 
-  f = open(args_dict['nmap-os-db-file'])
+  filename = args_dict['internet-census-file']
+  if filename != '-':
+    f = open()
+  else:
+    f = sys.stdin
   q = Queue.Queue(maxsize=args.max_threads + 2)
 
   threads = []
