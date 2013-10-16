@@ -161,20 +161,15 @@ int main(int argc, char *argv[]) {
         usage(argv[0]);
         break;
       case 'l':
-        if (line_numbers_only)
-          error("[WARN] --line-numbers-only already specified!");
         line_numbers_only = 1;
+        quiet_flag = 1;
         break;
       case 'm':
-        if (guess_threshold_percent)
-          error("[WARN] guess threshold already specified!");
         guess_threshold_percent = atoi(optarg);
         if (guess_threshold_percent <= 0 || guess_threshold_percent > 100)
           fatal("Invalid guess threshold. Please enter a number between 1 and 100.");
         break;
       case 'q':
-        if (quiet_flag)
-          error("[WARN] --quiet already specified!");
         quiet_flag = 1;
         break;
       case '?':
