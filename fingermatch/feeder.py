@@ -13,7 +13,7 @@ import re
 import fcntl
 import os
 import threading
-from Queue import Queue
+import Queue
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
@@ -80,9 +80,12 @@ def worker():
   fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
   while True:
-    line = q.get()
-    process_line(line, p)
-    q.task_done()
+    try:
+      line = q.get(timeout=1.0)
+      process_line(line, p)
+      q.task_done()
+    except Queue.Empty:
+      break
 
   p.stdin.close()
   p.terminate()
@@ -103,12 +106,14 @@ if __name__ == "__main__":
     nproc_p.wait()
     max_threads = int(nproc_p.stdout.read())
 
-  q = Queue(maxsize=max_threads + 2)
+  q = Queue.Queue(maxsize=max_threads + 2)
 
+  threads = []
   for i in range(max_threads):
     t = threading.Thread(target=worker)
     t.daemon = True
     t.start()
+    threads += [t]
 
   while True:
     line = f.readline()
@@ -118,3 +123,5 @@ if __name__ == "__main__":
 
   stderr_log('Waiting for the remaining tasks to finish...')
   q.join()
+  for thread in threads:
+    thread.join()
