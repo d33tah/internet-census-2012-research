@@ -113,7 +113,7 @@ if __name__ == "__main__":
   formatter_class = argparse.ArgumentDefaultsHelpFormatter
   parser = argparse.ArgumentParser(description=description,
                                    formatter_class=formatter_class)
-  parser.add_argument('--max-threads', metavar='N', type=int,
+  parser.add_argument('--threads', metavar='N', type=int,
                       default=get_processor_count(),
                       help="Maximum number of worker threads")
   parser.add_argument('--wait-timeout', metavar='N', type=float, default=0.1,
