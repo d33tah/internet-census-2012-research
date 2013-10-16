@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
       {"quiet",             no_argument,        0, 'q'},
       {0, 0, 0, 0}
     };
-    c = getopt_long(argc, argv, "f:hm:q", long_options, &option_index);
+    c = getopt_long(argc, argv, "f:hlm:q", long_options, &option_index);
     /* Detect the end of the options. */
     if (c == -1)
       break;
