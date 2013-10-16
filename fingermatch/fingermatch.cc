@@ -120,7 +120,7 @@ void usage(char *argv0) {
 "  -f, --fp-file <filename>   Use the specified Nmap fingerprint database\n"
 "  -h, --help                 Display this help screen\n"
 "  -l, --line-numbers-only    Print comma-separated line numbers from the database\n"
-"  -g, --match <n>            Set the guess threshold to n percent (0 < n < 100)\n"
+"  -m, --match <n>            Set the guess threshold to n percent (0 < n < 100)\n"
 "  -q  --quiet                Display one line of output per fingerprint\n"
 , argv0);
   exit(0);
