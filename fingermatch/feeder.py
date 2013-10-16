@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-"""
-Fingermatch
-
+description = """
 A helper tool used to extract Internet Census 2012 data. Runs fingermatch and
 feeds it with the TCP/IP fingerprints, parsing the fingermatch's output.
 """
@@ -14,6 +12,7 @@ import fcntl
 import os
 import threading
 import Queue
+import argparse
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
@@ -92,23 +91,36 @@ def worker():
     p.stdin.close()
     p.terminate()
 
+def get_processor_count():
+  # not using check_output to make it compatible with Python 2.6
+  nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
+  nproc_p.wait()
+  return int(nproc_p.stdout.read())
+
+def percent_type(n):
+  error_msg = "%s must be a number between 1 and 100" % n
+  try:
+    n = int(n)
+  except ValueError:
+    raise argparse.ArgumentTypeError(error_msg)
+  if  n < 1 or n > 100:
+    raise argparse.ArgumentTypeError(error_msg)
+  return n
+
 if __name__ == "__main__":
 
-  if len(sys.argv) < 2 or len(sys.argv) > 3:
-    usage = """Usage: %s <internetcensusfile> <maxthreads-optional>
-    """ % sys.argv[0]
-    sys.exit(usage)
+  formatter_class = argparse.ArgumentDefaultsHelpFormatter
+  parser = argparse.ArgumentParser(description=description,
+                                   formatter_class=formatter_class)
+  parser.add_argument('--max-threads', metavar='N', type=int,
+                      default=get_processor_count(),
+                      help="Maximum number of worker threads")
+  parser.add_argument('nmap-os-db-file')
+  args = parser.parse_args()
+  args_dict = vars(args)
 
-  f = open(sys.argv[1])
-  if len(sys.argv) == 3:
-    max_threads = int(sys.argv[3])
-  else:
-    # not using check_output to make it compatible with Python 2.6
-    nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
-    nproc_p.wait()
-    max_threads = int(nproc_p.stdout.read())
-
-  q = Queue.Queue(maxsize=max_threads + 2)
+  f = open(args_dict['nmap-os-db-file'])
+  q = Queue.Queue(maxsize=args.max_threads + 2)
 
   threads = []
   for i in range(max_threads):
