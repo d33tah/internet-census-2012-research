@@ -79,16 +79,18 @@ def worker():
   fl = fcntl.fcntl(fd, fcntl.F_GETFL)
   fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
-  while True:
-    try:
-      line = q.get(timeout=10.0)
-      process_line(line, p)
-      q.task_done()
-    except Queue.Empty:
-      break
-
-  p.stdin.close()
-  p.terminate()
+  try:
+    while True:
+        line = q.get(timeout=10.0)
+        process_line(line, p)
+        q.task_done()
+  except Queue.Empty:
+    pass
+  except IOError: # broken pipe due to CTRL+C
+    pass
+  finally:
+    p.stdin.close()
+    p.terminate()
 
 if __name__ == "__main__":
 
