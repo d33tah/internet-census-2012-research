@@ -25,7 +25,6 @@ ignored_warnings = [
   "(SEQ|OPS|WIN|ECN|T1|T2|T3|T4|T5|T6|T7|U1|IE) line is missing",
 ]
 
-#ignored_warnings_re = map(lambda x: re.compile(x, flags=re.MULTILINE), ignored_warnings)
 ignored_warnings_re = map(re.compile, ignored_warnings)
 
 stdout_lock = threading.Lock()
