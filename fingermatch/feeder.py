@@ -121,7 +121,9 @@ if __name__ == "__main__":
                       help="Maximum time to parse a fingerprint")
   parser.add_argument('--match', metavar='N', type=percent_type, default=100,
                       help="Set the guess threshold to n percent")
-  parser.add_argument('internet-census-file')
+  parser.add_argument('internet-census-file', help='Internet Census 2012 ' + \
+                      'TCP/IP fingerprint file. A dash ("-") means ' + \
+                      'standard input.')
   args = parser.parse_args()
   args_dict = vars(args)
 
