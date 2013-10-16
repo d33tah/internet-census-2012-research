@@ -63,7 +63,7 @@ def process_line(line, p):
       sys.stderr.flush()
 
   stdout_lock.acquire()
-  print("%s\t%s" % (columns[0], program_output))
+  print("%s\t%s\t%s" % (columns[0], columns[1], program_output))
   stdout_lock.release()
 
 
