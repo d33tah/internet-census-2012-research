@@ -252,7 +252,7 @@ int main(int argc, char *argv[]) {
                 first = false;
               else
                 printf(",");
-              printf("%d", FPR.matches[i]->line);
+              printf("%d[%d]", FPR.matches[i]->line, (int)(FPR.accuracy[i]*100));
               num_printed++;
             }
           }
