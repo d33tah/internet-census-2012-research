@@ -66,7 +66,7 @@ def process_line(line, p):
   stdout_lock.release()
 
 
-def worker():
+def worker(wait_timeout):
   p = subprocess.Popen(["./fingermatch", "-q", "-f", "../nmap-os-db"],
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
@@ -80,7 +80,7 @@ def worker():
 
   try:
     while True:
-        line = q.get(timeout=10.0)
+        line = q.get(timeout=wait_timeout)
         process_line(line, p)
         q.task_done()
   except Queue.Empty:
@@ -115,6 +115,8 @@ if __name__ == "__main__":
   parser.add_argument('--max-threads', metavar='N', type=int,
                       default=get_processor_count(),
                       help="Maximum number of worker threads")
+  parser.add_argument('--wait-timeout', metavar='N', type=float, default=0.1,
+                      help="Maximum time to parse a fingerprint")
   parser.add_argument('nmap-os-db-file')
   args = parser.parse_args()
   args_dict = vars(args)
@@ -123,8 +125,8 @@ if __name__ == "__main__":
   q = Queue.Queue(maxsize=args.max_threads + 2)
 
   threads = []
-  for i in range(max_threads):
-    t = threading.Thread(target=worker)
+  for i in range(args.max_threads):
+    t = threading.Thread(target=worker, args=[args.wait_timeout])
     t.daemon = True
     t.start()
     threads += [t]
