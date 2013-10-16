@@ -62,11 +62,10 @@ def process_line(line, p):
   stdout_lock.release()
 
 
-def worker(wait_timeout, match_threshold):
-  p = subprocess.Popen(["./fingermatch",
-                        "--match", str(match_threshold),
-                        "--quiet",
-                        "--fp-file", "../nmap-os-db"],
+def worker(wait_timeout, match_threshold, add_arguments):
+  cmd = "./fingermatch --match %s --quiet --fp-file ../nmap-os-db %s" % (
+    str(match_threshold), add_arguments)
+  p = subprocess.Popen(cmd, shell=True,
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE
@@ -119,6 +118,9 @@ if __name__ == "__main__":
                       help="Maximum number of worker threads")
   parser.add_argument('--wait-timeout', metavar='N', type=float, default=0.1,
                       help="Maximum time to parse a fingerprint")
+  parser.add_argument('--add-args', metavar='ARGS', type=str, default=None,
+                      help="Add additional arguments for fingermatch (remember"
+                      " to use --add-args=--something instead of --add-args --something)")
   parser.add_argument('-m', '--match', metavar='N', type=percent_type,
                       default=100, help="Set the guess threshold to n percent")
   parser.add_argument('internet-census-file', help='Internet Census 2012 '
@@ -136,7 +138,8 @@ if __name__ == "__main__":
 
   threads = []
   for i in range(args.max_threads):
-    t = threading.Thread(target=worker, args=[args.wait_timeout, args.match])
+    t = threading.Thread(target=worker, args=[args.wait_timeout, args.match,
+                                              args.add_args])
     t.daemon = True
     t.start()
     threads += [t]
