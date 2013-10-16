@@ -236,7 +236,7 @@ int main(int argc, char *argv[]) {
     case OSSCAN_NOMATCHES:
       if (quiet_flag)
           if (line_numbers_only)
-            printf("0\n");
+            printf("?\n");
           else
             printf("No matches\n");
       else
@@ -261,7 +261,7 @@ int main(int argc, char *argv[]) {
             }
           }
           if (num_printed == 0)
-            printf("0");
+            printf("?");
           printf("\n");
         } else {
           if (guess_threshold_percent == 100) {
