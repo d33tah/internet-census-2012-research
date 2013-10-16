@@ -38,8 +38,9 @@ def stderr_log(str_):
 def process_line(line, p):
 
   columns = line.split("\t")
-  fingerprint_column = columns[2]
   ip_column = columns[0]
+  timestamp_column = columns[1]
+  fingerprint_column = columns[2]
   fingerprint = fingerprint_column.replace(",", "\n")
 
   p.stdin.write(fingerprint)
@@ -63,7 +64,7 @@ def process_line(line, p):
       sys.stderr.flush()
 
   stdout_lock.acquire()
-  print("%s\t%s\t%s" % (columns[0], columns[1], program_output))
+  print("%s\t%s\t%s" % (ip_column, timestamp_column, program_output))
   stdout_lock.release()
 
 
