@@ -81,7 +81,7 @@ def worker():
 
   while True:
     try:
-      line = q.get(timeout=1.0)
+      line = q.get(timeout=10.0)
       process_line(line, p)
       q.task_done()
     except Queue.Empty:
