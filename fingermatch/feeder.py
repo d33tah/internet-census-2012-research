@@ -28,6 +28,7 @@ ignored_warnings_re = map(re.compile, ignored_warnings)
 
 stdout_lock = threading.Lock()
 
+
 def process_line(line, p):
 
   columns = line.split("\t")
@@ -71,7 +72,8 @@ def worker(wait_timeout, match_threshold):
                        stderr=subprocess.PIPE
   )
 
-  # Switch the process's stderr to non-blocking mode - might not work on Windows
+  # Switch the process's stderr to non-blocking mode
+  # (might not work on Windows)
   fd = p.stderr.fileno()
   fl = fcntl.fcntl(fd, fcntl.F_GETFL)
   fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
@@ -83,11 +85,12 @@ def worker(wait_timeout, match_threshold):
         q.task_done()
   except Queue.Empty:
     pass
-  except IOError: # broken pipe due to CTRL+C
+  except IOError:  # broken pipe due to CTRL+C
     pass
   finally:
     p.stdin.close()
     p.terminate()
+
 
 def get_processor_count():
   # not using check_output to make it compatible with Python 2.6
@@ -95,13 +98,14 @@ def get_processor_count():
   nproc_p.wait()
   return int(nproc_p.stdout.read())
 
+
 def percent_type(n):
   error_msg = "%s must be a number between 1 and 100" % n
   try:
     n = int(n)
   except ValueError:
     raise argparse.ArgumentTypeError(error_msg)
-  if  n < 1 or n > 100:
+  if n < 1 or n > 100:
     raise argparse.ArgumentTypeError(error_msg)
   return n
 
