@@ -119,6 +119,7 @@ void usage(char *argv0) {
 "  -h, --help                 Display this help screen\n"
 "  -l, --line-numbers-only    Print comma-separated line numbers from the database\n"
 "  -m, --match <n>            Set the guess threshold to n percent (0 < n < 100)\n"
+"  -r, --max-results <n>      Print at most n results in -l mode\n"
 "  -q  --quiet                Display one line of output per fingerprint\n"
 , argv0);
   exit(0);
@@ -133,7 +134,7 @@ int main(int argc, char *argv[]) {
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
   int i, rc, c, option_index, guess_threshold_percent = 0;
-  int quiet_flag = 0, line_numbers_only = 0;
+  int quiet_flag = 0, line_numbers_only = 0, max_results = 0;
   double guess_threshold;
 
   set_program_name(argv[0]);
@@ -144,10 +145,11 @@ int main(int argc, char *argv[]) {
       {"line-numbers-only", no_argument,        0, 'l'},
       {"help",              no_argument,        0, 'h'},
       {"match",             required_argument,  0, 'm'},
+      {"max-results",       required_argument,  0, 'r'},
       {"quiet",             no_argument,        0, 'q'},
       {0, 0, 0, 0}
     };
-    c = getopt_long(argc, argv, "f:hlm:q", long_options, &option_index);
+    c = getopt_long(argc, argv, "f:hlm:r:q", long_options, &option_index);
     /* Detect the end of the options. */
     if (c == -1)
       break;
@@ -166,6 +168,11 @@ int main(int argc, char *argv[]) {
         guess_threshold_percent = atoi(optarg);
         if (guess_threshold_percent <= 0 || guess_threshold_percent > 100)
           fatal("Invalid guess threshold. Please enter a number between 1 and 100.");
+        break;
+      case 'r':
+        max_results = atoi(optarg);
+        if (max_results <= 0)
+          fatal("Maximum number of results must be a positive number.");
         break;
       case 'q':
         quiet_flag = 1;
@@ -252,6 +259,8 @@ int main(int argc, char *argv[]) {
                 printf(",");
               printf("%d[%d]", FPR.matches[i]->line, (int)(FPR.accuracy[i]*100));
               num_printed++;
+              if (max_results && num_printed >= max_results)
+                break;
             }
           }
           if (num_printed == 0)
