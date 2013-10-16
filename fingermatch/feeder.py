@@ -119,8 +119,8 @@ if __name__ == "__main__":
                       help="Maximum number of worker threads")
   parser.add_argument('--wait-timeout', metavar='N', type=float, default=0.1,
                       help="Maximum time to parse a fingerprint")
-  parser.add_argument('-m', '--match', metavar='N', type=percent_type, default=100,
-                      help="Set the guess threshold to n percent")
+  parser.add_argument('-m', '--match', metavar='N', type=percent_type,
+                      default=100, help="Set the guess threshold to n percent")
   parser.add_argument('internet-census-file', help='Internet Census 2012 ' + \
                       'TCP/IP fingerprint file. A dash ("-") means ' + \
                       'standard input.')
