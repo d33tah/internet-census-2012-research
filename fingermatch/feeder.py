@@ -131,7 +131,7 @@ if __name__ == "__main__":
 
   filename = args_dict['internet-census-file']
   if filename != '-':
-    f = open()
+    f = open(filename)
   else:
     f = sys.stdin
   q = Queue.Queue(maxsize=args.max_threads + 2)
