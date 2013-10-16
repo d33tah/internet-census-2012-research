@@ -111,6 +111,6 @@ if __name__ == "__main__":
       break
     q.put(line)
 
-  sys.stderr.write('Waiting for the remaining tasks to finish...')
+  sys.stderr.write('Waiting for the remaining tasks to finish...\n')
   sys.stderr.flush()
   q.join()
