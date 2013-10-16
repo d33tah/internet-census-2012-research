@@ -1,8 +1,6 @@
 /***************************************************************************
- * fingermatch.cc -- A relatively simple utility for determining whether a *
- * given Nmap fingerprint matches (or comes close to matching) any of the  *
- * fingerprints in a collection such as the nmap-os-db file that ships     *
- * with Nmap.                                                              *
+ * fingermatch.cc -- a tool for matching Nmap fingerprints with nmap-os-db *
+ * entries in bulk.                                                        *
  *                                                                         *
  ***********************IMPORTANT NMAP LICENSE TERMS************************
  *                                                                         *
