@@ -28,11 +28,6 @@ ignored_warnings_re = map(re.compile, ignored_warnings)
 
 stdout_lock = threading.Lock()
 
-def stderr_log(str_):
-  sys.stderr.write(str_)
-  sys.stderr.write("\n")
-  sys.stderr.flush()
-
 def process_line(line, p):
 
   columns = line.split("\t")
@@ -142,7 +137,6 @@ if __name__ == "__main__":
       break
     q.put(line)
 
-  stderr_log('Waiting for the remaining tasks to finish...')
   q.join()
   for thread in threads:
     thread.join()
