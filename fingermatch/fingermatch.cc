@@ -164,6 +164,7 @@ int main(int argc, char *argv[]) {
         if (line_numbers_only)
           error("[WARN] --line-numbers-only already specified!");
         line_numbers_only = 1;
+        break;
       case 'm':
         if (guess_threshold_percent)
           error("[WARN] guess threshold already specified!");
