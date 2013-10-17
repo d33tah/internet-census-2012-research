@@ -81,8 +81,10 @@ def worker(wait_timeout, match_threshold, add_arguments):
   try:
     while True:
         line = q.get(timeout=wait_timeout)
-        process_line(line, p)
-        q.task_done()
+        try:
+          process_line(line, p)
+        finally:
+          q.task_done()
   except Queue.Empty:
     pass
   except IOError:  # broken pipe due to CTRL+C
