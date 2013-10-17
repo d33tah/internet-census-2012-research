@@ -23,6 +23,11 @@ ignored_warnings = [
 
   #"line is missing",
   "(SEQ|OPS|WIN|ECN|T1|T2|T3|T4|T5|T6|T7|U1|IE) line is missing",
+
+  # These doesn't make fingerprints any more accurate anyway.
+  "Warning: Cannot find nmap-mac-prefixes: Ethernet vendor correlation "
+  "will not be performed",
+  "[INFO] Vendor Info: (null)",
 ]
 
 ignored_warnings_re = map(re.compile, ignored_warnings)
