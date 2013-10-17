@@ -154,10 +154,12 @@ if __name__ == "__main__":
   add_args = args_dict['add_args']
   wait_timeout = args_dict['wait_timeout']
   filename = args_dict['internet-census-file']
+
   if filename != '-':
     f = open(filename)
   else:
     f = sys.stdin
+
   q = Queue.Queue(maxsize=max_threads + 2)
 
   worker_args = args=[wait_timeout, match_threshold, add_args]
