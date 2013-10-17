@@ -13,6 +13,7 @@ import os
 import threading
 import Queue
 import argparse
+import time
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
@@ -108,6 +109,25 @@ def percent_type(n):
     raise argparse.ArgumentTypeError(error_msg)
   return n
 
+def spawn_thread(worker_args):
+    t = threading.Thread(target=worker, args=worker_args)
+    t.daemon = True
+    t.start()
+    return t
+
+def reviwer(threads, max_threads, worker_args):
+  while keep_reviwing:
+    remove_threads = []
+    for t in threads:
+      if not t.is_alive():
+        remove_threads += [t]
+    for t in remove_threads:
+      threads.remove(t)
+    if len(threads) < max_threads:
+      for i in range(max_threads - len(threads)):
+        threads += [spawn_thread(worker_args)]
+    time.sleep(1)
+
 if __name__ == "__main__":
 
   formatter_class = argparse.ArgumentDefaultsHelpFormatter
@@ -129,20 +149,26 @@ if __name__ == "__main__":
   args = parser.parse_args()
   args_dict = vars(args)
 
+  max_threads = args_dict['threads']
+  match_threshold = args_dict['match']
+  add_args = args_dict['add_args']
+  wait_timeout = args_dict['wait_timeout']
   filename = args_dict['internet-census-file']
   if filename != '-':
     f = open(filename)
   else:
     f = sys.stdin
-  q = Queue.Queue(maxsize=args.max_threads + 2)
+  q = Queue.Queue(maxsize=max_threads + 2)
+
+  worker_args = args=[wait_timeout, match_threshold, add_args]
 
   threads = []
-  for i in range(args.max_threads):
-    t = threading.Thread(target=worker, args=[args.wait_timeout, args.match,
-                                              args.add_args])
-    t.daemon = True
-    t.start()
-    threads += [t]
+  for i in range(max_threads):
+    threads += [spawn_thread(worker_args)]
+
+  keep_reviwing = True
+  reviwer_args = [threads, max_threads, worker_args]
+  threading.Thread(target=reviwer, args=reviwer_args).start()
 
   while True:
     line = f.readline()
@@ -150,6 +176,7 @@ if __name__ == "__main__":
       break
     q.put(line)
 
+  keep_reviwing = False
   q.join()
   for thread in threads:
     thread.join()
