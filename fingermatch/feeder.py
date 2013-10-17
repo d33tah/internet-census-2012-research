@@ -14,6 +14,7 @@ import threading
 import Queue
 import argparse
 import time
+import math
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
@@ -140,8 +141,10 @@ if __name__ == "__main__":
   formatter_class = argparse.ArgumentDefaultsHelpFormatter
   parser = argparse.ArgumentParser(description=description,
                                    formatter_class=formatter_class)
+  # make the maximum thread count 20% higher than the number of processors.
+  max_threads = int(math.ceil(get_processor_count()*1.2))
   parser.add_argument('-t', '--threads', metavar='N', type=int,
-                      default=get_processor_count(),
+                      default=max_threads,
                       help="Maximum number of worker threads")
   parser.add_argument('--wait-timeout', metavar='N', type=float, default=0.1,
                       help="Maximum time to parse a fingerprint")
@@ -167,7 +170,7 @@ if __name__ == "__main__":
   else:
     f = sys.stdin
 
-  q = Queue.Queue(maxsize=max_threads + 2)
+  q = Queue.Queue(maxsize=max_threads*2)
 
   worker_args = args=[wait_timeout, match_threshold, add_args]
 
