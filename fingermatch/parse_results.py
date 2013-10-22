@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 
 # parse_results.py - read the uncompressed run-research.sh output from
 # the standard input, extract and count the perfect matches and print the
