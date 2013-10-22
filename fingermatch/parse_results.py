@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/bin/python
+
+# parse_results.py - read the uncompressed run-research.sh output from
+# the standard input, extract and count the perfect matches and print the
+# results to the standard output.
+#
+# For a 5x speedup, run this under pypy.
 
 import sys
 
@@ -7,18 +13,30 @@ import sys
 fingerprints = dict(enumerate(open('nmap-os-db').readlines()))
 
 results = {}
-for line in sys.stdin.readlines():
-  columns = line.split()
-  num_devices = int(columns[0])
-  line_number = int(columns[1])-1
-  fingerprint_name = fingerprints[line_number]
-  fingerprint_name = fingerprint_name.lstrip("Fingerprint ")
-  fingerprint_name = fingerprint_name.rstrip("\r\n")
-  if not fingerprint_name in results:
-    results[fingerprint_name] = num_devices
-  else:
-    results[fingerprint_name] += num_devices
+for line in sys.stdin:
+  columns = line.rstrip("\r\n").split()
+  try:
+    matches = columns[2].split(',')
+  except:
+    continue
+  for match in matches:
+    if match.find('[100]') != -1:
+      try:
+        line_number = int(match.replace('[100]', ''))
+      except:
+        continue
+      fingerprint_name = fingerprints[line_number-1]
+      if fingerprint_name.find("Fingerprint") == -1:
+        sys.exit(line)
+      fingerprint_name = fingerprint_name.lstrip("Fingerprint ")
+      fingerprint_name = fingerprint_name.rstrip("\r\n")
+#      key = line_number
+      key = fingerprint_name
+      if not key in results:
+        results[key] = 1
+      else:
+        results[key] += 1
 
 results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
-for fingerprint_name, num_devices in results:
-  print("%s\t%s" % (num_devices, fingerprint_name))
+for fingerprint_line, num_devices in results:
+  print("%s\t%s" % (num_devices, fingerprint_line))
