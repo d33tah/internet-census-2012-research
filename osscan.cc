@@ -156,19 +156,19 @@ extern NmapOps o;
    certain string, it allocates memory and stores a copy of the string in a
    static pool. Thereafter it will return a pointer to the saved string instead
    of allocating memory for an identical one. */
-const char *string_pool_insert(const char *s)
+const char *string_pool_insert(const char *s, const char *t)
 {
   static std::set<std::string> pool;
   static std::pair<std::set<std::string>::iterator, bool> pair;
 
-  pair = pool.insert(s);
+  if (t) {
+      pair = pool.insert(std::string(s, t));
+  }
+  else {
+      pair = pool.insert(s);
+  }
 
   return pair.first->c_str();
-}
-
-const char *string_pool_substr(const char *s, const char *t)
-{
-  return string_pool_insert(std::string(s, t).c_str());
 }
 
 const char *string_pool_substr_strip(const char *s, const char *t) {
@@ -177,7 +177,7 @@ const char *string_pool_substr_strip(const char *s, const char *t) {
   while (t > s && isspace((int) (unsigned char) *(t - 1)))
     t--;
 
-  return string_pool_substr(s, t);
+  return string_pool_insert(s, t);
 }
 
 /* Skip over whitespace to find the beginning of a word, then read until the
@@ -194,7 +194,7 @@ static const char *string_pool_strip_word(const char *s) {
   if (s == t)
     return NULL;
 
-  return string_pool_substr(s, t);
+  return string_pool_insert(s, t);
 }
 
 /* Format a string with sprintf and insert it with string_pool_insert. */
@@ -799,14 +799,14 @@ static std::vector<struct AVal> str2AVal(const char *str) {
     if (!q) {
       fatal("Parse error with AVal string (%s) in nmap-os-db file", str);
     }
-    av.attribute = string_pool_substr(p, q);
+    av.attribute = string_pool_insert(p, q);
     p = q+1;
     if (i < count - 1) {
       q = strchr(p, '%');
       if (!q) {
         fatal("Parse error with AVal string (%s) in nmap-os-db file", str);
       }
-      av.value = string_pool_substr(p, q);
+      av.value = string_pool_insert(p, q);
     } else {
       av.value = string_pool_insert(p);
     }
