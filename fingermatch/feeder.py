@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-description = """
+"""
 A helper tool used to extract Internet Census 2012 data. Runs fingermatch and
 feeds it with the TCP/IP fingerprints, parsing the fingermatch's output.
 """
@@ -139,21 +139,21 @@ def reviwer(threads, max_threads, worker_args):
 if __name__ == "__main__":
 
   formatter_class = argparse.ArgumentDefaultsHelpFormatter
-  parser = argparse.ArgumentParser(description=description,
+  parser = argparse.ArgumentParser(description=__doc__,
                                    formatter_class=formatter_class)
   # make the maximum thread count 20% higher than the number of processors.
   max_threads = int(math.ceil(get_processor_count() * 1.2))
   parser.add_argument('-t', '--threads', metavar='N', type=int,
                       default=max_threads,
-                      help="Maximum number of worker threads")
+                      help="maximum number of worker threads")
   parser.add_argument('--wait-timeout', metavar='N', type=float, default=0.1,
-                      help="Maximum time to parse a fingerprint")
+                      help="maximum time to parse a fingerprint")
   parser.add_argument('--add-args', metavar='ARGS', type=str, default=None,
-                      help="Add additional arguments for fingermatch (remember"
+                      help="add additional arguments for fingermatch (remember"
                       " to use --add-args=--something instead of"
                       " --add-args --something)")
   parser.add_argument('-m', '--match', metavar='N', type=percent_type,
-                      default=100, help="Set the guess threshold to n percent")
+                      default=100, help="set the guess threshold to n percent")
   parser.add_argument('internet-census-file', help='Internet Census 2012 '
                       'TCP/IP fingerprint file. A dash ("-") means '
                       'standard input.')
