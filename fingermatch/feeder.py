@@ -142,7 +142,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser(description=description,
                                    formatter_class=formatter_class)
   # make the maximum thread count 20% higher than the number of processors.
-  max_threads = int(math.ceil(get_processor_count()*1.2))
+  max_threads = int(math.ceil(get_processor_count() * 1.2))
   parser.add_argument('-t', '--threads', metavar='N', type=int,
                       default=max_threads,
                       help="Maximum number of worker threads")
@@ -150,7 +150,8 @@ if __name__ == "__main__":
                       help="Maximum time to parse a fingerprint")
   parser.add_argument('--add-args', metavar='ARGS', type=str, default=None,
                       help="Add additional arguments for fingermatch (remember"
-                      " to use --add-args=--something instead of --add-args --something)")
+                      " to use --add-args=--something instead of"
+                      " --add-args --something)")
   parser.add_argument('-m', '--match', metavar='N', type=percent_type,
                       default=100, help="Set the guess threshold to n percent")
   parser.add_argument('internet-census-file', help='Internet Census 2012 '
@@ -170,9 +171,9 @@ if __name__ == "__main__":
   else:
     f = sys.stdin
 
-  q = Queue.Queue(maxsize=max_threads*2)
+  q = Queue.Queue(maxsize=max_threads * 2)
 
-  worker_args = args=[wait_timeout, match_threshold, add_args]
+  worker_args = [wait_timeout, match_threshold, add_args]
 
   threads = []
   for i in range(max_threads):
