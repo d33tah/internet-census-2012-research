@@ -8,5 +8,6 @@ cut -f3 - \
   | tr ',' '\n' \
   | grep '\[100\]' \
   | sed 's/\[100\]//' \
+  | sort \
   | uniq --count \
   | sort -n -r
