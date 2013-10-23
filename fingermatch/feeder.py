@@ -16,6 +16,8 @@ import argparse
 import time
 import math
 
+from fputils import print_stderr
+
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
 
@@ -34,11 +36,6 @@ ignored_warnings = [
 ignored_warnings_re = map(re.compile, ignored_warnings)
 
 stdout_lock = threading.Lock()
-
-
-def print_stderr(str_):
-  sys.stderr.write("%s\n" % str_)
-  sys.stderr.flush()
 
 
 def process_line(line, p):

@@ -15,6 +15,8 @@ import argparse
 import socket
 import struct
 
+from fputils import print_stderr
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--names', action='store_true',
                     help='group by names instead of line numbers')
@@ -25,10 +27,6 @@ args = parser.parse_args()
 if sys.stdin.isatty():
   sys.exit("ERROR: %s: the script expects feeder.py output as its "
            "standard input." % sys.argv[0])
-
-def print_stderr(str_):
-  sys.stderr.write("%s\n" % str_)
-  sys.stderr.flush()
 
 if args.names:
   # Create a dictionary where line number is a key and the fingerprint as the
