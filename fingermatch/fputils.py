@@ -2,6 +2,10 @@
 
 import sys
 
+"""
+A module with utility functions.
+"""
+
 
 def percent_type(n):
   error_msg = "%s must be a number between 1 and 100" % n
