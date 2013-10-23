@@ -5,7 +5,7 @@ Reads the uncompressed run-research.sh output from
 the standard input, extract and count the perfect matches and print the
 results to the standard output.
 
-For a 5x speedup, run this under pypy.
+For a speedup, run this under pypy.
 """
 
 import sys
