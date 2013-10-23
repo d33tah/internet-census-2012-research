@@ -75,7 +75,7 @@ def worker(wait_timeout, match_threshold, add_arguments):
   p = subprocess.Popen(cmd, shell=True,
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE
+                       stderr=subprocess.PIPE,
   )
 
   # Switch the process's stderr to non-blocking mode
@@ -117,11 +117,13 @@ def percent_type(n):
     raise argparse.ArgumentTypeError(error_msg)
   return n
 
+
 def spawn_thread(worker_args):
     t = threading.Thread(target=worker, args=worker_args)
     t.daemon = True
     t.start()
     return t
+
 
 def reviwer(threads, max_threads, worker_args):
   while keep_reviwing:
