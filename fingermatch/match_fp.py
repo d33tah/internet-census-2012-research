@@ -72,7 +72,21 @@ def get_test_names(test):
     if test[i] == '|':
       i += 1
       start += 1
-  return ret, test[i:]
+
+  test_exp = test[i+1:]
+  exps = test_exp.split('|')
+  lambda_code = 'lambda x: '
+  lambda_exps = []
+  for exp in exps:
+    if exp == '':
+      exp = "''"
+    if exp[0] in ['>', '<']:
+      lambda_exps += ['x %s= "%s"' % (exp[0], exp[1:])]
+    else:
+      lambda_exps += ['x == "%s"' % exp[1:]]
+  lambda_code += ' or '.join(lambda_exps)
+  test_lambda = eval(lambda_code)
+  return ret, test_exp, test_lambda
 
 fingerprints = []
 f = open('nmap-os-db2')
@@ -108,16 +122,18 @@ while True:
       if test == '':
         fp.probes[group_name] = None
         continue
-      test_names, test_exp = get_test_names(test)
+      test_names, test_exp, test_lambda = get_test_names(test)
       for test_name in test_names:
-        assert(test_exp.startswith('='))
-        if test_name == 'R' and test_exp == "=N":
+        #assert(test_name not in fp.probes[group_name])
+        #assert(test_exp.startswith('='))
+        if test_name == 'R' and test_exp == "N":
           fp.probes[group_name] = None
           continue
         if test_name in ['W0', 'W7', 'W8', 'W9']:
           pass
         else:
           assert(test_name in known_tests[group_name])
+        fp.probes[group_name][test_name] = test_lambda
     got_fp = True
   else:
     sys.exit("Strange line: '%s'" % repr(line))
