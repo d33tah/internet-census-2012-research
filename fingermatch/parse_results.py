@@ -18,6 +18,8 @@ import struct
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--names', action='store_true',
                     help='group by names instead of line numbers')
+parser.add_argument('--percentage', default=100, type=int, metavar='N',
+                    help='minimum percentage needed to count the result')
 args = parser.parse_args()
 
 if sys.stdin.isatty():
@@ -65,24 +67,23 @@ for line in sys.stdin:
     ip_counts[ip] = checked_hash
 
   for match in matches:
-    if match.find('[100]') != -1:
-      try:
-        line_number = int(match.replace('[100]', ''))
-      except:
-        continue
-      if args.names:
-        fingerprint_name = fingerprints[line_number-1]
-        if fingerprint_name.find("Fingerprint") == -1:
-          sys.exit(line)
-        fingerprint_name = fingerprint_name.lstrip("Fingerprint ")
-        fingerprint_name = fingerprint_name.rstrip("\r\n")
-        key = fingerprint_name
-      else:
-        key = line_number
-      if not key in results:
-        results[key] = 1
-      else:
-        results[key] += 1
+    line_number, percentage = map(int,match.rstrip(']').split('['))
+    if percentage < args.percentage:
+      continue
+    score = 1
+    if args.names:
+      fingerprint_name = fingerprints[line_number-1]
+      if fingerprint_name.find("Fingerprint") == -1:
+        sys.exit(line)
+      fingerprint_name = fingerprint_name.lstrip("Fingerprint ")
+      fingerprint_name = fingerprint_name.rstrip("\r\n")
+      key = fingerprint_name
+    else:
+      key = line_number
+    if not key in results:
+      results[key] = score
+    else:
+      results[key] += score
 
 results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
 print_stderr("%s duplicates found" % duplicates)
