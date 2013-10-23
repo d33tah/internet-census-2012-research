@@ -4,4 +4,6 @@
 #
 # A tool I used to validate code quality.
 
-pep8 feeder.py --ignore=E111,E121
+for file in *.py; do
+  pep8 $file --ignore=E111,E121
+done
