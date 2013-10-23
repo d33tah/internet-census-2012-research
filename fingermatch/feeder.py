@@ -72,8 +72,7 @@ def process_line(line, p):
   print("%s\t%s\t%s" % (ip_column, timestamp_column, program_output))
   stdout_lock.release()
 
-
-def worker(wait_timeout, match_threshold, add_arguments):
+def spawn_process(match_threshold, add_arguments):
   cmd = "./fingermatch --match %s --quiet --fp-file ../nmap-os-db %s" % (
     str(match_threshold), add_arguments)
   p = subprocess.Popen(cmd, shell=True,
@@ -87,14 +86,28 @@ def worker(wait_timeout, match_threshold, add_arguments):
   fd = p.stderr.fileno()
   fl = fcntl.fcntl(fd, fcntl.F_GETFL)
   fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+  return p
 
+
+def worker(wait_timeout, match_threshold, add_arguments):
+  p = spawn_process(match_threshold, add_arguments)
   try:
     while True:
-        line = q.get(timeout=wait_timeout)
-        try:
-          process_line(line, p)
-        finally:
-          q.task_done()
+        batch = q.get(timeout=wait_timeout)
+        if len(batch) > 2:
+          print_stderr("len(batch)=%s" % len(batch))
+        exception = None
+        for line in batch:
+          try:
+            process_line(line, p)
+          except Exception, e:
+            print_stderr("Caught an exception: ")
+            print_stderr(e)
+            exception = e
+            p = spawn_process(match_threshold, add_arguments)
+        q.task_done()
+        if exception is not None:
+          raise exception
   except Queue.Empty:
     pass
   except IOError:  # broken pipe due to CTRL+C
@@ -141,6 +154,7 @@ def reviwer(threads, max_threads, worker_args):
       for i in range(max_threads - len(threads)):
         threads += [spawn_thread(worker_args)]
     time.sleep(1)
+  print_stderr("stopped reviwing.")
 
 if __name__ == "__main__":
 
@@ -189,11 +203,20 @@ if __name__ == "__main__":
   reviwer_args = [threads, max_threads, worker_args]
   threading.Thread(target=reviwer, args=reviwer_args).start()
 
+  batch = []
+  last_ip = None
+  line = f.readline()
   while True:
+    ip = line.split()[0]
+    if ip != last_ip:
+      last_ip = ip
+      q.put(batch)
+      batch = []
+    batch += [line]
     line = f.readline()
     if line == '':
+      q.put(batch)
       break
-    q.put(line)
 
   keep_reviwing = False
   q.join()
