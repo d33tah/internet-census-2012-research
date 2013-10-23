@@ -16,7 +16,7 @@ import argparse
 import time
 import math
 
-from fputils import print_stderr
+from fputils import print_stderr, percent_type
 
 ignored_warnings = [
   "Adjusted fingerprint due to \d+ duplicated tests",
@@ -119,17 +119,6 @@ def get_processor_count():
   nproc_p = subprocess.Popen("nproc", stdout=subprocess.PIPE)
   nproc_p.wait()
   return int(nproc_p.stdout.read())
-
-
-def percent_type(n):
-  error_msg = "%s must be a number between 1 and 100" % n
-  try:
-    n = int(n)
-  except ValueError:
-    raise argparse.ArgumentTypeError(error_msg)
-  if n < 1 or n > 100:
-    raise argparse.ArgumentTypeError(error_msg)
-  return n
 
 
 def spawn_thread(worker_args):

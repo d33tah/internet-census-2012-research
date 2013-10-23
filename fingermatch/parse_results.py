@@ -15,7 +15,7 @@ import argparse
 import socket
 import struct
 
-from fputils import print_stderr
+from fputils import print_stderr, percent_type
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--names', action='store_true',
