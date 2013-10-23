@@ -69,6 +69,7 @@ def process_line(line, p):
   print("%s\t%s\t%s" % (ip_column, timestamp_column, program_output))
   stdout_lock.release()
 
+
 def spawn_process(match_threshold, add_arguments):
   cmd = "./fingermatch --match %s --quiet --fp-file ../nmap-os-db %s" % (
     str(match_threshold), add_arguments)

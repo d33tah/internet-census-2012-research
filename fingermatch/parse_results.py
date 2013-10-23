@@ -33,6 +33,7 @@ if args.names:
   # value
   fingerprints = dict(enumerate(open('nmap-os-db').readlines()))
 
+
 def ip_to_u32(ip):
     """
     Translate an IP address to little endian unsigned 32-bit integer. This way
@@ -65,12 +66,12 @@ for line in sys.stdin:
     ip_counts[ip] = checked_hash
 
   for match in matches:
-    line_number, percentage = map(int,match.rstrip(']').split('['))
+    line_number, percentage = map(int, match.rstrip(']').split('['))
     if percentage < args.percentage:
       continue
     score = 1
     if args.names:
-      fingerprint_name = fingerprints[line_number-1]
+      fingerprint_name = fingerprints[line_number - 1]
       if fingerprint_name.find("Fingerprint") == -1:
         sys.exit(line)
       fingerprint_name = fingerprint_name.lstrip("Fingerprint ")
