@@ -36,6 +36,11 @@ ignored_warnings_re = map(re.compile, ignored_warnings)
 stdout_lock = threading.Lock()
 
 
+def print_stderr(str_):
+  sys.stderr.write("%s\n" % str_)
+  sys.stderr.flush()
+
+
 def process_line(line, p):
 
   columns = line.split("\t")
@@ -61,8 +66,7 @@ def process_line(line, p):
         is_ignored = True
         break
     if not is_ignored:
-      sys.stderr.write('Warning: %s\n' % error_output)
-      sys.stderr.flush()
+      print_stderr('Warning: %s' % error_output)
 
   stdout_lock.acquire()
   print("%s\t%s\t%s" % (ip_column, timestamp_column, program_output))
