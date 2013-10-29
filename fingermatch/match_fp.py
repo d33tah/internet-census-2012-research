@@ -63,10 +63,23 @@ def get_matchpoints(f):
   return max_points, matchpoints, lines_read
 
 
-def dump_matchpoints(matchpoints):
+def sorted_dict_repr(dict_, sep=' '):
+  ret = []
+  for k in sorted(dict_):
+    ret += ["%s: %s" % (repr(k), repr(dict_[k]))]
+  return '{' + (','+sep).join(ret) + '}'
+
+
+def dump_matchpoints(matchpoints, sep=' '):
   print('{')
   for k in sorted(matchpoints):
-    line = '  %5s: %s,' % (repr(k), sorted(matchpoints[k]))
+    if isinstance(matchpoints[k], list):
+      desc = sorted(matchpoints[k])
+    elif isinstance(matchpoints[k], dict):
+      desc = sorted_dict_repr(matchpoints[k], sep)
+    else:
+      desc = repr(matchpoints[k])
+    line = '  %5s: %s,' % (repr(k), desc)
     print(line)
   print('}')
 
