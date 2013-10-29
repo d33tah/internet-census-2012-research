@@ -81,7 +81,7 @@ def get_test_names(test):
     if exp == '':
       exp = "''"
     if exp[0] in ['>', '<']:
-      lambda_exps += ['x %s= "%s"' % (exp[0], exp[1:])]
+      lambda_exps += ['x %s "%s"' % (exp[0], exp[1:])]
     else:
       lambda_exps += ['x == "%s"' % exp[1:]]
   lambda_code += ' or '.join(lambda_exps)
