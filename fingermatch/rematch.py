@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+"""
+Repeats an OS detection attempt and compares the results with a given Internet
+Census 2012 TCP/IP fingerprinting data.
+"""
+
 import xml.etree.ElementTree as ET
 import subprocess
 import sys
