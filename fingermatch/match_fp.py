@@ -3,7 +3,6 @@
 import sys
 from fputils import print_stderr
 
-# Generated using dump_matchpoints().
 known_tests = {
   'ECN': ['CC', 'DF', 'O', 'Q', 'R', 'T', 'TG', 'W'],
    'IE': ['CD', 'DFI', 'R', 'T', 'TG'],
