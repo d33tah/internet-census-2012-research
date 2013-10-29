@@ -17,7 +17,7 @@ p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 xmlout = p.communicate()[0]
 
 t = ET.fromstring(xmlout)
-assert(len(t.findall('./host'))==1)
+assert(len(t.findall('./host')) == 1)
 os = t.findall('./host[0]/os/osfingerprint')
 new_fp = os[0].get('fingerprint')
 new_fp_lines = new_fp.split('\n')
