@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
   struct FingerPrintResultsIPv4 FPR;
   char fprint[8192];
   int i, rc, c, option_index, guess_threshold_percent = 0;
-  int quiet_flag = 0, line_numbers_only = 0, max_results = 0;
+  int quiet_flag = 0, line_numbers_only = 0, max_results = 3;
   double guess_threshold;
 
   set_program_name(argv[0]);
