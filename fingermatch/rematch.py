@@ -48,9 +48,26 @@ p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 xmlout = p.communicate()[0]
 
 t = ET.fromstring(xmlout)
-assert(len(t.findall('./host')) == 1)
-os = t.findall('./host[0]/os/osfingerprint')
-new_fp = os[0].get('fingerprint')
+assert(len(t.findall('./host')) == 1)  # make sure there's only one host
+
+state_nodes = t.findall("./host[0]/ports/port/state")
+found_tcp_closed = False
+found_tcp_open = False
+for port in state_nodes:
+  state = port.get('state')
+  if state == 'closed':
+    found_tcp_closed = True
+  elif state == 'open':
+    found_tcp_open = True
+
+if not found_tcp_open:
+  sys.exit("Failed to find one open TCP port.")
+
+if not found_tcp_closed:
+  sys.exit("Failed to find one closed TCP port.")
+
+fingerprint_node = t.findall('./host[0]/os/osfingerprint')
+new_fp = fingerprint_node[0].get('fingerprint')
 new_fp_lines = new_fp.split('\n')
 
 tmp1 = tempfile.NamedTemporaryFile()
