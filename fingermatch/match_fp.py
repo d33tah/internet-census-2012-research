@@ -28,6 +28,7 @@ class Fingerprint:
     self.classes = ""
     self.cpe = ""
     self.probes = {}
+    self.score = 0
     self.line = 0
 
 
@@ -182,3 +183,34 @@ while True:
     sys.exit("Strange line: '%s'" % repr(line))
 
 print_stderr("Loaded %d fingerprints." % len(fingerprints))
+
+fp = Fingerprint()
+for line in sys.stdin.xreadlines():
+  if any(line.startswith(k + "(") for k in known_tests):
+    group_name, tests = line.split('(')
+    assert(group_name not in fp.probes)
+    assert(group_name in known_tests)
+    fp.probes[group_name] = {}
+    for test in tests.rstrip(')\n').split('%'):
+      if test == '':
+        fp.probes[group_name] = None
+        continue
+      test_name, value = test.split('=')
+      if test_name == 'R' and value == "N":
+        fp.probes[group_name] = None
+      elif test_name in ['W0', 'W7', 'W8', 'W9']:
+        pass
+      else:
+        assert(test_name in known_tests[group_name])
+        fp.probes[group_name][test_name] = value
+      for fingerprint in fingerprints:
+        points = matchpoints[group_name][test_name]
+        if fingerprint.probes[group_name] is None:
+          if test_name == 'R' and value == 'N':
+            fingerprint.score += sum(matchpoints[group_name].values())
+        elif not test_name in fingerprint.probes[group_name]:
+          continue
+        elif fingerprint.probes[group_name][test_name](value):
+          fingerprint.score += points
+  else:
+    print_stderr("WARNING: weird line: %s" % line)
