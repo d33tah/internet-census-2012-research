@@ -30,6 +30,16 @@ class Fingerprint:
     self.probes = {}
 
 
+class PrettyLambda:
+  def __init__(self, expr, str_show):
+    self.l = eval(expr)
+    self.expr = expr
+    self.str_show = repr(str_show)
+  def __call__(self, *args, **kwargs):
+    return self.l(*args, **kwargs)
+  def __repr__(self):
+    return self.str_show
+
 def get_matchpoints(f):
   matchpoints = {}
   max_points = 0
@@ -85,7 +95,7 @@ def get_test_names(test):
     else:
       lambda_exps += ['x == "%s"' % exp[1:]]
   lambda_code += ' or '.join(lambda_exps)
-  test_lambda = eval(lambda_code)
+  test_lambda = PrettyLambda(lambda_code, test_exp)
   return ret, test_exp, test_lambda
 
 fingerprints = []
