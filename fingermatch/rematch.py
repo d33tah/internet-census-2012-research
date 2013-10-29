@@ -45,11 +45,13 @@ cmd = ("sudo nmap {ip} "
        ).format(**cmd_args)
 print_stderr("Will run %s" % cmd)
 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-xmlout = p.communicate()[0]
+xmlout = p.communicate()[0]  # read the Nmap XML output
 
+# parse the XML output
 t = ET.fromstring(xmlout)
 assert(len(t.findall('./host')) == 1)  # make sure there's only one host
 
+# make sure we have one open and one closed port
 state_nodes = t.findall("./host[0]/ports/port/state")
 found_tcp_closed = False
 found_tcp_open = False
@@ -66,10 +68,12 @@ if not found_tcp_open:
 if not found_tcp_closed:
   sys.exit("Failed to find one closed TCP port.")
 
+# extract the raw fingerprint from the XML data
 fingerprint_node = t.findall('./host[0]/os/osfingerprint')
 new_fp = fingerprint_node[0].get('fingerprint')
 new_fp_lines = new_fp.split('\n')
 
+# open the two fingerprints in vimdiff
 tmp1 = tempfile.NamedTemporaryFile()
 tmp2 = tempfile.NamedTemporaryFile()
 
