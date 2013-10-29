@@ -28,6 +28,7 @@ class Fingerprint:
     self.classes = ""
     self.cpe = ""
     self.probes = {}
+    self.line = 0
 
 
 class PrettyLambda:
@@ -43,8 +44,10 @@ class PrettyLambda:
 def get_matchpoints(f):
   matchpoints = {}
   max_points = 0
+  lines_read = 0
   while True:
     line = f.readline()
+    lines_read += 1
     if line == '\n':
       break
     group_name, tests = line.split('(')
@@ -57,7 +60,7 @@ def get_matchpoints(f):
       assert(test_name in known_tests[group_name])
       matchpoints[group_name][test_name] = int(test_points)
       max_points += int(test_points)
-  return max_points, matchpoints
+  return max_points, matchpoints, lines_read
 
 
 def dump_matchpoints(matchpoints):
@@ -66,6 +69,14 @@ def dump_matchpoints(matchpoints):
     line = '  %5s: %s,' % (repr(k), sorted(matchpoints[k]))
     print(line)
   print('}')
+
+
+def is_hex(x):
+  try:
+    int(x, 16)
+    return True
+  except ValueError:
+    return False
 
 
 def get_test_names(test):
@@ -102,8 +113,10 @@ fingerprints = []
 f = open('nmap-os-db2')
 got_fp = False
 fp = Fingerprint()
+lineno = 0
 while True:
   line = f.readline()
+  lineno += 1
   if line == '\n' or line == '':
     if got_fp:
       assert(all(test in fp.probes for test in known_tests))
@@ -114,11 +127,13 @@ while True:
   elif line[0] == '#':
     continue
   elif line.startswith("MatchPoints"):
-    max_points, matchpoints = get_matchpoints(f)
+    max_points, matchpoints, lines_read = get_matchpoints(f)
+    lineno += lines_read
     # dump_matchpoints(matchpoints)
     p = {}
   elif line.startswith("Fingerprint "):
     fp.name = line[len("Fingerprint "):]
+    fp.line = lineno
   elif line.startswith("Class "):
     fp.clases = line[len("Class "):]
   elif line.startswith("CPE "):
