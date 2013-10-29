@@ -10,14 +10,38 @@ import subprocess
 import sys
 import pipes
 import tempfile
+from fputils import print_stderr
 
 ic_line = sys.stdin.readline()
 columns = ic_line.split()
-ip = columns[0]
 fp = columns[2]
 fp_lines = fp.split(',')
 
-cmd = "sudo nmap %s -p T:179,T:21,U:43477 -O -n -vv -oX -" % pipes.quote(ip)
+# extract the data about the closed and open TCP ports and the closed UDP port
+# and build a command line based on them.
+cmd_args = {}
+
+scan_line = fp_lines[0]
+for atom in scan_line.split('%'):
+  key, val = atom.split('=')
+  if key == 'CT':
+    cmd_args['closed_tcp'] = int(val)
+  elif key == 'OT':
+    cmd_args['open_tcp'] = int(val)
+  elif key == 'CU':
+    cmd_args['closed_udp'] = int(val)
+
+cmd_args['ip'] = pipes.quote(columns[0])
+
+cmd = ("sudo nmap {ip} "
+       "-p T:{open_tcp},T:{closed_tcp},U:{closed_udp}"  # scan only these ports
+       " -n"     # disable reverse DNS queries
+       " -O"     # enable OS fingerprinting
+       " -vv"    # add extra verbosity
+       " -oX -"  # output data in XML format to the standard output
+                 # of the default Nmap format)
+       ).format(**cmd_args)
+print_stderr("Will run %s" % cmd)
 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 xmlout = p.communicate()[0]
 
