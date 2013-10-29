@@ -279,19 +279,22 @@ int main(int argc, char *argv[]) {
         break;
       }
       if (FPR.num_perfect_matches > 0) {
+        int already_printed = 0;
         printf("Found **%d PERFECT MATCHES** for entered fingerprint in %s:\n", FPR.num_perfect_matches, fingerfilename);
         printf("Accu Line# OS (classification)\n");
-        for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++)
+        for(i=0; i < FPR.num_matches && FPR.accuracy[i] == 1; i++) {
           print_match(FPR, i, quiet_flag);
+          already_printed++;
+        }
         printf("**ADDITIONAL GUESSES** for entered fingerprint in %s:\n", fingerfilename);
         printf("Accu Line# OS (classification)\n");
-        for(i=0; i < 10 && i < FPR.num_matches && FPR.accuracy[i] >= guess_threshold && FPR.accuracy[i] < 1; i++) {
+        for(i=0; i < max_results - already_printed && i < FPR.num_matches && FPR.accuracy[i] >= guess_threshold && FPR.accuracy[i] < 1; i++) {
           print_match(FPR, i, quiet_flag);
         }
       } else {
         printf("No perfect matches found, **GUESSES AVAILABLE** for entered fingerprint in %s:\n", fingerfilename);
         printf("Accu Line# OS (classification)\n");
-        for(i=0; i < MAX_GUESSES && i < FPR.num_matches; i++)
+        for(i=0; i < max_results && i < FPR.num_matches; i++)
           print_match(FPR, i, quiet_flag);
       }
       printf("\n");
