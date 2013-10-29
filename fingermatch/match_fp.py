@@ -103,6 +103,11 @@ def get_test_names(test):
       exp = "''"
     if exp[0] in ['>', '<']:
       lambda_exps += ['x %s "%s"' % (exp[0], exp[1:])]
+    elif exp.find('-') != -1:
+      lower_bound_hex, upper_bound_hex = exp.split('-')
+      lower_bound = int(lower_bound_hex, 16)
+      upper_bound = int(upper_bound_hex, 16)
+      lambda_exps += ['is_hex(x) and int(x, 16) >= %d and int(x, 16) <= %d' % (lower_bound, upper_bound)]
     else:
       lambda_exps += ['x == "%s"' % exp[1:]]
   lambda_code += ' or '.join(lambda_exps)
