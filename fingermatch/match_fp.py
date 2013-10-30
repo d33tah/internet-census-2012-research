@@ -322,3 +322,9 @@ for line in sys.stdin.xreadlines():
           fingerprint.score += points
   else:
     print_stderr("WARNING: weird line: %s" % line)
+
+fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
+
+print_stderr("Best matches:")
+for i in range(10):
+  print_stderr("[%.2f%%] %s" % (float(fps[i].score)/max_points*100, fps[i].name))
