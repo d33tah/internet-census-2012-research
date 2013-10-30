@@ -220,8 +220,9 @@ def parse_test(test):
   test_lambda = PrettyLambda(lambda_code, test_exp)
   return test_names, test_exp, test_lambda
 
+fp_db_file = 'nmap-os-db2'
 fingerprints = []
-f = open('nmap-os-db2')
+f = open(fp_db_file)
 got_fp = False
 fp = Fingerprint()
 lineno = 0
@@ -272,7 +273,7 @@ while True:
         fp.probes[group_name][test_name] = test_lambda
     got_fp = True
   else:
-    sys.exit("Strange line: '%s'" % repr(line))
+    sys.exit("ERROR: Strange line in %s: '%s'" % (fp_db_file, repr(line)))
 
 print_stderr("Loaded %d fingerprints." % len(fingerprints))
 
