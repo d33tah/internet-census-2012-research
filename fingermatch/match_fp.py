@@ -185,14 +185,14 @@ def parse_test(test):
 
   Returns list, str, PrettyLambda
   """
-  ret = []
+  test_names = []
   i = 0
   start = i
   while test[i] != '=':
     while test[i].isalnum():
       i += 1
     test_name = test[start:i]
-    ret += [test_name]
+    test_names += [test_name]
     start = i
     assert(test[i] in ['=', '|'])
     if test[i] == '|':
@@ -218,7 +218,7 @@ def parse_test(test):
       lambda_exps += ['x == "%s"' % exp[1:]]
   lambda_code += ' or '.join(lambda_exps)
   test_lambda = PrettyLambda(lambda_code, test_exp)
-  return ret, test_exp, test_lambda
+  return test_names, test_exp, test_lambda
 
 fingerprints = []
 f = open('nmap-os-db2')
