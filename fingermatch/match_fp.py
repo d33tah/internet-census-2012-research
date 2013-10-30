@@ -241,7 +241,6 @@ while True:
   elif line.startswith("MatchPoints"):
     max_points, matchpoints, lines_read = get_matchpoints(f)
     lineno += lines_read
-    # print_probes(matchpoints)
     p = {}
   elif line.startswith("Fingerprint "):
     fp.name = line[len("Fingerprint "):]
@@ -262,7 +261,6 @@ while True:
       test_names, test_exp, test_lambda = parse_test(test)
       for test_name in test_names:
         #assert(test_name not in fp.probes[group_name])
-        #assert(test_exp.startswith('='))
         if test_name == 'R' and test_exp == "N":
           fp.probes[group_name] = None
           continue
