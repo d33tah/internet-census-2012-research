@@ -84,6 +84,7 @@ class PrettyLambda:
   def __repr__(self):
     return self.str_show
 
+
 def get_matchpoints(f):
   """Read matchpoints from a file. Strictly validate the input. Returns the
   sum of the points that a fingerprint can score, a dictionary where the keys
@@ -135,7 +136,7 @@ def sorted_dict_repr(dict_, sep=' '):
   ret = []
   for k in sorted(dict_):
     ret += ["%s: %s" % (repr(k), repr(dict_[k]))]
-  return '{' + (','+sep).join(ret) + '}'
+  return '{' + (',' + sep).join(ret) + '}'
 
 
 def print_probes(probe_dict, sep=' '):
@@ -197,7 +198,7 @@ def parse_test(test):
       i += 1
       start += 1
 
-  test_exp = test[i+1:]
+  test_exp = test[i + 1:]
   exps = test_exp.split('|')
   lambda_code = 'lambda x: '
   lambda_exps = []
@@ -210,7 +211,8 @@ def parse_test(test):
       lower_bound_hex, upper_bound_hex = exp.split('-')
       lower_bound = int(lower_bound_hex, 16)
       upper_bound = int(upper_bound_hex, 16)
-      lambda_exps += ['is_hex(x) and int(x, 16) >= %d and int(x, 16) <= %d' % (lower_bound, upper_bound)]
+      lambda_exps += ['is_hex(x) and int(x, 16) >= %d and int(x, 16) <= %d' %
+                      (lower_bound, upper_bound)]
     else:
       lambda_exps += ['x == "%s"' % exp[1:]]
   lambda_code += ' or '.join(lambda_exps)
