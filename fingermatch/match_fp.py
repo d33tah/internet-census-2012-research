@@ -81,6 +81,9 @@ class PrettyLambda:
     in actually calling the lambda."""
     return getattr(self.l, arg)
 
+  def __str__(self):
+    return self.str_show
+
   def __repr__(self):
     return self.str_show
 
