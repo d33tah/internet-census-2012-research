@@ -9,6 +9,7 @@ proved useful in finding errors in nmap-os-db database.
 """
 
 import sys
+import os
 from fputils import print_stderr
 
 # A dictionary of tables with known tests. Any test not listed here is
@@ -301,6 +302,9 @@ while True:
     sys.exit("ERROR: Strange line in %s: '%s'" % (fp_db_file, repr(line)))
 
 print_stderr("Loaded %d fingerprints." % len(fingerprints))
+
+if os.isatty(sys.stdin.fileno()):
+  print_stderr("Please enter the fingerprint in Nmap format:")
 
 fp = Fingerprint()
 for line in sys.stdin.xreadlines():
