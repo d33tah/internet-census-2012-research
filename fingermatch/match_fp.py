@@ -38,7 +38,7 @@ class Fingerprint:
     # the test names and values are either lambdas (in a pattern fingerprint,
     # from nmap-os-db) or strings (in an Nmap-generated fingerprint).
     #
-    # Example 1 - a piece of 'Juniper MAG2600 SSL VPN gateway' fingerprint:
+    # Example 1 - a part of 'Juniper MAG2600 SSL VPN gateway' fingerprint:
     #
     # self.probes = {
     # 'T1': {
@@ -47,7 +47,7 @@ class Fingerprint:
     #   },
     # }
     #
-    # Example 2 - a piece of an Nmap-generated fingerprint:
+    # Example 2 - a part of an Nmap-generated fingerprint:
     # self.probes = {
     # 'T1' : {
     #     'T': '3E',
