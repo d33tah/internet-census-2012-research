@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+"""
+Parses an nmap-os-db file, then reads an Nmap fingerprint from the standard
+input and prints the matches.
+
+Currently it's quite slow and not completely compatible with Nmap. It already
+proved useful in finding errors in nmap-os-db database.
+"""
+
 import sys
 from fputils import print_stderr
 
