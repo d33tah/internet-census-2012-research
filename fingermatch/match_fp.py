@@ -70,7 +70,7 @@ def sorted_dict_repr(dict_, sep=' '):
   return '{' + (','+sep).join(ret) + '}'
 
 
-def dump_probes(probe_dict, sep=' '):
+def print_probes(probe_dict, sep=' '):
   print('{')
   for k in sorted(probe_dict):
     if isinstance(probe_dict[k], list):
@@ -147,7 +147,7 @@ while True:
   elif line.startswith("MatchPoints"):
     max_points, matchpoints, lines_read = get_matchpoints(f)
     lineno += lines_read
-    # dump_probes(matchpoints)
+    # print_probes(matchpoints)
     p = {}
   elif line.startswith("Fingerprint "):
     fp.name = line[len("Fingerprint "):]
