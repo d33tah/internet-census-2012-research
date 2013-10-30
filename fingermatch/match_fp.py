@@ -70,15 +70,15 @@ def sorted_dict_repr(dict_, sep=' '):
   return '{' + (','+sep).join(ret) + '}'
 
 
-def dump_probes(matchpoints, sep=' '):
+def dump_probes(probe_dict, sep=' '):
   print('{')
-  for k in sorted(matchpoints):
-    if isinstance(matchpoints[k], list):
-      desc = sorted(matchpoints[k])
-    elif isinstance(matchpoints[k], dict):
-      desc = sorted_dict_repr(matchpoints[k], sep)
+  for k in sorted(probe_dict):
+    if isinstance(probe_dict[k], list):
+      desc = sorted(probe_dict[k])
+    elif isinstance(probe_dict[k], dict):
+      desc = sorted_dict_repr(probe_dict[k], sep)
     else:
-      desc = repr(matchpoints[k])
+      desc = repr(probe_dict[k])
     line = '  %5s: %s,' % (repr(k), desc)
     print(line)
   print('}')
