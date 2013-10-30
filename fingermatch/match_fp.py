@@ -92,7 +92,7 @@ def is_hex(x):
     return False
 
 
-def get_test_names(test):
+def parse_test(test):
   ret = []
   i = 0
   start = i
@@ -165,7 +165,7 @@ while True:
       if test == '':
         fp.probes[group_name] = None
         continue
-      test_names, test_exp, test_lambda = get_test_names(test)
+      test_names, test_exp, test_lambda = parse_test(test)
       for test_name in test_names:
         #assert(test_name not in fp.probes[group_name])
         #assert(test_exp.startswith('='))
