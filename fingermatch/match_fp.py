@@ -327,4 +327,5 @@ fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
 
 print_stderr("Best matches:")
 for i in range(10):
-  print_stderr("[%.2f%%] %s" % (float(fps[i].score)/max_points*100, fps[i].name))
+  score = float(fps[i].score) / max_points * 100
+  print_stderr("[%.2f%%] %s" % (score, fps[i].name))
