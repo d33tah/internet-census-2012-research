@@ -101,6 +101,7 @@ def get_matchpoints(f):
   lines_read = 0
   while True:
     line = f.readline()
+    assert(line != '')
     lines_read += 1
     if line == '\n':
       break
