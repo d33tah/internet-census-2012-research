@@ -283,7 +283,9 @@ while True:
       for test_name in test_names:
         # make sure it's not a redefinition of a test. Commented out because
         # nmap-os-db currently contains redefinitions.
-        #assert(test_name not in fp.probes[group_name])
+        if test_name in fp.probes[group_name]:
+          print_stderr("WARNING: %s:%d: duplicate %s" % (fp_db_file, lineno,
+                                                        test_name))
         if test_name == 'R' and test_exp == "N":
           fp.probes[group_name] = None
           continue
