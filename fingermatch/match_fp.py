@@ -223,7 +223,7 @@ def parse_test(test):
       lambda_exps += ['is_hex(x) and int(x, 16) >= %d and int(x, 16) <= %d' %
                       (lower_bound, upper_bound)]
     else:
-      lambda_exps += ['x == "%s"' % exp[1:]]
+      lambda_exps += ['x == "%s"' % exp]
   lambda_code += ' or '.join(lambda_exps)
   test_lambda = PrettyLambda(lambda_code, test_exp)
   return test_names, test_exp, test_lambda
