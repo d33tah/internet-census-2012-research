@@ -101,16 +101,19 @@ def get_matchpoints(f):
   lines_read = 0
   while True:
     line = f.readline()
+    # crash on EOF
     assert(line != '')
     lines_read += 1
     if line == '\n':
       break
     group_name, tests = line.split('(')
+    # make sure it's not a redefinition of a test group and the group is known
     assert(group_name not in matchpoints)
     assert(group_name in known_tests)
     matchpoints[group_name] = {}
     for test in tests.rstrip(')\n').split('%'):
       test_name, test_points = test.split('=')
+      # make sure it's not a redefinition of a test and the test is known
       assert(test not in matchpoints[group_name])
       assert(test_name in known_tests[group_name])
       matchpoints[group_name][test_name] = int(test_points)
@@ -185,6 +188,7 @@ def parse_test(test):
 
   Returns list, str, PrettyLambda
   """
+  # find all the test names
   test_names = []
   i = 0
   start = i
@@ -199,6 +203,7 @@ def parse_test(test):
       i += 1
       start += 1
 
+  # build a PrettyLambda based on the test expression
   test_exp = test[i + 1:]
   exps = test_exp.split('|')
   lambda_code = 'lambda x: '
@@ -230,13 +235,16 @@ while True:
   line = f.readline()
   lineno += 1
   if line == '\n' or line == '':
+  # we hit a newline or an EOF, consider than an end of a fingerprint entry
     if got_fp:
+      # make sure we collected all the known tests and register the fingerprint
       assert(all(test in fp.probes for test in known_tests))
       fingerprints += [fp]
       fp = Fingerprint()
     if line == '':
       break
   elif line[0] == '#':
+    # ignore the comments
     continue
   elif line.startswith("MatchPoints"):
     max_points, matchpoints, lines_read = get_matchpoints(f)
@@ -249,8 +257,10 @@ while True:
     fp.clases = line[len("Class "):]
   elif line.startswith("CPE "):
     fp.cpe = line[len("CPE "):]
+  # see if the line starts with a definition of any known test group
   elif any(line.startswith(k + "(") for k in known_tests):
     group_name, tests = line.split('(')
+    # make sure it's not a redefinition of a test group and the group is known
     assert(group_name not in fp.probes)
     assert(group_name in known_tests)
     fp.probes[group_name] = {}
@@ -260,10 +270,14 @@ while True:
         continue
       test_names, test_exp, test_lambda = parse_test(test)
       for test_name in test_names:
+        # make sure it's not a redefinition of a test. Commented out because
+        # nmap-os-db currently contains redefinitions.
         #assert(test_name not in fp.probes[group_name])
         if test_name == 'R' and test_exp == "N":
           fp.probes[group_name] = None
           continue
+        # make sure it's a known test. there are four exceptions because of
+        # errors in nmap-os-db.
         if test_name in ['W0', 'W7', 'W8', 'W9']:
           pass
         else:
