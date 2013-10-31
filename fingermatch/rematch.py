@@ -38,6 +38,7 @@ cmd_args['ip'] = pipes.quote(columns[0])
 cmd = ("sudo nmap {ip} "
        "-p T:{open_tcp},T:{closed_tcp},U:{closed_udp}"  # scan only these ports
        " -n"     # disable reverse DNS queries
+       " -Pn"    # assume that the host is up
        " -O"     # enable OS fingerprinting
        " -vv"    # add extra verbosity
        " -oX -"  # output data in XML format to the standard output
