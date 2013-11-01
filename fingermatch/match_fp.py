@@ -286,7 +286,7 @@ while True:
         # nmap-os-db currently contains redefinitions.
         if test_name in fp.probes[group_name]:
           print_stderr("WARNING: %s:%d: duplicate %s" % (fp_db_file, lineno,
-                                                        test_name))
+                                                         test_name))
         if test_name == 'R' and test_exp == "N":
           fp.probes[group_name] = None
           continue
