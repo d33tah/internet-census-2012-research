@@ -75,7 +75,7 @@ for line in sys.stdin:
       fingerprint_name = fingerprints[line_number - 1]
       if fingerprint_name.find("Fingerprint") == -1:
         sys.exit(line)
-      fingerprint_name = fingerprint_name.lstrip("Fingerprint ")
+      fingerprint_name = fingerprint_name[len("Fingerprint "):]
       fingerprint_name = fingerprint_name.rstrip("\r\n")
       key = fingerprint_name
     else:
