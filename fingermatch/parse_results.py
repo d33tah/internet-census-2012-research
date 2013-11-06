@@ -18,7 +18,7 @@ import struct
 from fputils import print_stderr, percent_type
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--names', action='store_true',
+parser.add_argument('--names', action='store_true', default=True,
                     help='group by names instead of line numbers')
 parser.add_argument('--percentage', default=100, type=percent_type,
                     metavar='N',
