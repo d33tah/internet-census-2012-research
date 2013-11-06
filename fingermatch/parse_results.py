@@ -90,8 +90,6 @@ for line in sys.stdin:
     line_number, percentage = map(int, match.rstrip(']').split('['))
     if percentage < args.percentage:
       continue
-    if line_number not in fps_seen:
-      fps_seen[line_number] = True
     score = 1
     if args.names:
       fingerprint_name = fingerprints[line_number - 1]
