@@ -20,6 +20,8 @@ from fputils import print_stderr, percent_type
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--names', action='store_true', default=True,
                     help='group by names instead of line numbers')
+parser.add_argument('--count_duplicates', action='store_true', default=False,
+                    help='count duplicate hits of the results')
 parser.add_argument('--percentage', default=100, type=percent_type,
                     metavar='N',
                     help='minimum percentage needed to count the result')
@@ -44,8 +46,9 @@ def ip_to_u32(ip):
     return struct.unpack("<I", socket.inet_aton(ip))[0]
 
 results = {}
-ip_counts = {}
-duplicates = 0
+if args.count_duplicates:
+  ip_counts = {}
+  duplicates = 0
 for line in sys.stdin:
   columns = line.rstrip("\r\n").split()
   if len(columns) < 3:
@@ -60,11 +63,12 @@ for line in sys.stdin:
 
   ip = ip_to_u32(columns[0])
   checked_hash = hash(matches_column)
-  if ip in ip_counts and ip_counts[ip] == checked_hash:
-    duplicates += 1
-    continue
-  elif matches_column not in ['?', '']:
-    ip_counts[ip] = checked_hash
+  if args.count_duplicates:
+    if ip in ip_counts and ip_counts[ip] == checked_hash:
+      duplicates += 1
+      continue
+    elif matches_column not in ['?', '']:
+      ip_counts[ip] = checked_hash
 
   for match in matches:
     line_number, percentage = map(int, match.rstrip(']').split('['))
@@ -86,7 +90,8 @@ for line in sys.stdin:
       results[key] += score
 
 results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
-print_stderr("%s duplicates found" % duplicates)
+if args.count_duplicates:
+  print_stderr("%s duplicates found" % duplicates)
 
 for fingerprint_line, num_devices in results:
   print("%s\t%s" % (num_devices, fingerprint_line))
