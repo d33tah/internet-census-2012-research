@@ -34,8 +34,15 @@ if sys.stdin.isatty():
 if args.names:
   # Create a dictionary where line number is a key and the fingerprint as the
   # value
-  fingerprints = dict(enumerate(open('nmap-os-db').readlines()))
-
+  f = open("nmap-os-db")
+  line = f.readline()
+  lineno = 0
+  fingerprints = {}
+  while line != '':
+    if line.startswith("Fingerprint "):
+      fingerprints[lineno] = line
+    line = f.readline()
+    lineno += 1
 
 def ip_to_u32(ip):
     """
