@@ -22,10 +22,15 @@ parser.add_argument('--names', action='store_true', default=True,
                     help='group by names instead of line numbers')
 parser.add_argument('--count_duplicates', action='store_true', default=False,
                     help='count duplicate hits of the results')
+parser.add_argument('--first-word', action='store_true', default=False,
+                    help='group the results by first word in fingerprint'
+                    '(implies --names)')
 parser.add_argument('--percentage', default=100, type=percent_type,
                     metavar='N',
                     help='minimum percentage needed to count the result')
 args = parser.parse_args()
+if args.first_word:
+    args.names = True
 
 if sys.stdin.isatty():
   sys.exit("ERROR: %s: the script expects feeder.py output as its "
@@ -87,7 +92,10 @@ for line in sys.stdin:
     score = 1
     if args.names:
       fingerprint_name = fingerprints[line_number - 1]
-      key = fingerprint_name
+      if args.first_word:
+        key = fingerprint_name.split()[0]
+      else:
+        key = fingerprint_name
     else:
       key = line_number
     if not key in results:
