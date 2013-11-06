@@ -61,6 +61,7 @@ def ip_to_u32(ip):
     return struct.unpack("<I", socket.inet_aton(ip))[0]
 
 results = {}
+long_results = {}
 if args.count_duplicates:
   ip_counts = {}
   duplicates = 0
@@ -89,6 +90,8 @@ for line in sys.stdin:
     line_number, percentage = map(int, match.rstrip(']').split('['))
     if percentage < args.percentage:
       continue
+    if line_number not in fps_seen:
+      fps_seen[line_number] = True
     score = 1
     if args.names:
       fingerprint_name = fingerprints[line_number - 1]
@@ -96,6 +99,10 @@ for line in sys.stdin:
         key = fingerprint_name.split()[0]
       else:
         key = fingerprint_name
+      if not fingerprint_name in long_results:
+        long_results[fingerprint_name] = score
+      else:
+        long_results[fingerprint_name] += score
     else:
       key = line_number
     if not key in results:
@@ -108,4 +115,17 @@ if args.count_duplicates:
 
 results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
 for fingerprint_line, num_devices in results:
+  if args.names and args.first_word:
+    long_matches = None
+    long_name = None
+    long_matches_count = 0
+    for key in long_results:
+      if key.split()[0] == fingerprint_line:
+        long_matches = long_results[key]
+        long_name = key
+        long_matches_count += 1
+    if long_name is not None and long_matches == num_devices:
+      fingerprint_line = long_name
+    elif long_matches_count > 1:
+      fingerprint_line += " [%s]" % long_matches_count
   print("%s\t%s" % (num_devices, fingerprint_line))
