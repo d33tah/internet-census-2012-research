@@ -46,6 +46,7 @@ if args.names:
     line = f.readline()
     lineno += 1
 
+
 def ip_to_u32(ip):
     """
     Translate an IP address to little endian unsigned 32-bit integer. This way
@@ -94,9 +95,9 @@ for line in sys.stdin:
     else:
       results[key] += score
 
-results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
 if args.count_duplicates:
   print_stderr("%s duplicates found" % duplicates)
 
+results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
 for fingerprint_line, num_devices in results:
   print("%s\t%s" % (num_devices, fingerprint_line))
