@@ -40,6 +40,8 @@ if args.names:
   fingerprints = {}
   while line != '':
     if line.startswith("Fingerprint "):
+      line = line[len("Fingerprint "):]
+      line = line.rstrip("\r\n")
       fingerprints[lineno] = line
     line = f.readline()
     lineno += 1
@@ -84,10 +86,6 @@ for line in sys.stdin:
     score = 1
     if args.names:
       fingerprint_name = fingerprints[line_number - 1]
-      if fingerprint_name.find("Fingerprint") == -1:
-        sys.exit(line)
-      fingerprint_name = fingerprint_name[len("Fingerprint "):]
-      fingerprint_name = fingerprint_name.rstrip("\r\n")
       key = fingerprint_name
     else:
       key = line_number
