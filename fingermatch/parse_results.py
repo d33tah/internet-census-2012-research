@@ -124,7 +124,8 @@ for line in sys.stdin:
 if args.count_duplicates:
   print_stderr("%s duplicates found" % duplicates)
 
-results = reversed(sorted(results.iteritems(), key=lambda k: k[1]))
+results = list(reversed(sorted(results.iteritems(), key=lambda k: k[1])))
+num_devices_sum = sum([i[1] for i in results])
 for fingerprint_line, num_devices in results:
   if args.names and args.first_word:
     long_matches = None
@@ -139,4 +140,5 @@ for fingerprint_line, num_devices in results:
       fingerprint_line = long_name
     elif long_matches_count > 1:
       fingerprint_line += " [%s]" % long_matches_count
-  print("%s\t%s" % (num_devices, fingerprint_line))
+  percentage = float(num_devices)/num_devices_sum*100
+  print("%09s (%0.2f%%)\t%s" % (num_devices, percentage, fingerprint_line))
