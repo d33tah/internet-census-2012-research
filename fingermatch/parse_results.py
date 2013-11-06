@@ -10,6 +10,7 @@ For a speedup, run this under pypy.
 
 import sys
 import argparse
+import re
 
 # for ip_to_u32
 import socket
@@ -28,9 +29,18 @@ parser.add_argument('--first-word', action='store_true', default=False,
 parser.add_argument('--percentage', default=100, type=percent_type,
                     metavar='N',
                     help='minimum percentage needed to count the result')
+parser.add_argument('--regex-group', default='', metavar='r1,r2', help='group '
+                    'the results by comma-separated regular expressions '
+                    '(case insensitive; example: Microsoft|Windows,BSD)')
 args = parser.parse_args()
 if args.first_word:
     args.names = True
+
+regexes = []
+if args.regex_group:
+    args.names = True
+    for regex in args.regex_group.split(','):
+      regexes += [re.compile(regex, flags=re.IGNORECASE)]
 
 if sys.stdin.isatty():
   sys.exit("ERROR: %s: the script expects feeder.py output as its "
@@ -97,6 +107,9 @@ for line in sys.stdin:
         key = fingerprint_name.split()[0]
       else:
         key = fingerprint_name
+      for regex in regexes:
+        if regex.search(fingerprint_name):
+          key = regex.pattern
       if not fingerprint_name in long_results:
         long_results[fingerprint_name] = score
       else:
