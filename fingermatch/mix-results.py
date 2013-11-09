@@ -1,0 +1,14 @@
+#!/usr/bin/python
+
+import md5
+import sys
+
+random_salt = open('/dev/urandom').read(512)
+sys.stderr.write("random_salt=%s\n" % repr(random_salt))
+sys.stderr.flush()
+
+for line in sys.stdin.xreadlines():
+  split = line.split()
+  ip_hash = md5.md5(random_salt + split[0]).hexdigest()
+  new_ip = '.'.join(["%s" % int(ip_hash[i * 2:i * 2 + 2], 16) for i in range(4)])
+  print(new_ip + "\t" + "\t".join(split[1:]))
