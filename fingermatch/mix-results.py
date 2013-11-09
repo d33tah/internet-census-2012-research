@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+"""
+Hashes the Internet Census 2012 Fingerprint data so that the IP addresses
+are useless, but the same IP address will always have the same hash.
+"""
+
 import md5
 import sys
 
