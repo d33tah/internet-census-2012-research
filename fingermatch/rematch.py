@@ -43,6 +43,9 @@ for atom in scan_line.split('%'):
 
 if port_cmdline != '':
   port_cmdline = '-p ' + port_cmdline
+else:
+  print('\t'.join(columns + ['(NO PORTS TO SCAN)', '(NO PORTS TO SCAN)']))
+  sys.exit()
 
 cmd_args['ip'] = pipes.quote(columns[0])
 
