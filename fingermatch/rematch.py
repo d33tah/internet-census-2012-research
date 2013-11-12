@@ -64,25 +64,22 @@ for port in state_nodes:
   elif state == 'open':
     found_tcp_open = True
 
+comment = ''
 if not found_tcp_open:
-  sys.exit("Failed to find one open TCP port.")
+  comment += "Failed to find one open TCP port. "
 
 if not found_tcp_closed:
-  sys.exit("Failed to find one closed TCP port.")
+  comment += "Failed to find one closed TCP port."
+
+if comment == '':
+  comment = 'OK'
 
 # extract the raw fingerprint from the XML data
 fingerprint_node = t.findall('./host[0]/os/osfingerprint')
 new_fp = fingerprint_node[0].get('fingerprint')
 new_fp_lines = new_fp.split('\n')
+if new_fp_lines[-1] == '':
+  new_fp_lines = new_fp_lines[:-1]
 
-# open the two fingerprints in vimdiff
-tmp1 = tempfile.NamedTemporaryFile()
-tmp2 = tempfile.NamedTemporaryFile()
-
-tmp1.write('\n'.join(new_fp_lines))
-tmp2.write('\n'.join(fp_lines))
-
-tmp1.flush()
-tmp2.flush()
-
-subprocess.call(["vimdiff", tmp1.name, tmp2.name])
+columns += [','.join(new_fp_lines), comment]
+print('\t'.join(columns))
