@@ -24,20 +24,31 @@ fp_lines = fp.split(',')
 # and build a command line based on them.
 cmd_args = {}
 
+port_cmdline = ''
 scan_line = fp_lines[0]
 for atom in scan_line.split('%'):
   key, val = atom.split('=')
   if key == 'CT':
-    cmd_args['closed_tcp'] = int(val)
+    if port_cmdline != '' and val != '':
+      port_cmdline += ','
+      port_cmdline += 'T:%d' % int(val)
   elif key == 'OT':
-    cmd_args['open_tcp'] = int(val)
+    if port_cmdline != '' and val != '':
+      port_cmdline += ','
+    port_cmdline += 'T:%d' % int(val)
   elif key == 'CU':
-    cmd_args['closed_udp'] = int(val)
+    if port_cmdline != '' and val != '':
+      port_cmdline += ','
+      port_cmdline += 'U:%d' % int(val)
+
+if port_cmdline != '':
+  port_cmdline = '-p ' + port_cmdline
 
 cmd_args['ip'] = pipes.quote(columns[0])
 
-cmd = ("sudo nmap {ip} "
-       "-p T:{open_tcp},T:{closed_tcp},U:{closed_udp}"  # scan only these ports
+
+cmd = ("sudo nmap {ip} " +
+       port_cmdline +
        " -n"     # disable reverse DNS queries
        " -Pn"    # assume that the host is up
        " -O"     # enable OS fingerprinting
