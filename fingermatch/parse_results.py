@@ -141,4 +141,4 @@ for fingerprint_line, num_devices in results:
     elif long_matches_count > 1:
       fingerprint_line += " [%s]" % long_matches_count
   percentage = float(num_devices)/num_devices_sum*100
-  print("%09s (%0.2f%%)\t%s" % (num_devices, percentage, fingerprint_line))
+  print("%09s (%0.6f%%)\t%s" % (num_devices, percentage, fingerprint_line))
