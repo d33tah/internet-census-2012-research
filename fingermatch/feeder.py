@@ -30,7 +30,7 @@ ignored_warnings = [
   # These doesn't make fingerprints any more accurate anyway.
   "Warning: Cannot find nmap-mac-prefixes: Ethernet vendor correlation "
   "will not be performed",
-  "[INFO] Vendor Info: (null)",
+  "[INFO] Vendor Info: ",
 ]
 
 ignored_warnings_re = map(re.compile, ignored_warnings)
