@@ -13,7 +13,8 @@ import tempfile
 from fputils import print_stderr
 
 
-print_stderr("Enter a line from IC TCP/IP fingerprints data set.")
+if sys.stdin.isatty():
+  print_stderr("Enter a line from IC TCP/IP fingerprints data set.")
 ic_line = sys.stdin.readline()
 columns = ic_line.split()
 fp = columns[2]
