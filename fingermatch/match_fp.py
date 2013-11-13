@@ -10,6 +10,7 @@ proved useful in finding errors in nmap-os-db database.
 
 import sys
 import os
+import copy
 from fputils import print_stderr
 
 # A dictionary of tables with known tests. Any test not listed here is
@@ -306,12 +307,15 @@ print_stderr("Loaded %d fingerprints." % len(fingerprints))
 if os.isatty(sys.stdin.fileno()):
   print_stderr("Please enter the fingerprint in Nmap format:")
 
+fp_known_tests = copy.copy(known_tests)
+fp_known_tests['SCAN'] = ['V', 'E','D','OT','CT','CU',
+                          'PV','DS','DC','G','TM','P']
 fp = Fingerprint()
 for line in sys.stdin.xreadlines():
-  if any(line.startswith(k + "(") for k in known_tests):
+  if any(line.startswith(k + "(") for k in fp_known_tests):
     group_name, tests = line.split('(')
     assert(group_name not in fp.probes)
-    assert(group_name in known_tests)
+    assert(group_name in fp_known_tests)
     fp.probes[group_name] = {}
     for test in tests.rstrip(')\n').split('%'):
       if test == '':
@@ -323,8 +327,10 @@ for line in sys.stdin.xreadlines():
       elif test_name in ['W0', 'W7', 'W8', 'W9']:
         pass
       else:
-        assert(test_name in known_tests[group_name])
+        assert(test_name in fp_known_tests[group_name])
         fp.probes[group_name][test_name] = value
+      if group_name == 'SCAN':
+        continue
       for fingerprint in fingerprints:
         points = matchpoints[group_name][test_name]
         if fingerprint.probes[group_name] is None:
