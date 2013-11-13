@@ -299,6 +299,22 @@ test_explanations = {
          'to a closed port, IP DF not set', t2_t7_explanation],
   'U1': ['UDP probe no. 1 - character \'C\' repeated '
          '300 times, IP ID set to 0x1024', u1_explanation],
+  'IE': ['ICMP echo', {
+    'R':   ['Responsiveness', just_return],
+    'DFI': ['Don\'t fragment (ICMP)', explain_with_dict({
+        'N': 'neither of the ping responses have the DF bit set',
+        'S': 'both responses echo the DF value of the probe',
+        'Y': 'both of the response DF bits are set',
+        'O': 'other - both responses have the DF bit toggled',
+      })],
+    'T':   ['IP initial time-to-live', just_return],
+    'TG':  ['IP initial time-to-live guess', just_return],
+    'CD':  ['ICMP response code', explain_with_dict({
+        'Z': 'both code values are zero',
+        'S': 'both code values are the same as in the corresponding probe',
+        'O': 'other: the ICMP response codes vary',
+      }, default='both packets use the same non-zero number')],
+  }],
 }
 
 class Fingerprint:
