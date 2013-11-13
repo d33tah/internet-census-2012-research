@@ -13,11 +13,21 @@ import collections
 domains = collections.defaultdict(int)
 raw_domains = []
 
+# get the SLDs.csv file from here:
+# https://raw.github.com/gavingmiller/second-level-domains/
+slds = []
+for sld_line in open("SLDs.csv").readlines():
+  sld_columns = sld_line.split(',')
+  slds += sld_columns[1].rstrip('\r').lstrip('.')
+
 for line in sys.stdin.readlines():
   domain = line.rstrip('\n')
   raw_domains += [domain]
   domain_short = domain.split('.')[-2:]
   key = '.'.join(domain_short)
+  if key in slds:
+    domain_short = domain.split('.')[-3:]
+    key = '.'.join(domain_short)
   domains[key] += 1
 
 for k, v in reversed(sorted(domains.items(), key=lambda x: x[1])):
