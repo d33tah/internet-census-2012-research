@@ -562,72 +562,75 @@ def explain_fp(probe_dict, _known_tests):
         value_explanation = "(no information)"
       print("\t%s (%s): %s" % (test_explanation[0], test, value_explanation))
 
-fp_db_file = 'nmap-os-db2'
-fingerprints = []
-f = open(fp_db_file)
-got_fp = False
-fp = Fingerprint()
-lineno = 0
-while True:
-  line = f.readline()
-  lineno += 1
-  if line == '\n' or line == '':
-  # we hit a newline or an EOF, consider than an end of a fingerprint entry
-    if got_fp:
-      # make sure we collected all the known tests and register the fingerprint
-      assert(all(test in fp.probes for test in known_tests))
-      fingerprints += [fp]
-      fp = Fingerprint()
-    if line == '':
-      break
-  elif line[0] == '#':
-    # ignore the comments
-    continue
-  elif line.startswith("MatchPoints"):
-    max_points, matchpoints, lines_read = get_matchpoints(f)
-    lineno += lines_read
-    p = {}
-  elif line.startswith("Fingerprint "):
-    fp.name = line[len("Fingerprint "):].rstrip('\r\n')
-    fp.line = lineno
-  elif line.startswith("Class "):
-    fp.clases = line[len("Class "):]
-  elif line.startswith("CPE "):
-    fp.cpe = line[len("CPE "):]
-  # see if the line starts with a definition of any known test group
-  elif any(line.startswith(k + "(") for k in known_tests):
-    group_name, tests = line.split('(')
-    # make sure it's not a redefinition of a test group and the group is known
-    assert(group_name not in fp.probes)
-    assert(group_name in known_tests)
-    fp.probes[group_name] = {}
-    for test in tests.rstrip(')\n').split('%'):
-      if test == '':  # treat lines like 'OPS()' as 'OPS(R=N)'
-        fp.probes[group_name] = None
-        continue
-      test_names, test_exp, test_lambda = parse_test(test)
-      for test_name in test_names:
-        # make sure it's not a redefinition of a test. Commented out because
-        # nmap-os-db currently contains redefinitions.
-        if test_name in fp.probes[group_name]:
-          print_stderr("WARNING: %s:%d: duplicate %s" % (fp_db_file, lineno,
-                                                         test_name))
-        if test_name == 'R' and test_exp == "N":
+def load_fingerprints():
+  fingerprints = []
+  fp_db_file = 'nmap-os-db2'
+  f = open(fp_db_file)
+  got_fp = False
+  fp = Fingerprint()
+  lineno = 0
+  while True:
+    line = f.readline()
+    lineno += 1
+    if line == '\n' or line == '':
+    # we hit a newline or an EOF, consider than an end of a fingerprint entry
+      if got_fp:
+        # make sure we collected all the known tests and register the fingerprint
+        assert(all(test in fp.probes for test in known_tests))
+        fingerprints += [fp]
+        fp = Fingerprint()
+      if line == '':
+        break
+    elif line[0] == '#':
+      # ignore the comments
+      continue
+    elif line.startswith("MatchPoints"):
+      max_points, matchpoints, lines_read = get_matchpoints(f)
+      lineno += lines_read
+      p = {}
+    elif line.startswith("Fingerprint "):
+      fp.name = line[len("Fingerprint "):].rstrip('\r\n')
+      fp.line = lineno
+    elif line.startswith("Class "):
+      fp.clases = line[len("Class "):]
+    elif line.startswith("CPE "):
+      fp.cpe = line[len("CPE "):]
+    # see if the line starts with a definition of any known test group
+    elif any(line.startswith(k + "(") for k in known_tests):
+      group_name, tests = line.split('(')
+      # make sure it's not a redefinition of a test group and the group is known
+      assert(group_name not in fp.probes)
+      assert(group_name in known_tests)
+      fp.probes[group_name] = {}
+      for test in tests.rstrip(')\n').split('%'):
+        if test == '':  # treat lines like 'OPS()' as 'OPS(R=N)'
           fp.probes[group_name] = None
           continue
-        # make sure it's a known test. there are four exceptions because of
-        # errors in nmap-os-db.
-        if test_name in ['W0', 'W7', 'W8', 'W9']:
-          pass
-        else:
-          assert(test_name in known_tests[group_name])
-        fp.probes[group_name][test_name] = test_lambda
-    got_fp = True
-  else:
-    sys.exit("ERROR: Strange line in %s: '%s'" % (fp_db_file, repr(line)))
+        test_names, test_exp, test_lambda = parse_test(test)
+        for test_name in test_names:
+          # make sure it's not a redefinition of a test. Commented out because
+          # nmap-os-db currently contains redefinitions.
+          if test_name in fp.probes[group_name]:
+            print_stderr("WARNING: %s:%d: duplicate %s" % (fp_db_file, lineno,
+                                                           test_name))
+          if test_name == 'R' and test_exp == "N":
+            fp.probes[group_name] = None
+            continue
+          # make sure it's a known test. there are four exceptions because of
+          # errors in nmap-os-db.
+          if test_name in ['W0', 'W7', 'W8', 'W9']:
+            pass
+          else:
+            assert(test_name in known_tests[group_name])
+          fp.probes[group_name][test_name] = test_lambda
+      got_fp = True
+    else:
+      sys.exit("ERROR: Strange line in %s: '%s'" % (fp_db_file, repr(line)))
 
-print_stderr("Loaded %d fingerprints." % len(fingerprints))
+  print_stderr("Loaded %d fingerprints." % len(fingerprints))
+  return fingerprints, matchpoints, max_points
 
+fingerprints, matchpoints, max_points = load_fingerprints()
 if os.isatty(sys.stdin.fileno()):
   print_stderr("Please enter the fingerprint in Nmap format:")
 
