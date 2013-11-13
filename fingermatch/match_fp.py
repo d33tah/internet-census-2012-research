@@ -107,6 +107,39 @@ test_explanations = {
     'TM': ['Scan time in hexadecimal epoch', hextimestamp_to_date],
     'P':  ['Nmap platform', just_return],
   }],
+  'SEQ': ['Packet sequence analysis', {
+    'SP':  ['TCP ISN sequence predictability index', just_return],
+    'GCD': ['TCP ISN greatest common divisor', just_return],
+    'ISR': ['TCP ISN counter rate', just_return],
+    'TI':  ['TCP IP ID sequence generation algorithm', explain_with_dict({
+        'Z':  'all zero',
+        'RD': 'random - at least one increase by 20 000',
+        'BI': 'broken - divisible by 256, no greater than 5120',
+        'I':  'incremental - all of the differences less than ten',
+      }, default='identical')],
+    'CI':  ['TCP IP ID closed port sequence numbers', just_return],  # TODO
+    'II':  ['ICMP IP ID sequence generation algorithm', explain_with_dict({
+        'Z':  'both zero',
+        'RI': 'random positive increments - difference > 1000 '
+              'and difference mod 256 not even',
+        'BI': 'broken increment - difference divisible by 256, '
+              'no greter than 5120',
+        'II': 'incremental - difference less than ten',
+      }, default='identical')],
+    'SS':  ['Shared IP ID sequence Boolean', explain_with_dict({
+        'S': 'the sequence is shared',
+        'O': 'the sequence is not shared',
+      })],
+    'TS':  ['TCP timestamp option algorithm', explain_with_dict({
+        'U': 'unsupported - any of the responses has no timestamp option',
+        '0': 'zero - any of the timestamp values are zero',
+        '1': 'average increments per second falls within 0-5.66',
+        '7': 'average increments per second falls within 70-150',
+        '8': 'average increments per second falls within 150-350',
+        'A': '1,000 Hz',
+      }, default='binary logarithm of the average increments per second, '
+                 'rounded to the nearest integer')],
+  }],
 }
 
 class Fingerprint:
