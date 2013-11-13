@@ -630,49 +630,50 @@ def load_fingerprints():
   print_stderr("Loaded %d fingerprints." % len(fingerprints))
   return fingerprints, matchpoints, max_points
 
-fingerprints, matchpoints, max_points = load_fingerprints()
-if os.isatty(sys.stdin.fileno()):
-  print_stderr("Please enter the fingerprint in Nmap format:")
+if __name__ == "__main__":
+  fingerprints, matchpoints, max_points = load_fingerprints()
+  if os.isatty(sys.stdin.fileno()):
+    print_stderr("Please enter the fingerprint in Nmap format:")
 
-fp_known_tests = copy.copy(known_tests)
-fp_known_tests['SCAN'] = ['V', 'E','D','OT','CT','CU',
-                          'PV','DS','DC','G','TM','P']
-fp = Fingerprint()
-for line in sys.stdin.xreadlines():
-  if any(line.startswith(k + "(") for k in fp_known_tests):
-    group_name, tests = line.split('(')
-    assert(group_name not in fp.probes)
-    assert(group_name in fp_known_tests)
-    fp.probes[group_name] = {}
-    for test in tests.rstrip(')\n').split('%'):
-      if test == '':
-        fp.probes[group_name] = None
-        continue
-      test_name, value = test.split('=')
-      if test_name == 'R' and value == "N":
-        fp.probes[group_name] = None
-      elif test_name in ['W0', 'W7', 'W8', 'W9']:
-        pass
-      else:
-        assert(test_name in fp_known_tests[group_name])
-        fp.probes[group_name][test_name] = value
-      if group_name == 'SCAN':
-        continue
-      for fingerprint in fingerprints:
-        points = matchpoints[group_name][test_name]
-        if fingerprint.probes[group_name] is None:
-          if test_name == 'R' and value == 'N':
-            fingerprint.score += sum(matchpoints[group_name].values())
-        elif not test_name in fingerprint.probes[group_name]:
+  fp_known_tests = copy.copy(known_tests)
+  fp_known_tests['SCAN'] = ['V', 'E','D','OT','CT','CU',
+                            'PV','DS','DC','G','TM','P']
+  fp = Fingerprint()
+  for line in sys.stdin.xreadlines():
+    if any(line.startswith(k + "(") for k in fp_known_tests):
+      group_name, tests = line.split('(')
+      assert(group_name not in fp.probes)
+      assert(group_name in fp_known_tests)
+      fp.probes[group_name] = {}
+      for test in tests.rstrip(')\n').split('%'):
+        if test == '':
+          fp.probes[group_name] = None
           continue
-        elif fingerprint.probes[group_name][test_name](value):
-          fingerprint.score += points
-  else:
-    print_stderr("WARNING: weird line: %s" % line)
+        test_name, value = test.split('=')
+        if test_name == 'R' and value == "N":
+          fp.probes[group_name] = None
+        elif test_name in ['W0', 'W7', 'W8', 'W9']:
+          pass
+        else:
+          assert(test_name in fp_known_tests[group_name])
+          fp.probes[group_name][test_name] = value
+        if group_name == 'SCAN':
+          continue
+        for fingerprint in fingerprints:
+          points = matchpoints[group_name][test_name]
+          if fingerprint.probes[group_name] is None:
+            if test_name == 'R' and value == 'N':
+              fingerprint.score += sum(matchpoints[group_name].values())
+          elif not test_name in fingerprint.probes[group_name]:
+            continue
+          elif fingerprint.probes[group_name][test_name](value):
+            fingerprint.score += points
+    else:
+      print_stderr("WARNING: weird line: %s" % line)
 
-fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
+  fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
 
-print("Best matches:")
-for i in range(10):
-  score = float(fps[i].score) / max_points * 100
-  print("[%.2f%%] %s" % (score, fps[i].name))
+  print("Best matches:")
+  for i in range(10):
+    score = float(fps[i].score) / max_points * 100
+    print("[%.2f%%] %s" % (score, fps[i].name))
