@@ -76,27 +76,25 @@ def hextimestamp_to_date(hextimestamp):
 
 test_explanations = {
   'SCAN': ['General information about the tests', {
-      'V':  ['Nmap version used to perform the scan', just_return],
-      'D':  ['Date of scan (MM/DD)', just_return],
-      'E':  ['OS detection engine ID', just_return],
-      'OT': ['Open TCP port number', just_return],
-      'CT': ['Closed TCP port number', just_return],
-      'CU': ['Closed UCP port number', just_return],
-      'PV': ['Private IP space', just_return],
-      'DS': ['Network distance in hops', just_return],
-      'DC': ['Distance calculation method', explain_with_dict({
-          'L': 'localhost',
-          'D': 'direct',
-          'I': 'ICMP',
-          'T': 'traceroute',
-        })],
-      'G':  ['Fingerprint suitable for submission', just_return],
-      'M':  ['Mac address without leading zeros', just_return],
-      'TM': ['Scan time in hexadecimal epoch', hextimestamp_to_date],
-      'P':  ['Nmap platform', just_return],
-    },
-  ],
-
+    'V':  ['Nmap version used to perform the scan', just_return],
+    'D':  ['Date of scan (MM/DD)', just_return],
+    'E':  ['OS detection engine ID', just_return],
+    'OT': ['Open TCP port number', just_return],
+    'CT': ['Closed TCP port number', just_return],
+    'CU': ['Closed UCP port number', just_return],
+    'PV': ['Private IP space', just_return],
+    'DS': ['Network distance in hops', just_return],
+    'DC': ['Distance calculation method', explain_with_dict({
+        'L': 'localhost',
+        'D': 'direct',
+        'I': 'ICMP',
+        'T': 'traceroute',
+      })],
+    'G':  ['Fingerprint suitable for submission', just_return],
+    'M':  ['Mac address without leading zeros', just_return],
+    'TM': ['Scan time in hexadecimal epoch', hextimestamp_to_date],
+    'P':  ['Nmap platform', just_return],
+  }],
 }
 
 class Fingerprint:
