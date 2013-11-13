@@ -44,7 +44,7 @@ def explain_with_dict(d):
   Example:
   >>> f = explain_with_dict({'A': 'Good', 'B': 'Bad'})
   >>> f('A')
-  'A (Good)'
+  'Good'
 
   Returns function
   """
@@ -55,7 +55,7 @@ def explain_with_dict(d):
     Args:
       k: the key for the outer function's dictionary
     """
-    return '%s (%s)' % (k, d[k])
+    return '%s' % d[k]
   return inner_function
 
 test_explanations = {
@@ -314,8 +314,13 @@ def explain_fp(probe_dict, _known_tests):
       continue
     for test in _known_tests[k]:
       test_explanation = test_explanations[k][1][test]
+      explanation_f = test_explanation[1]
       if test in probe_dict[k]:
-        value_explanation = test_explanation[1](probe_dict[k][test])
+        explanation = explanation_f(probe_dict[k][test])
+        if explanation_f != just_return:
+          value_explanation = "%s (%s)" % (probe_dict[k][test], explanation)
+        else:
+          value_explanation = "%s" % explanation
       else:
         value_explanation = "(no information)"
       print("\t%s: %s" % (test_explanation[0], value_explanation))
