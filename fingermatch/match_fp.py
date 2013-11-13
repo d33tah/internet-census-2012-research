@@ -125,7 +125,32 @@ def explain_options(options):
   Returns str
   """
   options_list = map(lambda x: explain_option(x), re.findall('([LNMWTS][0-9A-F]*)', options))
+  if options_list == []:
+    return 'no options'
   return ', '.join(options_list)
+
+def explain_flags(flags):
+  """Explains Nmap TCP flags syntax.
+
+  Args:
+    flags (str): the TCP flags to be explained
+
+  Returns str
+  """
+  ret = []
+  if 'E' in flags:
+    ret += ['ECN Echo']
+  if 'U' in flags:
+    ret += ['Urgent Data']
+  if 'A' in flags:
+    ret += ['Acknowledgement']
+  if 'P' in flags:
+    ret += ['Push']
+  if 'R' in flags:
+    ret += ['Synchronize']
+  if 'F' in flags:
+    ret += ['Final']
+  return ', '.join(ret)
 
 seq__ti_ci_ii_expl = explain_with_dict({
   'Z':  'all zero',
@@ -135,6 +160,38 @@ seq__ti_ci_ii_expl = explain_with_dict({
   'BI': 'broken - divisible by 256, no greater than 5120',
   'I':  'incremental - all of the differences less than ten',
 }, default='identical')
+
+t2_t7_explanation = {
+  'R':  ['Responsiveness', just_return],
+  'DF': ['IP don\'t fragment bit', just_return],
+  'T':  ['IP initial time-to-live', just_return],
+  'TG': ['IP initial time-to-live guess', just_return],
+  'W':  ['TCP initial window size for ECN packet', just_return],
+  'S':  ['TCP sequence number', explain_with_dict({
+      'Z': 'sequence number is zero',
+      'A': 'sequence number = acknowledgement number in the probe',
+      'A+': 'sequence number = acknowledgement number in the probe plus one',
+      'O': 'other (not zero, not acknowledgement number plus zero/one)',
+    })],
+  'A':  ['TCP acknowledge number', explain_with_dict({
+      'Z': 'acknowledgement number is zero',
+      'S': 'acknowledgement number = sequence number in the probe',
+      'S+': 'acknowledgement number = sequence number in the probe plus one',
+      'O': 'other (not zero, not sequence number plus zero/one)',
+    })],
+  'F':  ['TCP flags', explain_flags],
+  'O':  ['TCP options for ECN packet', explain_options],
+  'RD': ['TCP RST data checksum', explain_with_dict({
+    '0': 'no data'
+    }, default='present')],
+  'Q':  ['TCP miscellaneous quirks', explain_with_dict({
+      '':   'no quirks present',
+      'R':  'reserved field in the TCP header is nonzero',
+      'RU': 'reserved field in the TCP header is nonzero AND '
+            'nonzero urgent pointer field value when URG flag is not set',
+      'U':  'nonzero urgent pointer field value when URG flag is not set',
+    })],
+}
 
 test_explanations = {
   'SCAN': ['General information about the tests', {
@@ -210,6 +267,18 @@ test_explanations = {
         'U':  'nonzero urgent pointer field value when URG flag is not set',
       })],
   }],
+  'T2': ['TCP probe no. 2 - no flags set, IP DF set, '
+         'window=128 to an open port', t2_t7_explanation],
+  'T3': ['TCP probe no. 3 - SYN, FIN, URG, PSH, '
+         'window=256 to open port, IP DF not set', t2_t7_explanation],
+  'T4': ['TCP probe no. 4 - TCP ACK with IP DF and '
+         'window=1024 to an open port', t2_t7_explanation],
+  'T5': ['TCP probe no. 5 - TCP SYN without IP DF and'
+         'window=31337 to a closed port', t2_t7_explanation],
+  'T6': ['TCP probe no. 6 - TCP ACK with IP DF and'
+         'window=32768 to a closed port', t2_t7_explanation],
+  'T7': ['TCP probe no. 7 - FIN, PSH and URG set, window=63535 '
+         'to a closed port, IP DF not set', t2_t7_explanation],
 }
 
 class Fingerprint:
