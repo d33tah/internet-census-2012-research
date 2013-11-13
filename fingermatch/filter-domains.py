@@ -18,7 +18,7 @@ raw_domains = []
 slds = []
 for sld_line in open("SLDs.csv").readlines():
   sld_columns = sld_line.split(',')
-  slds += sld_columns[1].rstrip('\r').lstrip('.')
+  slds += [sld_columns[1].rstrip('\r\n').lstrip('.')]
 
 for line in sys.stdin.readlines():
   domain = line.rstrip('\n')
