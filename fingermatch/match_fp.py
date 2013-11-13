@@ -161,6 +161,14 @@ seq__ti_ci_ii_expl = explain_with_dict({
   'I':  'incremental - all of the differences less than ten',
 }, default='identical')
 
+quirks_explanation = ['TCP miscellaneous quirks', explain_with_dict({
+  '':   'no quirks present',
+  'R':  'reserved field in the TCP header is nonzero',
+  'RU': 'reserved field in the TCP header is nonzero AND '
+        'nonzero urgent pointer field value when URG flag is not set',
+  'U':  'nonzero urgent pointer field value when URG flag is not set',
+})]
+
 t2_t7_explanation = {
   'R':  ['Responsiveness', just_return],
   'DF': ['IP don\'t fragment bit', just_return],
@@ -184,13 +192,7 @@ t2_t7_explanation = {
   'RD': ['TCP RST data checksum', explain_with_dict({
     '0': 'no data'
     }, default='present')],
-  'Q':  ['TCP miscellaneous quirks', explain_with_dict({
-      '':   'no quirks present',
-      'R':  'reserved field in the TCP header is nonzero',
-      'RU': 'reserved field in the TCP header is nonzero AND '
-            'nonzero urgent pointer field value when URG flag is not set',
-      'U':  'nonzero urgent pointer field value when URG flag is not set',
-    })],
+  'Q':  quirks_explanation,
 }
 
 test_explanations = {
@@ -259,13 +261,7 @@ test_explanations = {
     'W':  ['TCP initial window size for ECN packet', just_return],
     'O':  ['TCP options for ECN packet', explain_options],
     'CC': ['Explicit congestion control', just_return],
-    'Q':  ['TCP miscellaneous quirks', explain_with_dict({
-        '':   'no quirks present',
-        'R':  'reserved field in the TCP header is nonzero',
-        'RU': 'reserved field in the TCP header is nonzero AND '
-              'nonzero urgent pointer field value when URG flag is not set',
-        'U':  'nonzero urgent pointer field value when URG flag is not set',
-      })],
+    'Q':  quirks_explanation,
   }],
   'T2': ['TCP probe no. 2 - no flags set, IP DF set, '
          'window=128 to an open port', t2_t7_explanation],
