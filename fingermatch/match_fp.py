@@ -195,14 +195,14 @@ test_explanations = {
     'W6': ['TCP initial window size for packet 6', just_return],
   }],
   'ECN': ['TCP explicit congestion notification', {
-    'R': ['Responsiveness', just_return],
+    'R':  ['Responsiveness', just_return],
     'DF': ['IP don\'t fragment bit', just_return],
-    'T': ['IP initial time-to-live', just_return],
+    'T':  ['IP initial time-to-live', just_return],
     'TG': ['IP initial time-to-live guess', just_return],
-    'W': ['TCP initial window size for ECN packet', just_return],
-    'O': ['TCP options for ECN packet', explain_options],
+    'W':  ['TCP initial window size for ECN packet', just_return],
+    'O':  ['TCP options for ECN packet', explain_options],
     'CC': ['Explicit congestion control', just_return],
-    'Q': ['TCP miscellaneous quirks', explain_with_dict({
+    'Q':  ['TCP miscellaneous quirks', explain_with_dict({
         '':   'no quirks present',
         'R':  'reserved field in the TCP header is nonzero',
         'RU': 'reserved field in the TCP header is nonzero AND '
