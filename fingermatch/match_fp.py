@@ -32,6 +32,56 @@ known_tests = {
   'IE':  ['R', 'DFI', 'T', 'TG', 'CD'],
 }
 
+just_return = lambda x: x
+
+def explain_with_dict(d):
+  """Returns a function that explains given values using a specified
+  dictionary.
+
+  Args:
+    d (dict): the dictionary used for explaining the values
+
+  Example:
+  >>> f = explain_with_dict({'A': 'Good', 'B': 'Bad'})
+  >>> f('A')
+  'A (Good)'
+
+  Returns function
+  """
+  def inner_function(k):
+    """Inner function for explain_with_dict. Returns a value under the given
+    key in the outer dictionary's argument.
+
+    Args:
+      k: the key for the outer function's dictionary
+    """
+    return '%s (%s)' % (k, d[k])
+  return inner_function
+
+test_explanations = {
+  'SCAN': ['General information about the tests', {
+      'V':  ['Nmap version used to perform the scan', just_return],
+      'D':  ['Date of scan (MM/DD)', just_return],
+      'E':  ['OS detection engine ID', just_return],
+      'OT': ['Open TCP port number', just_return],
+      'CT': ['Closed TCP port number', just_return],
+      'CU': ['Closed UCP port number', just_return],
+      'PV': ['Private IP space', just_return],
+      'DS': ['Network distance in hops', just_return],
+      'DC': ['Distance calculation method', explain_with_dict({
+          'L': 'localhost',
+          'D': 'direct',
+          'I': 'ICMP',
+          'T': 'traceroute',
+        })],
+      'G':  ['Fingerprint suitable for submission', just_return],
+      'M':  ['Mac address without leading zeros', just_return],
+      'TM': ['Scan time in hexadecimal epoch', just_return],
+      'P':  ['Nmap platform', just_return],
+    },
+  ],
+
+}
 
 class Fingerprint:
   """A class that holds data about a single fingerprint."""
@@ -246,6 +296,22 @@ def parse_test(test):
   lambda_code += ' or '.join(lambda_exps)
   test_lambda = PrettyLambda(lambda_code, test_exp)
   return test_names, test_exp, test_lambda
+
+def explain_fp(probe_dict, _known_tests):
+  unknown_groups = [key for key in probe_dict if key not in _known_tests]
+  if unknown_groups != []:
+    print_stderr("WARNING: print_probes: unknown_groups=%s" %
+                 repr(unknown_groups))
+  for k in ['SCAN', 'SEQ', 'OPS', 'WIN', 'ECN', 'T1', 'T2',
+            'T3', 'T4', 'T5', 'T6', 'T7', 'U1', 'IE'] + unknown_groups:
+    print("%s:" % test_explanations[k][0])
+    for test in _known_tests[k]:
+      test_explanation = test_explanations[k][1][test]
+      if test in probe_dict[k]:
+        value_explanation = test_explanation[1](probe_dict[k][test])
+      else:
+        value_explanation = "(no information)"
+      print("\t%s: %s" % (test_explanation[0], value_explanation))
 
 fp_db_file = 'nmap-os-db2'
 fingerprints = []
