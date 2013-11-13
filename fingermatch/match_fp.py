@@ -506,6 +506,9 @@ def explain_fp(probe_dict, _known_tests):
     if k not in probe_dict:
       print("\t(test group not found)")
       continue
+    if probe_dict[k] is None:
+      print("\t(probe did not respond)")
+      continue
     for test in _known_tests[k]:
       test_explanation = test_explanations[k][1][test]
       explanation_f = test_explanation[1]
