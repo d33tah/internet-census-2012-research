@@ -86,6 +86,15 @@ def hextimestamp_to_date(hextimestamp):
   ret = datetime.datetime.fromtimestamp(int(hextimestamp, 16))
   return str(ret)
 
+seq__ti_ci_ii_expl = explain_with_dict({
+  'Z':  'all zero',
+  'RD': 'random - at least one increase by 20 000',
+  'RI': 'random positive increments - difference > 1000 '
+        'and difference mod 256 not even',
+  'BI': 'broken - divisible by 256, no greater than 5120',
+  'I':  'incremental - all of the differences less than ten',
+}, default='identical')
+
 test_explanations = {
   'SCAN': ['General information about the tests', {
     'V':  ['Nmap version used to perform the scan', just_return],
@@ -111,21 +120,9 @@ test_explanations = {
     'SP':  ['TCP ISN sequence predictability index', just_return],
     'GCD': ['TCP ISN greatest common divisor', just_return],
     'ISR': ['TCP ISN counter rate', just_return],
-    'TI':  ['TCP IP ID sequence generation algorithm', explain_with_dict({
-        'Z':  'all zero',
-        'RD': 'random - at least one increase by 20 000',
-        'BI': 'broken - divisible by 256, no greater than 5120',
-        'I':  'incremental - all of the differences less than ten',
-      }, default='identical')],
-    'CI':  ['TCP IP ID closed port sequence numbers', just_return],  # TODO
-    'II':  ['ICMP IP ID sequence generation algorithm', explain_with_dict({
-        'Z':  'both zero',
-        'RI': 'random positive increments - difference > 1000 '
-              'and difference mod 256 not even',
-        'BI': 'broken increment - difference divisible by 256, '
-              'no greter than 5120',
-        'I': 'incremental - difference less than ten',
-      }, default='identical')],
+    'TI':  ['TCP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
+    'CI':  ['TCP IP ID closed port sequence numbers', seq__ti_ci_ii_expl],
+    'II':  ['ICMP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
     'SS':  ['Shared IP ID sequence Boolean', explain_with_dict({
         'S': 'the sequence is shared',
         'O': 'the sequence is not shared',
