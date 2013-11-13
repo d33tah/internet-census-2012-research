@@ -124,7 +124,7 @@ test_explanations = {
               'and difference mod 256 not even',
         'BI': 'broken increment - difference divisible by 256, '
               'no greter than 5120',
-        'II': 'incremental - difference less than ten',
+        'I': 'incremental - difference less than ten',
       }, default='identical')],
     'SS':  ['Shared IP ID sequence Boolean', explain_with_dict({
         'S': 'the sequence is shared',
