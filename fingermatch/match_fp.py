@@ -186,6 +186,14 @@ test_explanations = {
     'O5': ['TCP options for packet 5', explain_options],
     'O6': ['TCP options for packet 6', explain_options],
   }],
+  'WIN': ['TCP initial window size', {
+    'W1': ['TCP initial window size for packet 1', just_return],
+    'W2': ['TCP initial window size for packet 2', just_return],
+    'W3': ['TCP initial window size for packet 3', just_return],
+    'W4': ['TCP initial window size for packet 4', just_return],
+    'W5': ['TCP initial window size for packet 5', just_return],
+    'W6': ['TCP initial window size for packet 6', just_return],
+  }],
 }
 
 class Fingerprint:
