@@ -16,10 +16,10 @@ from fputils import print_stderr
 # A dictionary of tables with known tests. Any test not listed here is
 # considered an error.
 known_tests = {
-  'ECN': ['CC', 'DF', 'O', 'Q', 'R', 'T', 'TG', 'W'],
-   'IE': ['CD', 'DFI', 'R', 'T', 'TG'],
-  'OPS': ['O1', 'O2', 'O3', 'O4', 'O5', 'O6'],
   'SEQ': ['CI', 'GCD', 'II', 'ISR', 'SP', 'SS', 'TI', 'TS'],
+  'OPS': ['O1', 'O2', 'O3', 'O4', 'O5', 'O6'],
+  'WIN': ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
+  'ECN': ['CC', 'DF', 'O', 'Q', 'R', 'T', 'TG', 'W'],
    'T1': ['A', 'DF', 'F', 'Q', 'R', 'RD', 'S', 'T', 'TG'],
    'T2': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
    'T3': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
@@ -29,7 +29,7 @@ known_tests = {
    'T7': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
    'U1': ['DF', 'IPL', 'R', 'RID', 'RIPCK',
           'RIPL', 'RUCK', 'RUD', 'T', 'TG', 'UN'],
-  'WIN': ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
+   'IE': ['CD', 'DFI', 'R', 'T', 'TG'],
 }
 
 
@@ -167,7 +167,10 @@ def print_probes(probe_dict, sep=' '):
   Returns None
   """
   print('{')
-  for k in sorted(probe_dict):
+  for k in ['SCAN', 'SEQ', 'OPS', 'WIN', 'ECN', 'T1', 'T2',
+            'T3', 'T4', 'T5', 'T6', 'T7', 'U1', 'IE']:
+    if k not in probe_dict:
+      continue
     if isinstance(probe_dict[k], list):
       desc = sorted(probe_dict[k])
     elif isinstance(probe_dict[k], dict):
