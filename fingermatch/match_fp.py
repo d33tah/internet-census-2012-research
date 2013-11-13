@@ -11,6 +11,7 @@ proved useful in finding errors in nmap-os-db database.
 import sys
 import os
 import copy
+import datetime
 from fputils import print_stderr
 
 # A dictionary of tables with known tests. Any test not listed here is
@@ -58,6 +59,10 @@ def explain_with_dict(d):
     return '%s' % d[k]
   return inner_function
 
+def hextimestamp_to_date(hextimestamp):
+  ret = datetime.datetime.fromtimestamp(int(hextimestamp, 16))
+  return str(ret)
+
 test_explanations = {
   'SCAN': ['General information about the tests', {
       'V':  ['Nmap version used to perform the scan', just_return],
@@ -76,7 +81,7 @@ test_explanations = {
         })],
       'G':  ['Fingerprint suitable for submission', just_return],
       'M':  ['Mac address without leading zeros', just_return],
-      'TM': ['Scan time in hexadecimal epoch', just_return],
+      'TM': ['Scan time in hexadecimal epoch', hextimestamp_to_date],
       'P':  ['Nmap platform', just_return],
     },
   ],
