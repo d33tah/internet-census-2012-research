@@ -35,8 +35,6 @@ known_tests = {
   'IE': ['R', 'DFI', 'T', 'TG', 'CD'],
 }
 
-just_return = lambda x: x
-
 
 def explain_with_dict(d, default=None):
   """Returns a function that explains given values using a specified
@@ -177,10 +175,10 @@ quirks_explanation = ['TCP miscellaneous quirks', explain_with_dict({
 })]
 
 first_four = {
-  'R': ['Responsiveness', just_return],
-  'DF': ['IP don\'t fragment bit', just_return],
-  'T': ['IP initial time-to-live', just_return],
-  'TG': ['IP initial time-to-live guess', just_return],
+  'R': ['Responsiveness', None],
+  'DF': ['IP don\'t fragment bit', None],
+  'T': ['IP initial time-to-live', None],
+  'TG': ['IP initial time-to-live guess', None],
 }
 
 t1_explanation = copy.copy(first_four)
@@ -206,47 +204,47 @@ t1_explanation.update({
 
 t2_t7_explanation = copy.copy(t1_explanation)
 t2_t7_explanation.update({
-  'W': ['TCP initial window size for ECN packet', just_return],
+  'W': ['TCP initial window size for ECN packet', None],
   'O': ['TCP options for ECN packet', explain_options],
 })
 
 u1_explanation = copy.copy(first_four)
 u1_explanation.update({
-  'IPL': ['IP total length', just_return],
-  'UN': ['Unused port unreachable field nonzero', just_return],
-  'RIPL': ['Returned probe IP total length value', just_return],
-  'RID': ['Returned probe IP ID value', just_return],
-  'RIPCK': ['Integrity of returned probe IP checksum value', just_return],
+  'IPL': ['IP total length', None],
+  'UN': ['Unused port unreachable field nonzero', None],
+  'RIPL': ['Returned probe IP total length value', None],
+  'RID': ['Returned probe IP ID value', None],
+  'RIPCK': ['Integrity of returned probe IP checksum value', None],
   'RUCK': ['Integrity of returned probe UDP length and checksum',
-           just_return],
-  'RUD': ['Integrity of returned UDP data', just_return],
+           None],
+  'RUD': ['Integrity of returned UDP data', None],
 })
 
 test_explanations = {
   'SCAN': ['General information about the tests', {
-    'V': ['Nmap version used to perform the scan', just_return],
-    'D': ['Date of scan (M/D)', just_return],
-    'E': ['OS detection engine ID', just_return],
-    'OT': ['Open TCP port number', just_return],
-    'CT': ['Closed TCP port number', just_return],
-    'CU': ['Closed UCP port number', just_return],
-    'PV': ['Private IP space', just_return],
-    'DS': ['Network distance in hops', just_return],
+    'V': ['Nmap version used to perform the scan', None],
+    'D': ['Date of scan (M/D)', None],
+    'E': ['OS detection engine ID', None],
+    'OT': ['Open TCP port number', None],
+    'CT': ['Closed TCP port number', None],
+    'CU': ['Closed UCP port number', None],
+    'PV': ['Private IP space', None],
+    'DS': ['Network distance in hops', None],
     'DC': ['Distance calculation method', explain_with_dict({
         'L': 'localhost',
         'D': 'direct',
         'I': 'ICMP',
         'T': 'traceroute',
       })],
-    'G': ['Fingerprint suitable for submission', just_return],
-    'M': ['Mac address without leading zeros', just_return],
+    'G': ['Fingerprint suitable for submission', None],
+    'M': ['Mac address without leading zeros', None],
     'TM': ['Scan time in hexadecimal epoch', hextimestamp_to_date],
-    'P': ['Nmap platform', just_return],
+    'P': ['Nmap platform', None],
   }],
   'SEQ': ['Packet sequence analysis', {
-    'SP': ['TCP ISN sequence predictability index', just_return],
-    'GCD': ['TCP ISN greatest common divisor', just_return],
-    'ISR': ['TCP ISN counter rate', just_return],
+    'SP': ['TCP ISN sequence predictability index', None],
+    'GCD': ['TCP ISN greatest common divisor', None],
+    'ISR': ['TCP ISN counter rate', None],
     'TI': ['TCP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
     'CI': ['TCP IP ID closed port sequence numbers', seq__ti_ci_ii_expl],
     'II': ['ICMP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
@@ -273,21 +271,21 @@ test_explanations = {
     'O6': ['TCP options for packet 6', explain_options],
   }],
   'WIN': ['TCP initial window size', {
-    'W1': ['TCP initial window size for packet 1', just_return],
-    'W2': ['TCP initial window size for packet 2', just_return],
-    'W3': ['TCP initial window size for packet 3', just_return],
-    'W4': ['TCP initial window size for packet 4', just_return],
-    'W5': ['TCP initial window size for packet 5', just_return],
-    'W6': ['TCP initial window size for packet 6', just_return],
+    'W1': ['TCP initial window size for packet 1', None],
+    'W2': ['TCP initial window size for packet 2', None],
+    'W3': ['TCP initial window size for packet 3', None],
+    'W4': ['TCP initial window size for packet 4', None],
+    'W5': ['TCP initial window size for packet 5', None],
+    'W6': ['TCP initial window size for packet 6', None],
   }],
   'ECN': ['TCP explicit congestion notification', {
-    'R': ['Responsiveness', just_return],
-    'DF': ['IP don\'t fragment bit', just_return],
-    'T': ['IP initial time-to-live', just_return],
-    'TG': ['IP initial time-to-live guess', just_return],
-    'W': ['TCP initial window size for ECN packet', just_return],
+    'R': ['Responsiveness', None],
+    'DF': ['IP don\'t fragment bit', None],
+    'T': ['IP initial time-to-live', None],
+    'TG': ['IP initial time-to-live guess', None],
+    'W': ['TCP initial window size for ECN packet', None],
     'O': ['TCP options for ECN packet', explain_options],
-    'CC': ['Explicit congestion control', just_return],
+    'CC': ['Explicit congestion control', None],
     'Q': quirks_explanation,
   }],
   'T1': ['TCP probe no. 1 - window scale (10), NOP, MSS (1460),'
@@ -308,15 +306,15 @@ test_explanations = {
   'U1': ['UDP probe no. 1 - character \'C\' repeated '
          '300 times, IP ID set to 0x1024', u1_explanation],
   'IE': ['ICMP echo', {
-    'R': ['Responsiveness', just_return],
+    'R': ['Responsiveness', None],
     'DFI': ['Don\'t fragment (ICMP)', explain_with_dict({
         'N': 'neither of the ping responses have the DF bit set',
         'S': 'both responses echo the DF value of the probe',
         'Y': 'both of the response DF bits are set',
         'O': 'other - both responses have the DF bit toggled',
       })],
-    'T': ['IP initial time-to-live', just_return],
-    'TG': ['IP initial time-to-live guess', just_return],
+    'T': ['IP initial time-to-live', None],
+    'TG': ['IP initial time-to-live guess', None],
     'CD': ['ICMP response code', explain_with_dict({
         'Z': 'both code values are zero',
         'S': 'both code values are the same as in the corresponding probe',
@@ -563,11 +561,11 @@ def explain_fp(probe_dict, _known_tests):
       test_explanation = test_explanations[k][1][test]
       explanation_f = test_explanation[1]
       if test in probe_dict[k]:
-        explanation = explanation_f(probe_dict[k][test])
-        if explanation_f != just_return:
+        if explanation_f is not None:
+          explanation = explanation_f(probe_dict[k][test])
           value_explanation = "%s (%s)" % (probe_dict[k][test], explanation)
         else:
-          value_explanation = "%s" % explanation
+          value_explanation = "%s" % probe_dict[k][test]
       else:
         value_explanation = "(no information)"
       print("\t%s (%s): %s" % (test_explanation[0], test, value_explanation))
