@@ -13,6 +13,7 @@ import os
 import copy
 import datetime
 import re
+import argparse
 from fputils import print_stderr
 
 # A dictionary of tables with known tests. Any test not listed here is
@@ -631,7 +632,20 @@ def load_fingerprints():
   return fingerprints, matchpoints, max_points
 
 if __name__ == "__main__":
-  fingerprints, matchpoints, max_points = load_fingerprints()
+
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument('--match', action='store_true')
+  parser.add_argument('--explain', action='store_true')
+  args = parser.parse_args()
+  if not args.match and not args.explain:
+    sys.exit("ERROR: %s: you need either --match or --explain to continue."
+      % sys.argv[0])
+
+  if args.match:
+    fingerprints, matchpoints, max_points = load_fingerprints()
+  else:
+    fingerprints = []
+
   if os.isatty(sys.stdin.fileno()):
     print_stderr("Please enter the fingerprint in Nmap format:")
 
@@ -671,9 +685,12 @@ if __name__ == "__main__":
     else:
       print_stderr("WARNING: weird line: %s" % line)
 
-  fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
+  if args.match:
+    fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
+    print("Best matches:")
+    for i in range(10):
+      score = float(fps[i].score) / max_points * 100
+      print("[%.2f%%] %s" % (score, fps[i].name))
 
-  print("Best matches:")
-  for i in range(10):
-    score = float(fps[i].score) / max_points * 100
-    print("[%.2f%%] %s" % (score, fps[i].name))
+  if args.explain:
+    explain_fp(fp.probes, fp_known_tests)
