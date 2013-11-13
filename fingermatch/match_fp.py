@@ -324,7 +324,7 @@ def explain_fp(probe_dict, _known_tests):
       print_stderr("WARNING: unknown test group: %s (values: %s)" % (k,
                    repr(probe_dict[k])))
       continue
-    print("%s:" % test_explanations[k][0])
+    print("%s (%s):" % (test_explanations[k][0], k))
     if k not in probe_dict:
       print("\t(test group not found)")
       continue
@@ -339,7 +339,7 @@ def explain_fp(probe_dict, _known_tests):
           value_explanation = "%s" % explanation
       else:
         value_explanation = "(no information)"
-      print("\t%s: %s" % (test_explanation[0], value_explanation))
+      print("\t%s (%s): %s" % (test_explanation[0], test, value_explanation))
 
 fp_db_file = 'nmap-os-db2'
 fingerprints = []
