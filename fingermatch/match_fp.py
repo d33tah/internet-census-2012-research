@@ -169,12 +169,11 @@ quirks_explanation = ['TCP miscellaneous quirks', explain_with_dict({
   'U':  'nonzero urgent pointer field value when URG flag is not set',
 })]
 
-t2_t7_explanation = {
+t1_explanation = {
   'R':  ['Responsiveness', just_return],
   'DF': ['IP don\'t fragment bit', just_return],
   'T':  ['IP initial time-to-live', just_return],
   'TG': ['IP initial time-to-live guess', just_return],
-  'W':  ['TCP initial window size for ECN packet', just_return],
   'S':  ['TCP sequence number', explain_with_dict({
       'Z': 'sequence number is zero',
       'A': 'sequence number = acknowledgement number in the probe',
@@ -188,12 +187,17 @@ t2_t7_explanation = {
       'O': 'other (not zero, not sequence number plus zero/one)',
     })],
   'F':  ['TCP flags', explain_flags],
-  'O':  ['TCP options for ECN packet', explain_options],
   'RD': ['TCP RST data checksum', explain_with_dict({
     '0': 'no data'
     }, default='present')],
   'Q':  quirks_explanation,
 }
+
+t2_t7_explanation = copy.copy(t1_explanation)
+t2_t7_explanation.update({
+  'W':  ['TCP initial window size for ECN packet', just_return],
+  'O':  ['TCP options for ECN packet', explain_options],
+})
 
 test_explanations = {
   'SCAN': ['General information about the tests', {
@@ -263,6 +267,9 @@ test_explanations = {
     'CC': ['Explicit congestion control', just_return],
     'Q':  quirks_explanation,
   }],
+  'T1': ['TCP probe no. 1 - window scale (10), NOP, MSS (1460),'
+         'timestamp (TSval: 0xFFFFFFFF; TSecr: 0), SACK permitted. '
+         'The window field is 1.', t1_explanation],
   'T2': ['TCP probe no. 2 - no flags set, IP DF set, '
          'window=128 to an open port', t2_t7_explanation],
   'T3': ['TCP probe no. 3 - SYN, FIN, URG, PSH, '
