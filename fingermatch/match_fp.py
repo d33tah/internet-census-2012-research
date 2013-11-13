@@ -16,20 +16,20 @@ from fputils import print_stderr
 # A dictionary of tables with known tests. Any test not listed here is
 # considered an error.
 known_tests = {
-  'SEQ': ['CI', 'GCD', 'II', 'ISR', 'SP', 'SS', 'TI', 'TS'],
+  'SEQ': ['SP', 'GCD', 'ISR', 'TI', 'CI', 'II', 'SS', 'TS'],
   'OPS': ['O1', 'O2', 'O3', 'O4', 'O5', 'O6'],
   'WIN': ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
-  'ECN': ['CC', 'DF', 'O', 'Q', 'R', 'T', 'TG', 'W'],
-   'T1': ['A', 'DF', 'F', 'Q', 'R', 'RD', 'S', 'T', 'TG'],
-   'T2': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
-   'T3': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
-   'T4': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
-   'T5': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
-   'T6': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
-   'T7': ['A', 'DF', 'F', 'O', 'Q', 'R', 'RD', 'S', 'T', 'TG', 'W'],
-   'U1': ['DF', 'IPL', 'R', 'RID', 'RIPCK',
-          'RIPL', 'RUCK', 'RUD', 'T', 'TG', 'UN'],
-   'IE': ['CD', 'DFI', 'R', 'T', 'TG'],
+  'ECN': ['R', 'DF', 'T', 'TG', 'W', 'O', 'CC', 'Q'],
+  'T1':  ['R', 'DF', 'T', 'TG', 'S', 'A', 'F', 'RD', 'Q'],
+  'T2':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T3':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T4':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T5':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T6':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T7':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'U1':  ['R', 'DF', 'T', 'TG', 'IPL', 'UN',
+          'RIPL', 'RID', 'RIPCK', 'RUCK', 'RUD'],
+  'IE':  ['R', 'DFI', 'T', 'TG', 'CD'],
 }
 
 
@@ -134,47 +134,53 @@ def get_matchpoints(f):
   return max_points, matchpoints, lines_read
 
 
-def sorted_dict_repr(dict_, sep=' '):
+def tests_repr(dict_, group_name, _known_tests, sep=' '):
   """A __repr__ for dictionaries that displays key-value pairs in a sorted
   order.
 
-  Example:
-
-  >>> print(sorted_dict_repr({5: 6, 7:9, 2: 4}, sep='\n'))
-  {2: 4,
-  5: 6,
-  7: 9}
-
   Args:
     dict_ (dict): the dictionary to be described
+    group_name (str): the name of the test group, used to adjust sorting order
+    _known_tests (dict): a dictionary with the known tests
     sep (str): the key-value pair separator
+
   Returns str
   """
   ret = []
-  for k in sorted(dict_):
+  unknown_tests = [key for key in dict_ if key not in _known_tests[group_name]]
+  if unknown_tests != []:
+    print_stderr("WARNING: tests_repr: unknown_tests=%s" % repr(unknown_tests))
+  for k in _known_tests[group_name] + unknown_tests:
+    if k not in dict_:
+      continue
     ret += ["%s: %s" % (repr(k), repr(dict_[k]))]
   return '{' + (',' + sep).join(ret) + '}'
 
 
-def print_probes(probe_dict, sep=' '):
+def print_probes(probe_dict, _known_tests,  sep=' '):
   """Pretty-prints a given probe. Adds newlines, sorts the dictionaries and
   aligns the key lengths.
 
   Args:
     probe_dict (dict): a dictionary with the probes
-    sep (str): the separator that will be passed to sorted_dict_repr
+    _known_tests (dict): a dictionary with the known tests
+    sep (str): the separator that will be passed to tests_repr
 
   Returns None
   """
   print('{')
+  unknown_groups = [key for key in probe_dict if key not in _known_tests]
+  if unknown_groups != []:
+    print_stderr("WARNING: print_probes: unknown_groups=%s" %
+                 repr(unknown_groups))
   for k in ['SCAN', 'SEQ', 'OPS', 'WIN', 'ECN', 'T1', 'T2',
-            'T3', 'T4', 'T5', 'T6', 'T7', 'U1', 'IE']:
+            'T3', 'T4', 'T5', 'T6', 'T7', 'U1', 'IE'] + unknown_groups:
     if k not in probe_dict:
       continue
     if isinstance(probe_dict[k], list):
       desc = sorted(probe_dict[k])
     elif isinstance(probe_dict[k], dict):
-      desc = sorted_dict_repr(probe_dict[k], sep)
+      desc = tests_repr(probe_dict[k], k, _known_tests, sep)
     else:
       desc = repr(probe_dict[k])
     line = '  %5s: %s,' % (repr(k), desc)
