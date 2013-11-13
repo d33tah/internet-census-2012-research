@@ -169,11 +169,15 @@ quirks_explanation = ['TCP miscellaneous quirks', explain_with_dict({
   'U':  'nonzero urgent pointer field value when URG flag is not set',
 })]
 
-t1_explanation = {
+first_four = {
   'R':  ['Responsiveness', just_return],
   'DF': ['IP don\'t fragment bit', just_return],
   'T':  ['IP initial time-to-live', just_return],
   'TG': ['IP initial time-to-live guess', just_return],
+}
+
+t1_explanation = copy.copy(first_four)
+t1_explanation.update({
   'S':  ['TCP sequence number', explain_with_dict({
       'Z': 'sequence number is zero',
       'A': 'sequence number = acknowledgement number in the probe',
@@ -191,12 +195,23 @@ t1_explanation = {
     '0': 'no data'
     }, default='present')],
   'Q':  quirks_explanation,
-}
+})
 
 t2_t7_explanation = copy.copy(t1_explanation)
 t2_t7_explanation.update({
   'W':  ['TCP initial window size for ECN packet', just_return],
   'O':  ['TCP options for ECN packet', explain_options],
+})
+
+u1_explanation = copy.copy(first_four)
+u1_explanation.update({
+  'IPL':   ['IP total length', just_return],
+  'UN':    ['Unused port unreachable field nonzero', just_return],
+  'RIPL':  ['Returned probe IP total length value', just_return],
+  'RID':   ['Returned probe IP ID value', just_return],
+  'RIPCK': ['Integrity of returned probe IP checksum value', just_return],
+  'RUCK':  ['Integrity of returned probe UDP length and checksum', just_return],
+  'RUD':   ['Integrity of returned UDP data', just_return],
 })
 
 test_explanations = {
@@ -282,6 +297,8 @@ test_explanations = {
          'window=32768 to a closed port', t2_t7_explanation],
   'T7': ['TCP probe no. 7 - FIN, PSH and URG set, window=63535 '
          'to a closed port, IP DF not set', t2_t7_explanation],
+  'U1': ['UDP probe no. 1 - character \'C\' repeated '
+         '300 times, IP ID set to 0x1024', u1_explanation],
 }
 
 class Fingerprint:
