@@ -180,11 +180,11 @@ test_explanations = {
   }],
   'OPS': ['TCP options', {
     'O1': ['TCP options for packet 1', explain_options],
-    'O2': ['TCP options for packet 1', explain_options],
-    'O3': ['TCP options for packet 1', explain_options],
-    'O4': ['TCP options for packet 1', explain_options],
-    'O5': ['TCP options for packet 1', explain_options],
-    'O6': ['TCP options for packet 1', explain_options],
+    'O2': ['TCP options for packet 2', explain_options],
+    'O3': ['TCP options for packet 3', explain_options],
+    'O4': ['TCP options for packet 4', explain_options],
+    'O5': ['TCP options for packet 5', explain_options],
+    'O6': ['TCP options for packet 6', explain_options],
   }],
 }
 
