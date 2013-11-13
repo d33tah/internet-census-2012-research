@@ -35,17 +35,26 @@ known_tests = {
 
 just_return = lambda x: x
 
-def explain_with_dict(d):
+def explain_with_dict(d, default=None):
   """Returns a function that explains given values using a specified
   dictionary.
 
   Args:
     d (dict): the dictionary used for explaining the values
+    default: the default value to be returned if the key is not found
 
   Example:
   >>> f = explain_with_dict({'A': 'Good', 'B': 'Bad'})
   >>> f('A')
   'Good'
+  >>> f('C')
+  Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "<stdin>", line 26, in inner_function
+  KeyError: 'C'
+  >>> f = explain_with_dict({'A': 'Good', 'B': 'Bad'}, default='No idea')
+  >>> f('C')
+  'No idea'
 
   Returns function
   """
@@ -56,7 +65,10 @@ def explain_with_dict(d):
     Args:
       k: the key for the outer function's dictionary
     """
-    return '%s' % d[k]
+    if default is not None and k not in d:
+      return default
+    else:
+      return '%s' % d[k]
   return inner_function
 
 def hextimestamp_to_date(hextimestamp):
