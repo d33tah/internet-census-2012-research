@@ -367,7 +367,7 @@ while True:
     lineno += lines_read
     p = {}
   elif line.startswith("Fingerprint "):
-    fp.name = line[len("Fingerprint "):]
+    fp.name = line[len("Fingerprint "):].rstrip('\r\n')
     fp.line = lineno
   elif line.startswith("Class "):
     fp.clases = line[len("Class "):]
