@@ -60,6 +60,17 @@ def explain_with_dict(d):
   return inner_function
 
 def hextimestamp_to_date(hextimestamp):
+  """Converts a hexadecimal timestamp to a human-readable date.
+
+  Args:
+    hextimestamp (str): the timestamp expressed as a hexadecimal number
+
+  Example:
+  >>> hextimestamp_to_date("5045AD58")
+  '2012-09-04 09:27:20'
+
+  Returns str
+  """
   ret = datetime.datetime.fromtimestamp(int(hextimestamp, 16))
   return str(ret)
 
