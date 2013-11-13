@@ -89,7 +89,7 @@ def hextimestamp_to_date(hextimestamp):
 test_explanations = {
   'SCAN': ['General information about the tests', {
     'V':  ['Nmap version used to perform the scan', just_return],
-    'D':  ['Date of scan (MM/DD)', just_return],
+    'D':  ['Date of scan (M/D)', just_return],
     'E':  ['OS detection engine ID', just_return],
     'OT': ['Open TCP port number', just_return],
     'CT': ['Closed TCP port number', just_return],
