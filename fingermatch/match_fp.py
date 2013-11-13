@@ -304,7 +304,14 @@ def explain_fp(probe_dict, _known_tests):
                  repr(unknown_groups))
   for k in ['SCAN', 'SEQ', 'OPS', 'WIN', 'ECN', 'T1', 'T2',
             'T3', 'T4', 'T5', 'T6', 'T7', 'U1', 'IE'] + unknown_groups:
+    if k not in test_explanations:
+      print_stderr("WARNING: unknown test group: %s (values: %s)" % (k,
+                   repr(probe_dict[k])))
+      continue
     print("%s:" % test_explanations[k][0])
+    if k not in probe_dict:
+      print("\t(test group not found)")
+      continue
     for test in _known_tests[k]:
       test_explanation = test_explanations[k][1][test]
       if test in probe_dict[k]:
