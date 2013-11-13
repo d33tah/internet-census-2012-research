@@ -23,19 +23,20 @@ known_tests = {
   'OPS': ['O1', 'O2', 'O3', 'O4', 'O5', 'O6'],
   'WIN': ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
   'ECN': ['R', 'DF', 'T', 'TG', 'W', 'O', 'CC', 'Q'],
-  'T1':  ['R', 'DF', 'T', 'TG', 'S', 'A', 'F', 'RD', 'Q'],
-  'T2':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
-  'T3':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
-  'T4':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
-  'T5':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
-  'T6':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
-  'T7':  ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
-  'U1':  ['R', 'DF', 'T', 'TG', 'IPL', 'UN',
-          'RIPL', 'RID', 'RIPCK', 'RUCK', 'RUD'],
-  'IE':  ['R', 'DFI', 'T', 'TG', 'CD'],
+  'T1': ['R', 'DF', 'T', 'TG', 'S', 'A', 'F', 'RD', 'Q'],
+  'T2': ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T3': ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T4': ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T5': ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T6': ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'T7': ['R', 'DF', 'T', 'TG', 'W', 'S', 'A', 'F', 'O', 'RD', 'Q'],
+  'U1': ['R', 'DF', 'T', 'TG', 'IPL', 'UN',
+         'RIPL', 'RID', 'RIPCK', 'RUCK', 'RUD'],
+  'IE': ['R', 'DFI', 'T', 'TG', 'CD'],
 }
 
 just_return = lambda x: x
+
 
 def explain_with_dict(d, default=None):
   """Returns a function that explains given values using a specified
@@ -73,6 +74,7 @@ def explain_with_dict(d, default=None):
       return '%s' % d[k]
   return inner_function
 
+
 def hextimestamp_to_date(hextimestamp):
   """Converts a hexadecimal timestamp to a human-readable date.
 
@@ -87,6 +89,7 @@ def hextimestamp_to_date(hextimestamp):
   """
   ret = datetime.datetime.fromtimestamp(int(hextimestamp, 16))
   return str(ret)
+
 
 def explain_option(option):
   """Explain a single Nmap TCP option
@@ -117,6 +120,7 @@ def explain_option(option):
 
   return ret + '>'
 
+
 def explain_options(options):
   """Explains Nmap TCP options syntax.
 
@@ -125,10 +129,12 @@ def explain_options(options):
 
   Returns str
   """
-  options_list = map(lambda x: explain_option(x), re.findall('([LNMWTS][0-9A-F]*)', options))
+  options_split = re.findall('([LNMWTS][0-9A-F]*)', options)
+  options_list = map(lambda x: explain_option(x), options_split)
   if options_list == []:
     return 'no options'
   return ', '.join(options_list)
+
 
 def explain_flags(flags):
   """Explains Nmap TCP flags syntax.
@@ -154,72 +160,73 @@ def explain_flags(flags):
   return ', '.join(ret)
 
 seq__ti_ci_ii_expl = explain_with_dict({
-  'Z':  'all zero',
+  'Z': 'all zero',
   'RD': 'random - at least one increase by 20 000',
   'RI': 'random positive increments - difference > 1000 '
         'and difference mod 256 not even',
   'BI': 'broken - divisible by 256, no greater than 5120',
-  'I':  'incremental - all of the differences less than ten',
+  'I': 'incremental - all of the differences less than ten',
 }, default='identical')
 
 quirks_explanation = ['TCP miscellaneous quirks', explain_with_dict({
-  '':   'no quirks present',
-  'R':  'reserved field in the TCP header is nonzero',
+  '': 'no quirks present',
+  'R': 'reserved field in the TCP header is nonzero',
   'RU': 'reserved field in the TCP header is nonzero AND '
         'nonzero urgent pointer field value when URG flag is not set',
-  'U':  'nonzero urgent pointer field value when URG flag is not set',
+  'U': 'nonzero urgent pointer field value when URG flag is not set',
 })]
 
 first_four = {
-  'R':  ['Responsiveness', just_return],
+  'R': ['Responsiveness', just_return],
   'DF': ['IP don\'t fragment bit', just_return],
-  'T':  ['IP initial time-to-live', just_return],
+  'T': ['IP initial time-to-live', just_return],
   'TG': ['IP initial time-to-live guess', just_return],
 }
 
 t1_explanation = copy.copy(first_four)
 t1_explanation.update({
-  'S':  ['TCP sequence number', explain_with_dict({
+  'S': ['TCP sequence number', explain_with_dict({
       'Z': 'sequence number is zero',
       'A': 'sequence number = acknowledgement number in the probe',
       'A+': 'sequence number = acknowledgement number in the probe plus one',
       'O': 'other (not zero, not acknowledgement number plus zero/one)',
     })],
-  'A':  ['TCP acknowledge number', explain_with_dict({
+  'A': ['TCP acknowledge number', explain_with_dict({
       'Z': 'acknowledgement number is zero',
       'S': 'acknowledgement number = sequence number in the probe',
       'S+': 'acknowledgement number = sequence number in the probe plus one',
       'O': 'other (not zero, not sequence number plus zero/one)',
     })],
-  'F':  ['TCP flags', explain_flags],
+  'F': ['TCP flags', explain_flags],
   'RD': ['TCP RST data checksum', explain_with_dict({
     '0': 'no data'
     }, default='present')],
-  'Q':  quirks_explanation,
+  'Q': quirks_explanation,
 })
 
 t2_t7_explanation = copy.copy(t1_explanation)
 t2_t7_explanation.update({
-  'W':  ['TCP initial window size for ECN packet', just_return],
-  'O':  ['TCP options for ECN packet', explain_options],
+  'W': ['TCP initial window size for ECN packet', just_return],
+  'O': ['TCP options for ECN packet', explain_options],
 })
 
 u1_explanation = copy.copy(first_four)
 u1_explanation.update({
-  'IPL':   ['IP total length', just_return],
-  'UN':    ['Unused port unreachable field nonzero', just_return],
-  'RIPL':  ['Returned probe IP total length value', just_return],
-  'RID':   ['Returned probe IP ID value', just_return],
+  'IPL': ['IP total length', just_return],
+  'UN': ['Unused port unreachable field nonzero', just_return],
+  'RIPL': ['Returned probe IP total length value', just_return],
+  'RID': ['Returned probe IP ID value', just_return],
   'RIPCK': ['Integrity of returned probe IP checksum value', just_return],
-  'RUCK':  ['Integrity of returned probe UDP length and checksum', just_return],
-  'RUD':   ['Integrity of returned UDP data', just_return],
+  'RUCK': ['Integrity of returned probe UDP length and checksum',
+           just_return],
+  'RUD': ['Integrity of returned UDP data', just_return],
 })
 
 test_explanations = {
   'SCAN': ['General information about the tests', {
-    'V':  ['Nmap version used to perform the scan', just_return],
-    'D':  ['Date of scan (M/D)', just_return],
-    'E':  ['OS detection engine ID', just_return],
+    'V': ['Nmap version used to perform the scan', just_return],
+    'D': ['Date of scan (M/D)', just_return],
+    'E': ['OS detection engine ID', just_return],
     'OT': ['Open TCP port number', just_return],
     'CT': ['Closed TCP port number', just_return],
     'CU': ['Closed UCP port number', just_return],
@@ -231,23 +238,23 @@ test_explanations = {
         'I': 'ICMP',
         'T': 'traceroute',
       })],
-    'G':  ['Fingerprint suitable for submission', just_return],
-    'M':  ['Mac address without leading zeros', just_return],
+    'G': ['Fingerprint suitable for submission', just_return],
+    'M': ['Mac address without leading zeros', just_return],
     'TM': ['Scan time in hexadecimal epoch', hextimestamp_to_date],
-    'P':  ['Nmap platform', just_return],
+    'P': ['Nmap platform', just_return],
   }],
   'SEQ': ['Packet sequence analysis', {
-    'SP':  ['TCP ISN sequence predictability index', just_return],
+    'SP': ['TCP ISN sequence predictability index', just_return],
     'GCD': ['TCP ISN greatest common divisor', just_return],
     'ISR': ['TCP ISN counter rate', just_return],
-    'TI':  ['TCP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
-    'CI':  ['TCP IP ID closed port sequence numbers', seq__ti_ci_ii_expl],
-    'II':  ['ICMP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
-    'SS':  ['Shared IP ID sequence Boolean', explain_with_dict({
+    'TI': ['TCP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
+    'CI': ['TCP IP ID closed port sequence numbers', seq__ti_ci_ii_expl],
+    'II': ['ICMP IP ID sequence generation algorithm', seq__ti_ci_ii_expl],
+    'SS': ['Shared IP ID sequence Boolean', explain_with_dict({
         'S': 'the sequence is shared',
         'O': 'the sequence is not shared',
       })],
-    'TS':  ['TCP timestamp option algorithm', explain_with_dict({
+    'TS': ['TCP timestamp option algorithm', explain_with_dict({
         'U': 'unsupported - any of the responses has no timestamp option',
         '0': 'zero - any of the timestamp values are zero',
         '1': 'average increments per second falls within 0-5.66',
@@ -274,14 +281,14 @@ test_explanations = {
     'W6': ['TCP initial window size for packet 6', just_return],
   }],
   'ECN': ['TCP explicit congestion notification', {
-    'R':  ['Responsiveness', just_return],
+    'R': ['Responsiveness', just_return],
     'DF': ['IP don\'t fragment bit', just_return],
-    'T':  ['IP initial time-to-live', just_return],
+    'T': ['IP initial time-to-live', just_return],
     'TG': ['IP initial time-to-live guess', just_return],
-    'W':  ['TCP initial window size for ECN packet', just_return],
-    'O':  ['TCP options for ECN packet', explain_options],
+    'W': ['TCP initial window size for ECN packet', just_return],
+    'O': ['TCP options for ECN packet', explain_options],
     'CC': ['Explicit congestion control', just_return],
-    'Q':  quirks_explanation,
+    'Q': quirks_explanation,
   }],
   'T1': ['TCP probe no. 1 - window scale (10), NOP, MSS (1460),'
          'timestamp (TSval: 0xFFFFFFFF; TSecr: 0), SACK permitted. '
@@ -301,22 +308,23 @@ test_explanations = {
   'U1': ['UDP probe no. 1 - character \'C\' repeated '
          '300 times, IP ID set to 0x1024', u1_explanation],
   'IE': ['ICMP echo', {
-    'R':   ['Responsiveness', just_return],
+    'R': ['Responsiveness', just_return],
     'DFI': ['Don\'t fragment (ICMP)', explain_with_dict({
         'N': 'neither of the ping responses have the DF bit set',
         'S': 'both responses echo the DF value of the probe',
         'Y': 'both of the response DF bits are set',
         'O': 'other - both responses have the DF bit toggled',
       })],
-    'T':   ['IP initial time-to-live', just_return],
-    'TG':  ['IP initial time-to-live guess', just_return],
-    'CD':  ['ICMP response code', explain_with_dict({
+    'T': ['IP initial time-to-live', just_return],
+    'TG': ['IP initial time-to-live guess', just_return],
+    'CD': ['ICMP response code', explain_with_dict({
         'Z': 'both code values are zero',
         'S': 'both code values are the same as in the corresponding probe',
         'O': 'other: the ICMP response codes vary',
       }, default='both packets use the same non-zero number')],
   }],
 }
+
 
 class Fingerprint:
   """A class that holds data about a single fingerprint."""
@@ -442,7 +450,7 @@ def tests_repr(dict_, group_name, _known_tests, sep=' '):
   return '{' + (',' + sep).join(ret) + '}'
 
 
-def print_probes(probe_dict, _known_tests,  sep=' '):
+def print_probes(probe_dict, _known_tests, sep=' '):
   """Pretty-prints a given probe. Adds newlines, sorts the dictionaries and
   aligns the key lengths.
 
@@ -532,6 +540,7 @@ def parse_test(test):
   test_lambda = PrettyLambda(lambda_code, test_exp)
   return test_names, test_exp, test_lambda
 
+
 def explain_fp(probe_dict, _known_tests):
   unknown_groups = [key for key in probe_dict if key not in _known_tests]
   if unknown_groups != []:
@@ -563,6 +572,7 @@ def explain_fp(probe_dict, _known_tests):
         value_explanation = "(no information)"
       print("\t%s (%s): %s" % (test_explanation[0], test, value_explanation))
 
+
 def load_fingerprints():
   fingerprints = []
   fp_db_file = 'nmap-os-db2'
@@ -576,7 +586,8 @@ def load_fingerprints():
     if line == '\n' or line == '':
     # we hit a newline or an EOF, consider than an end of a fingerprint entry
       if got_fp:
-        # make sure we collected all the known tests and register the fingerprint
+        # make sure we collected all the known tests
+        # and register the fingerprint
         assert(all(test in fp.probes for test in known_tests))
         fingerprints += [fp]
         fp = Fingerprint()
@@ -599,7 +610,8 @@ def load_fingerprints():
     # see if the line starts with a definition of any known test group
     elif any(line.startswith(k + "(") for k in known_tests):
       group_name, tests = line.split('(')
-      # make sure it's not a redefinition of a test group and the group is known
+      # make sure it's not a redefinition of a test group
+      # and the group is known
       assert(group_name not in fp.probes)
       assert(group_name in known_tests)
       fp.probes[group_name] = {}
@@ -639,7 +651,7 @@ if __name__ == "__main__":
   args = parser.parse_args()
   if not args.match and not args.explain:
     sys.exit("ERROR: %s: you need either --match or --explain to continue."
-      % sys.argv[0])
+             % sys.argv[0])
 
   if args.match:
     fingerprints, matchpoints, max_points = load_fingerprints()
@@ -650,8 +662,8 @@ if __name__ == "__main__":
     print_stderr("Please enter the fingerprint in Nmap format:")
 
   fp_known_tests = copy.copy(known_tests)
-  fp_known_tests['SCAN'] = ['V', 'E','D','OT','CT','CU',
-                            'PV','DS','DC','G','TM','P']
+  fp_known_tests['SCAN'] = ['V', 'E', 'D', 'OT', 'CT', 'CU',
+                            'PV', 'DS', 'DC', 'G', 'TM', 'P']
   fp = Fingerprint()
   for line in sys.stdin.xreadlines():
     if any(line.startswith(k + "(") for k in fp_known_tests):
