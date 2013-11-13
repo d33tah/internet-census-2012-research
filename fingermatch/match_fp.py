@@ -12,6 +12,7 @@ import sys
 import os
 import copy
 import datetime
+import re
 from fputils import print_stderr
 
 # A dictionary of tables with known tests. Any test not listed here is
@@ -86,6 +87,46 @@ def hextimestamp_to_date(hextimestamp):
   ret = datetime.datetime.fromtimestamp(int(hextimestamp, 16))
   return str(ret)
 
+def explain_option(option):
+  """Explain a single Nmap TCP option
+
+  Args:
+    option (str): the TCP option atom to be explained
+
+  Returns str
+  """
+  c = option[0]
+  ret = '<'
+
+  if c == 'L':
+    ret += 'End of Options'
+  elif c == 'N':
+    ret += 'No operation'
+  elif c == 'M':
+    ret += 'Maximum Segment Size'
+  elif c == 'W':
+    ret += 'Window Scale'
+  elif c == 'T':
+    ret += 'Timestamp'
+  elif c == 'S':
+    ret += 'Selective ACK permitted'
+
+  if len(option) > 1:
+    ret += ' [%s]' % option[1:]
+
+  return ret + '>'
+
+def explain_options(options):
+  """Explains Nmap TCP options syntax.
+
+  Args:
+    options (str): the TCP options string to be explained
+
+  Returns str
+  """
+  options_list = map(lambda x: explain_option(x), re.findall('([LNMWTS][0-9A-F]*)', options))
+  return ', '.join(options_list)
+
 seq__ti_ci_ii_expl = explain_with_dict({
   'Z':  'all zero',
   'RD': 'random - at least one increase by 20 000',
@@ -136,6 +177,14 @@ test_explanations = {
         'A': '1,000 Hz',
       }, default='binary logarithm of the average increments per second, '
                  'rounded to the nearest integer')],
+  }],
+  'OPS': ['TCP options', {
+    'O1': ['TCP options for packet 1', explain_options],
+    'O2': ['TCP options for packet 1', explain_options],
+    'O3': ['TCP options for packet 1', explain_options],
+    'O4': ['TCP options for packet 1', explain_options],
+    'O5': ['TCP options for packet 1', explain_options],
+    'O6': ['TCP options for packet 1', explain_options],
   }],
 }
 
