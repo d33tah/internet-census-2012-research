@@ -157,6 +157,12 @@ def explain_flags(flags):
     ret += ['Final']
   return ', '.join(ret)
 
+# The following explanations can be found either in Gordon "Fyodor" Lyon's book
+# titled "Nmap Network Scanning" (I totally recommend it) or in the chapter 8
+# here:
+#
+# http://nmap.org/book/toc.html
+
 seq__ti_ci_ii_expl = explain_with_dict({
   'Z': 'all zero',
   'RD': 'random - at least one increase by 20 000',
