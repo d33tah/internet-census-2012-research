@@ -10,13 +10,21 @@ If there is only one domain, it is displayed without truncation.
 import sys
 import collections
 
+if len(sys.argv) == 1:
+    slds_filename = "SLDs.csv"
+elif len(sys.argv) == 2:
+    slds_filename = sys.argv[1]
+else:
+    sys.exit("Usage: %s [path-to-SLDS.csv]\nThe argument can be skipped."
+             % sys.argv[0])
+
 domains = collections.defaultdict(int)
 raw_domains = []
 
 # get the SLDs.csv file from here:
 # https://raw.github.com/gavingmiller/second-level-domains/
 slds = []
-for sld_line in open("SLDs.csv").readlines():
+for sld_line in open(slds_filename).readlines():
   sld_columns = sld_line.split(',')
   slds += [sld_columns[1].rstrip('\r\n').lstrip('.')]
 
