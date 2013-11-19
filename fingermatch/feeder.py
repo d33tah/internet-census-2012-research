@@ -172,6 +172,8 @@ if __name__ == "__main__":
   max_threads = args_dict['threads']
   match_threshold = args_dict['match']
   add_args = args_dict['add_args']
+  if add_args is None:
+    add_args = '-l -r 3'
   wait_timeout = args_dict['wait_timeout']
   filename = args_dict['internet-census-file']
 
