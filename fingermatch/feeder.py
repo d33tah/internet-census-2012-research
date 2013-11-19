@@ -66,7 +66,9 @@ def process_line(line, p):
       print_stderr('Warning: %s' % error_output)
 
   stdout_lock.acquire()
-  print("%s\t%s\t%s" % (ip_column, timestamp_column, program_output))
+  print("%s\t%s\t%s\t%s" % (ip_column, timestamp_column,
+                            fingerprint_column.rstrip('\r\n'),
+                            program_output))
   stdout_lock.release()
 
 
