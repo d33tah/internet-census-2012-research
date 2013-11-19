@@ -9,36 +9,44 @@ If there is only one domain, it is displayed without truncation.
 
 import sys
 import collections
+import argparse
 
-if len(sys.argv) == 1:
-    slds_filename = "SLDs.csv"
-elif len(sys.argv) == 2:
-    slds_filename = sys.argv[1]
-else:
-    sys.exit("Usage: %s [path-to-SLDS.csv]\nThe argument can be skipped."
-             % sys.argv[0])
+parser = argparse.ArgumentParser()
 
-domains = collections.defaultdict(int)
+parser.add_argument('path-to-slds-file',
+                    help='Path to SLDs.csv file',
+                    default='SLDs.csv')
+
+parser.add_argument('--print-ips',
+                    help='Print the IP addresses for the domains',
+                    action='store_true')
+args = parser.parse_args()
+args_dict = vars(args)
+
+domains = collections.defaultdict(list)
 raw_domains = []
 
 # get the SLDs.csv file from here:
 # https://raw.github.com/gavingmiller/second-level-domains/
 slds = []
-for sld_line in open(slds_filename).readlines():
+for sld_line in open(args_dict['path-to-slds-file']).readlines():
   sld_columns = sld_line.split(',')
   slds += [sld_columns[1].rstrip('\r\n').lstrip('.')]
 
 for line in sys.stdin.readlines():
-  domain = line.rstrip('\n')
+  ip, domain = line.rstrip('\n').split()
   raw_domains += [domain]
   domain_short = domain.split('.')[-2:]
   key = '.'.join(domain_short)
   if key in slds:
     domain_short = domain.split('.')[-3:]
     key = '.'.join(domain_short)
-  domains[key] += 1
+  domains[key] += [ip]
 
-for k, v in reversed(sorted(domains.items(), key=lambda x: x[1])):
-  if v == 1:
+for k, v in reversed(sorted(domains.items(), key=lambda x: len(x[1]))):
+  if len(v) == 1:
     k = [domain for domain in raw_domains if domain.endswith(k)][0]
-  print("%s\t%s" % (v, k))
+  if args.print_ips:
+    print("%s\t%s\t%s" % (len(v), k, v))
+  else:
+    print("%s\t%s" % (len(v), k))
