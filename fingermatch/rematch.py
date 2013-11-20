@@ -52,6 +52,7 @@ cmd_args['ip'] = pipes.quote(columns[0])
 
 cmd = ("sudo nmap {ip} " +
        port_cmdline +
+       " -sSU"    # enable UDP scanning
        " -n"     # disable reverse DNS queries
        " -Pn"    # assume that the host is up
        " -O"     # enable OS fingerprinting
