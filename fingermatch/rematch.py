@@ -64,6 +64,13 @@ print_stderr("Will run %s" % cmd)
 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 xmlout = p.communicate()[0]  # read the Nmap XML output
 
+mktemp_cmd = "mktemp ~/scan-logs/%s-XXX.xml" % ip
+mktemp_process = subprocess.Popen(mktemp_cmd,
+                                  shell=True,
+                                  stdout=subprocess.PIPE)
+tmpfile = mktemp_process.communicate()[0].rstrip('\r\n')
+open(tmpfile, 'w').write(xmlout)
+
 # parse the XML output
 t = ET.fromstring(xmlout)
 assert(len(t.findall('./host')) == 1)  # make sure there's only one host
