@@ -34,7 +34,10 @@ for sld_line in open(args_dict['path-to-slds-file']).readlines():
   slds += [sld_columns[1].rstrip('\r\n').lstrip('.')]
 
 for line in sys.stdin.readlines():
-  ip, domain = line.rstrip('\n').split()
+  try:
+    ip, domain = line.rstrip('\n').split()
+  except:
+    sys.exit("Invalid line: %s" % line)
   raw_domains += [domain]
   domain_short = domain.split('.')[-2:]
   key = '.'.join(domain_short)
