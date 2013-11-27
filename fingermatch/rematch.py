@@ -47,8 +47,8 @@ else:
   print('\t'.join(columns + ['(NO PORTS TO SCAN)', '(NO PORTS TO SCAN)']))
   sys.exit()
 
-cmd_args['ip'] = pipes.quote(columns[0])
-
+ip = pipes.quote(columns[0])
+cmd_args['ip'] = ip
 
 cmd = ("sudo nmap {ip} " +
        port_cmdline +
