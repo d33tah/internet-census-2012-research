@@ -76,6 +76,7 @@ DESTDIR =
 
 TARGET = nmap
 FINGERMATCH = fingermatch/fingermatch
+SERVICEMATCH = servicematch/servicematch
 INSTALLNSE=@INSTALLNSE@
 BUILDZENMAP=@BUILDZENMAP@
 BUILDNDIFF=@BUILDNDIFF@
@@ -105,6 +106,8 @@ OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLooku
 
 FINGERMATCH_OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS) fingermatch/fingermatch.o fingermatch/fingerlib.o
 
+SERVICEMATCH_OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_scan.o MACLookup.o nmap_dns.o nmap_error.o nmap.o NmapOps.o NmapOutputTable.o nmap_tty.o osscan2.o osscan.o output.o payload.o portlist.o portreasons.o protocols.o scan_engine.o service_scan.o services.o TargetGroup.o Target.o targets.o tcpip.o timing.o traceroute.o utils.o xml.o $(NSE_OBJS) servicematch/servicematch.o
+
 # %.o : %.cc -- nope this is a GNU extension
 .cc.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
@@ -115,7 +118,7 @@ FINGERMATCH_OBJS = charpool.o FingerPrintResults.o FPEngine.o FPModel.o idle_sca
 FPModel.o: CXXFLAGS += -g0
 
 all: @LUA_BUILD@ @LIBLINEAR_BUILD@ @PCAP_BUILD@ @PCRE_BUILD@ @DNET_BUILD@ @NBASE_BUILD@ @NSOCK_BUILD@ @NCAT_BUILD@ @NMAP_UPDATE_BUILD@ netutil_build
-	$(MAKE) $(TARGET) $(FINGERMATCH) $(BUILDZENMAP) $(BUILDNDIFF) $(BUILDNPING)
+	$(MAKE) $(TARGET) $(FINGERMATCH) $(SERVICEMATCH) $(BUILDZENMAP) $(BUILDNDIFF) $(BUILDNPING)
 
 $(TARGET): @LUA_DEPENDS@ @LIBLINEAR_DEPENDS@ @PCAP_DEPENDS@ @PCRE_DEPENDS@ @DNET_DEPENDS@ $(NBASEDIR)/libnbase.a $(NSOCKDIR)/src/libnsock.a libnetutil/libnetutil.a $(OBJS)
 	@echo Compiling nmap
@@ -126,6 +129,11 @@ $(FINGERMATCH): @LUA_DEPENDS@ @LIBLINEAR_DEPENDS@ @PCAP_DEPENDS@ @PCRE_DEPENDS@ 
 	@echo Compiling fingermatch
 	rm -f $@
 	$(CXX) $(LDFLAGS) -o $@ $(FINGERMATCH_OBJS) $(LIBS)
+
+$(SERVICEMATCH): @LUA_DEPENDS@ @LIBLINEAR_DEPENDS@ @PCAP_DEPENDS@ @PCRE_DEPENDS@ @DNET_DEPENDS@ $(NBASEDIR)/libnbase.a $(NSOCKDIR)/src/libnsock.a libnetutil/libnetutil.a $(SERVICEMATCH_OBJS)
+	@echo Compiling fingermatch
+	rm -f $@
+	$(CXX) $(LDFLAGS) -o $@ $(SERVICEMATCH_OBJS) $(LIBS)
 
 build-%: %/Makefile
 	cd $* && $(MAKE)
@@ -253,6 +261,9 @@ debugclean:
 	rm -f *.gcov *.gcda *.gcno gmon.out
 fingermatch_clean:
 	rm -f $(FINGERMATCH_OBJS) $(FINGERMATCH)
+servicematch_clean:
+	rm -f $(SERVICEMATCH_OBJS) $(SERVICEMATCH)
+
 
 distclean: my_clean my_distclean @LUA_DIST_CLEAN@ @LIBLINEAR_DIST_CLEAN@ @PCAP_DIST_CLEAN@ @PCRE_DIST_CLEAN@ @DNET_DIST_CLEAN@ @NPING_DIST_CLEAN@ @ZENMAP_DIST_CLEAN@ @NCAT_DIST_CLEAN@ @NMAP_UPDATE_DIST_CLEAN@ nsock_dist_clean nbase_dist_clean netutil_dist_clean
 
