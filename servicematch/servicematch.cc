@@ -1,4 +1,3 @@
-
 /***************************************************************************
  * servicematch.cc -- A relatively simple utility for determining whether  *
  * a given Nmap service fingerprint matches (or comes close to any of the  *
@@ -29,7 +28,7 @@
  *   nmap-os-db or nmap-service-probes.                                    *
  * o Executes Nmap and parses the results (as opposed to typical shell or  *
  *   execution-menu apps, which simply display raw Nmap output and so are  *
- *   not derivative works.)                                                * 
+ *   not derivative works.)                                                *
  * o Integrates/includes/aggregates Nmap into a proprietary executable     *
  *   installer, such as those produced by InstallShield.                   *
  * o Links to a library or executes a program that does any of the above   *
@@ -104,7 +103,7 @@
 void usage() {
   printf("Usage: servicematch <fingerprintfilename>\n"
          "(You will be prompted for the fingerprint data)\n"
-	 "\n");
+         "\n");
   exit(1);
 }
 
@@ -230,7 +229,7 @@ int doMatch(AllProbes *AP, char *fprint, int fplen, char *ipaddystr) {
     // Lets find the next probe, if any
     currentprobe = strstr(p, "%r(");
   }
-  
+
   if (trunc) printf("WARNING:  At least one probe response was truncated\n");
   if (!found) printf("FAILED to match%s\n", ipaddystr);
 
@@ -291,38 +290,38 @@ int main(int argc, char *argv[]) {
     while(*p && isspace(*p)) p++;
     if (isInFP) {
       if (strncmp(p, "SF:", 3) == 0) {
-	p += 3;
-	assert(sizeof(fprint) > fplen + linelen + 1);
-	dst = fprint + fplen;
-	while(*p != '\r' && *p != '\n' && *p != ' ')
-	  *dst++ = *p++;
-	fplen = dst - fprint;
-	*dst++ = '\0';
+        p += 3;
+        assert(sizeof(fprint) > fplen + linelen + 1);
+        dst = fprint + fplen;
+        while(*p != '\r' && *p != '\n' && *p != ' ')
+          *dst++ = *p++;
+        fplen = dst - fprint;
+        *dst++ = '\0';
       } else {
-	fatal("Fingerprint incomplete ending on line #%d", lineno);
+        fatal("Fingerprint incomplete ending on line #%d", lineno);
       }
     }
 
     if (strncmp(p, "SF-Port", 7) == 0) {
-      if (isInFP) 
-	fatal("New service fingerprint started before the previous one was complete -- line %d", lineno);
+      if (isInFP)
+        fatal("New service fingerprint started before the previous one was complete -- line %d", lineno);
       assert(sizeof(fprint) > linelen + 1);
       dst = fprint;
       while(*p != '\r' && *p != '\n' && *p != ' ')
-	*dst++ = *p++;
+        *dst++ = *p++;
       fplen = dst - fprint;
       *dst++ = '\0';
       isInFP = true;
     } else if (strncmp(p, "Interesting port", 16) == 0) {
       q = line + linelen - 1;
       while(*q && (*q == ')' || *q == ':' || *q == '\n'|| *q == '.' || isdigit((int) (unsigned char) *q))) {
-	if (*q == ')' || *q == ':' || *q == '\n') *q = '\0';
-	q--;
+        if (*q == ')' || *q == ':' || *q == '\n') *q = '\0';
+        q--;
       }
       q++;
       assert(isdigit((int)(unsigned char) *q));
       if (inet_aton(q, &ip) != 0) {
-	snprintf(lastipbuf, sizeof(lastipbuf), " on %s", inet_ntoa(ip));
+        snprintf(lastipbuf, sizeof(lastipbuf), " on %s", inet_ntoa(ip));
       }
     }
 
