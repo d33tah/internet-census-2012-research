@@ -259,9 +259,9 @@ int cleanfp(char *fprint, int *fplen) {
 int main(int argc, char *argv[]) {
   AllProbes *AP = new AllProbes();
   char *probefile = NULL;
-  char fprint[16384];
   int fplen = 0; // Amount of chars in the current fprint
-  char line[512];
+  char line[51200];
+  char fprint[sizeof(line)*32];
   unsigned int linelen;
   char *dst = NULL;
   int lineno;
