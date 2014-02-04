@@ -55,6 +55,7 @@ def parse_line(line):
   found_regex = []
   while True:
     regex_type = f.read(1)
+    assert(regex_type in ['m', 'p', 'v', 'i', 'c', 'o', 'h', 'd'])
     if regex_type == "c":
       assert(f.read(3) == "pe:")
     if regex_type in found_regex:
