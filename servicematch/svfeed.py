@@ -60,8 +60,9 @@ def main():
         break
       fp_columns = fp_raw.split("\t")
       fp_reply_raw = fp_columns[3].rstrip('\r\n')
-      fp_reply = fp_reply_raw.replace('=', '\\x')
+      fp_reply = fp_reply_raw
       fp_reply = fp_reply.replace('\\', '\\x5c')
+      fp_reply = fp_reply.replace('=', '\\x')
       fp_reply = fp_reply.replace('"', '\\x22')
       fp_reply = fp_reply[:800]
       fp = '%s%d,"%s");' % (FP_START, len(fp_reply), fp_reply)
