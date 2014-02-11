@@ -232,6 +232,7 @@ int doMatch(AllProbes *AP, char *fprint, int fplen, char *ipaddystr) {
 
   if (trunc) printf("WARNING:  At least one probe response was truncated\n");
   if (!found) printf("FAILED to match%s\n", ipaddystr);
+  printf("DONE\n");
 
   return found ? 0 : 1;
 }
