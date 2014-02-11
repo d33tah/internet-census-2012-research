@@ -30,27 +30,16 @@ def process_line(p, line):
 
 def read_response(p):
   ret = []
-  # Skip over the WARNING about truncation.
-  while True:
-    line = p.stdout.readline().rstrip("\r\n")
-    if not line.startswith("WARNING"):
-      break
-  ret += process_line(p, line)
-
   # Now, read any remaining matches.
-  fd = p.stdout.fileno()
-  fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-  fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
   while True:
     try:
       line = p.stdout.readline().rstrip("\r\n")
+      print(line)
+      if line == "DONE":
+        break
       ret += process_line(p, line)
     except IOError:
       break
-  fd = p.stdout.fileno()
-  fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-  fcntl.fcntl(fd, fcntl.F_SETFL, fl & ~os.O_NONBLOCK)
-
   return ret
 
 def main():
