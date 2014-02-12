@@ -15,7 +15,6 @@ import socket
 import struct
 import sys
 import zlib
-import collections
 from StringIO import StringIO
 import md5
 
@@ -46,7 +45,6 @@ def run_pdb_hook(*args, **kwargs):
 
 
 def main():
-    sizes = collections.defaultdict(int)
     outfile = open(sys.argv[2], "w")
     onebyte_file = open("by-size/1", "w")
     #for line in sys.stdin:
@@ -58,7 +56,6 @@ def main():
         if fp:
             fp = decode_fp(fp)
             #fp = zlib.compress(fp, 9)
-            sizes[len(fp)] += 1
         fp_len = len(fp)
         if fp_len > 1:
             fp_md5 = md5.md5(fp).digest()
