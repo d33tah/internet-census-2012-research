@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/pypy
 
 """
 filter-domains.py - reads domain names from standard input and groups them by

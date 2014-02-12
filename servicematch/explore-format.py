@@ -17,6 +17,7 @@ import sys
 import zlib
 from StringIO import StringIO
 import md5
+import argparse
 
 
 def decode_fp(fp):
@@ -44,11 +45,11 @@ def run_pdb_hook(*args, **kwargs):
     pdb.pm()
 
 
-def main():
-    outfile = open(sys.argv[2], "w")
-    onebyte_file = open("by-size/1", "w")
+def main(infile, outfile):
+    outfile = open(outfile, "w")
+    onebyte_file = open("%s/1" % probe_dir, "w")
     #for line in sys.stdin:
-    for line in open(sys.argv[1]):
+    for line in open(infile):
         ip, timestamp, status, fp = line.split("\t")
         ip = socket.inet_aton(ip)
         timestamp = struct.pack("<I", int(timestamp))
@@ -73,5 +74,15 @@ def main():
             pass  # no fingerprint, do nothing for now
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--infile', required=True)
+    parser.add_argument('--outfile', required=True)
+    args = parser.parse_args()
+
+    dirname_split = args.dirname.split('-')
+    port_no = int(dirname_split[0])
+    probe_name = '-'.join(dirname_split[1:])
+
     sys.excepthook = run_pdb_hook
-    main()
+    main(args.infile, args.outfile)

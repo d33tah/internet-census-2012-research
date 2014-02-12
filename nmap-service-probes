@@ -5543,6 +5543,8 @@ match http m|^HTTP/1\.1 200 OK\r\n.*Server: Apache\r\n.*<title>VisualSVN Server<
 # APACHE
 match http m|^HTTP/1\.1 \d\d\d .*\r\nServer: Apache\r\nX-Powered-By: PHP/([\w._-]+)\r\n| p/Apache httpd/ i/PHP $1/ cpe:/a:apache:http_server/
 match http m|^HTTP/1\.[01].*?\r\nServer: Apache/(\d+\.\d+\.[-.\w]+) ([^\r\n]+)|s p/Apache httpd/ v/$1/ i/$2/ cpe:/a:apache:http_server:$1/
+match http m|^HTTP/1\.[01].*?\r\nServer: Apache/(\d+\.\d+\.[-.\w]+) ([^\r\n]+)|s p/Apache httpd/ v/$1/ i/$2/ cpe:/a:apache:http_server:$1/
+match http m|^HTTP/1\.[01].*?\r\nServer: Apache/(\d+\.\d+\.[-.\w]+) ([^\r\n]+)|s p/Apache httpd/ v/$1/ i/$2/ cpe:/a:apache:http_server:$1/
 match http m|^HTTP/1\.[01].*Server: Apache/([\d\.\w-]+)\s*\r?\n|s p/Apache httpd/ v/$1/ cpe:/a:apache:http_server:$1/
 match http m|^HTTP/1\.1 \d\d\d .*\r\nServer: Apache/(\d[-.\w]+)\r\n.*X-Powered-By: ([^\r\n]+)\r\n|s p/Apache httpd/ v/$1/ i/$2/ cpe:/a:apache:http_server:$1/
 match http m|^HTTP/1\.1 \d\d\d .*\r\nServer: Apache/(\d[-.\w]+)\r\n|s p/Apache httpd/ v/$1/ cpe:/a:apache:http_server:$1/

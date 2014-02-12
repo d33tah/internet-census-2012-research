@@ -9,7 +9,7 @@ import sys
 
 
 FP_START = "SF-Port110-TCP:V=6.40%I=7%D=1/20%Time=52DD2F2C%" \
-           "P=x86_64-redhat-linux-gnu%r(" + "GenericLines" +","
+           "P=x86_64-redhat-linux-gnu%r(" + "GetRequest" +","
 
 def process_line(p, line):
   ret = []
