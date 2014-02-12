@@ -139,13 +139,13 @@ def main(infile, outfile, port_no, probe_name):
     probe_dir = "%s-%s" % (port_no, probe_name)
     outfile = open(outfile, "w")
     onebyte_file = open("%s/1" % probe_dir, "w")
-    port_no_bin = struct.pack("<h", port_no)
+    port_no_bin = struct.pack(">h", port_no)
     probe_byte = chr(PROBE_NAMES.index(probe_name))
     #for line in sys.stdin:
     for line in open(infile):
         ip, timestamp, status, fp = line.split("\t")
         ip = socket.inet_aton(ip)
-        timestamp = struct.pack("<I", int(timestamp))
+        timestamp = struct.pack(">I", int(timestamp))
         status = chr(int(status))
         if fp:
             fp = decode_fp(fp)
