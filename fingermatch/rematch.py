@@ -59,6 +59,9 @@ cmd = ("sudo nmap {ip} " +
        " -vv"    # add extra verbosity
        " -oX -"  # output data in XML format to the standard output
                  # of the default Nmap format)
+       " --osscan-limit"    # only scan hosts with valid port
+       " --max-os-tries 1"  # try each host only once
+       " --max-retries 1"   # allow at most one retransmission per port
        ).format(**cmd_args)
 print_stderr("Will run %s" % cmd)
 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
