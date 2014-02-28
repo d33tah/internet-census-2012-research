@@ -55,20 +55,24 @@ BEGIN
         md5(\$6))
     ;
 
-BEGIN
-    INSERT INTO service_probe_fingerprint (
-      fingerprint_md5,
-      fingerprint
-    ) VALUES
-      (md5(\$6),
-        \$6
-      )
-    ;
+--Check if the value is in the index before adding it. Entering an
+--exception-handled block is too costly.
+IF (SELECT COUNT(*) FROM service_probe_fingerprint WHERE fingerprint_md5 = md5(\$6)) = 0 THEN
+  BEGIN
+      INSERT INTO service_probe_fingerprint (
+        fingerprint_md5,
+        fingerprint
+      ) VALUES
+        (md5(\$6),
+          \$6
+        )
+      ;
 
-EXCEPTION
-    WHEN unique_violation
-    THEN NULL;
-END;
+  EXCEPTION
+      WHEN unique_violation
+      THEN NULL;
+  END;
+END IF;
 END;
 \$body\$
 LANGUAGE plpgsql;
