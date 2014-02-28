@@ -56,6 +56,7 @@ BEGIN
         md5(\$6))
     ;
 
+BEGIN
     INSERT INTO service_probe_fingerprint (
       fingerprint_md5,
       fingerprint
@@ -68,6 +69,7 @@ BEGIN
 EXCEPTION
     WHEN unique_violation
     THEN NULL;
+END;
 END;
 \$body\$
 LANGUAGE plpgsql;
