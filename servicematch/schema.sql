@@ -96,4 +96,7 @@ SELECT * FROM service_probe;
 EXPLAIN ANALYZE SELECT * FROM service_probe WHERE ip='127.0.0.1';
 EXPLAIN ANALYZE SELECT * FROM service_probe WHERE fingerprint_md5=md5('=15=03=01=00=02=02=0A');
 
+TRUNCATE service_probe;
+TRUNCATE service_probe_fingerprint;
+
 END-OF-FILE
