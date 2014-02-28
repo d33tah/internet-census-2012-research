@@ -52,19 +52,19 @@ BEGIN
         abstime(\$4),
         \$5,
         \$6,
-        md5(\$6))
+        md5(\$7))
     ;
 
 --Check if the value is in the index before adding it. Entering an
 --exception-handled block is too costly.
-IF (SELECT COUNT(*) FROM service_probe_fingerprint WHERE fingerprint_md5 = md5(\$6)) = 0 THEN
+IF (SELECT COUNT(*) FROM service_probe_fingerprint WHERE fingerprint_md5 = md5(\$7)) = 0 THEN
   BEGIN
       INSERT INTO service_probe_fingerprint (
         fingerprint_md5,
         fingerprint
       ) VALUES
-        (md5(\$6),
-          \$6
+        (md5(\$7),
+          \$7
         )
       ;
 
