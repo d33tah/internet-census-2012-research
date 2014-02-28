@@ -81,7 +81,7 @@ SELECT insert_fingerprint(inet '111.4.115.13',
     'DNSVersionBindReq',
     '=15=03=01=00=02=02=0A');
 
-SELECT insert_fingerprint(inet '111.4.115.13',
+SELECT insert_fingerprint(inet '111.4.115.14',
     61613,
     1,
     1346809500,
