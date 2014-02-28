@@ -37,7 +37,6 @@ CREATE OR REPLACE FUNCTION insert_fingerprint(
 RETURNS void AS
 \$body\$
 BEGIN
-
     INSERT INTO service_probe (
       ip,
       portno,
