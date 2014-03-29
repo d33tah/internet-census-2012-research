@@ -34,15 +34,15 @@ INSERT_COLUMNS = ('service', 'product', 'version', 'info', 'cpe', 'os',
 FP_START = "SF-Port110-TCP:V=6.40%I=7%D=1/20%Time=52DD2F2C%" \
            "P=x86_64-redhat-linux-gnu%r"
 
-MATCH_PATTERN = ('^MATCHED [^ :]+?:(?P<lineno>\d+)' +
-                 '( \(FALLBACK: [^ ]+\))?' +
+MATCH_PATTERN = ('^MATCHED [^ :]+?:(?P<lineno>\\d+)' +
+                 '( \\(FALLBACK: [^ ]+\\))?' +
                  ' svc (?P<service>[^ ]+)' +
-                 '( p\|(?P<product>[^\|]+)\|)?' +
-                 '( v\|(?P<version>[^\|]+)\|)?' +
-                 '( i\|(?P<info>[^\|]+)\|)?' +
-                 '( h\|(?P<hostname>[^\|]+)\|)?' +
-                 '( o\|(?P<os>[^\|]+)\|)?' +
-                 '( d\|(?P<devicetype>[^\|]+)\|)?' +
+                 '( p\\|(?P<product>[^\\|]+)\\|)?' +
+                 '( v\\|(?P<version>[^\\|]+)\\|)?' +
+                 '( i\\|(?P<info>[^\\|]+)\\|)?' +
+                 '( h\\|(?P<hostname>[^\\|]+)\\|)?' +
+                 '( o\\|(?P<os>[^\\|]+)\\|)?' +
+                 '( d\\|(?P<devicetype>[^\\|]+)\\|)?' +
                  '( (?P<cpe>.*?))?$')
 
 
