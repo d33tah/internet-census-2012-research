@@ -89,6 +89,32 @@ def read_response(p):
     return ret
 
 
+def handle_record(record, p, insert_conn, insert_cur):
+    fp_reply = record[0]
+    fp_md5 = record[1]
+    probe_type = record[2]
+    fp_reply = fp_reply.replace('\\', '\\x5c')
+    fp_reply = fp_reply.replace('=', '\\x')
+    fp_reply = fp_reply.replace('"', '\\x22')
+    fp = FP_START + '%s(%s,%d,"%s");' % (FP_START, probe_type,
+                                         len(fp_reply), fp_reply)
+    p.stdin.write(fp)
+    p.stdin.write("\n\n")
+    p.stdin.flush()
+    ret = read_response(p)
+    if not ret:
+        # insert a NULL entry
+        insert_cur.execute("""INSERT INTO service_probe_match
+                            (fingerprint_md5)
+                            VALUES (%s)""", (fp_md5,))
+    else:
+        for match in ret:
+            insert_args = (fp_md5, ) + tuple(match[column]
+                                        for column in INSERT_COLUMNS)
+            insert_cur.execute(INSERT_QUERY, insert_args)
+    insert_conn.commit()
+
+
 def main():
     global select_conn, insert_conn, insert_cur, select_cur
 
@@ -123,30 +149,8 @@ def main():
             done_seconds = locale.format("%.2f", time.time() - t, 1)
             print_stderr("\tDone in %s seconds.\n" % done_seconds)
             first = False
-        fp_reply = record[0]
-        fp_md5 = record[1]
-        print(fp_md5)
-        probe_type = record[2]
-        fp_reply = fp_reply.replace('\\', '\\x5c')
-        fp_reply = fp_reply.replace('=', '\\x')
-        fp_reply = fp_reply.replace('"', '\\x22')
-        fp = FP_START + '%s(%s,%d,"%s");' % (FP_START, probe_type,
-                                             len(fp_reply), fp_reply)
-        p.stdin.write(fp)
-        p.stdin.write("\n\n")
-        p.stdin.flush()
-        ret = read_response(p)
-        if not ret:
-            # insert a NULL entry
-            insert_cur.execute("""INSERT INTO service_probe_match
-                                (fingerprint_md5)
-                                VALUES (%s)""", (fp_md5,))
-        else:
-            for match in ret:
-                insert_args = (fp_md5, ) + tuple(match[column]
-                                            for column in INSERT_COLUMNS)
-                insert_cur.execute(INSERT_QUERY, insert_args)
-        insert_conn.commit()
+        print(record[2])
+        handle_record(record, p, insert_conn, insert_cur)
 
 try:
     main()
