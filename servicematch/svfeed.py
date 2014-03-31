@@ -130,7 +130,7 @@ def main():
         fp_reply = fp_reply.replace('\\', '\\x5c')
         fp_reply = fp_reply.replace('=', '\\x')
         fp_reply = fp_reply.replace('"', '\\x22')
-        fp = FP_START + '%s(%s,%d,"%s");' % (FP_START, probe_type,
+        fp = FP_START + '%s(%s,%d,"%s");' % tuple(FP_START, probe_type,
                                              len(fp_reply), fp_reply)
         p.stdin.write(fp)
         p.stdin.write("\n\n")
