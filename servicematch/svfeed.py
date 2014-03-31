@@ -130,7 +130,7 @@ def main():
         fp_reply = fp_reply.replace('\\', '\\x5c')
         fp_reply = fp_reply.replace('=', '\\x')
         fp_reply = fp_reply.replace('"', '\\x22')
-        fp = FP_START + '%s(%s,%d,"%s");' % tuple(FP_START, probe_type,
+        fp = FP_START + '%s(%s,%d,"%s");' % (FP_START, probe_type,
                                              len(fp_reply), fp_reply)
         p.stdin.write(fp)
         p.stdin.write("\n\n")
@@ -143,7 +143,7 @@ def main():
                                 VALUES (%s)""", (fp_md5,))
         else:
             for match in ret:
-                insert_args = (fp_md5, ) + (match[column]
+                insert_args = (fp_md5, ) + tuple(match[column]
                                             for column in INSERT_COLUMNS)
                 insert_cur.execute(INSERT_QUERY, insert_args)
         insert_conn.commit()
