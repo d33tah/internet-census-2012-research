@@ -107,8 +107,15 @@ void usage() {
   exit(1);
 }
 
+//see portlist.cc.
+char *cstringSanityCheck(const char* string, int len);
 
-
+int print_sanitized(const char* format, const char* arg1, int len) {
+    char* sanitized = cstringSanityCheck(arg1, len);
+    int ret = printf(format, sanitized);
+    free(sanitized);
+    return ret;
+}
 
 char *fallback_depth_translate(ServiceProbe *SP, int fallbackDepth) {
   char buf[1024];
@@ -202,15 +209,18 @@ int doMatch(AllProbes *AP, char *fprint, int fplen, char *ipaddystr) {
             found = true;
             if (MD->product || MD->version || MD->info || MD->hostname || MD->ostype || MD->devicetype) {
               printf("MATCHED %s:%d %ssvc %s", probename, MD->lineno, fallback_depth_translate(SP, fallbackDepth), MD->serviceName);
-              if (MD->product) printf(" p|%s|", MD->product);
-              if (MD->version) printf(" v|%s|", MD->version);
-              if (MD->info) printf(" i|%s|", MD->info);
-              if (MD->hostname) printf(" h|%s|", MD->hostname);
-              if (MD->ostype) printf(" o|%s|", MD->ostype);
-              if (MD->devicetype) printf(" d|%s|", MD->devicetype);
-              if (MD->cpe_a) printf(" %s", MD->cpe_a);
-              if (MD->cpe_h) printf(" %s", MD->cpe_h);
-              if (MD->cpe_o) printf(" %s", MD->cpe_o);
+
+              if (MD->product) print_sanitized(" p|%s|", MD->product, 80);
+              if (MD->version) print_sanitized(" v|%s|", MD->version, 80);
+              if (MD->info) print_sanitized(" i|%s|", MD->info, 256);
+              if (MD->hostname) print_sanitized(" h|%s|", MD->hostname, 80);
+              if (MD->ostype) print_sanitized(" o|%s|", MD->ostype, 32);
+              if (MD->devicetype) print_sanitized(" d|%s|", MD->devicetype, 32);
+
+              if (MD->cpe_a) print_sanitized(" %s", MD->cpe_a, 80);
+              if (MD->cpe_h) print_sanitized(" %s", MD->cpe_h, 80);
+              if (MD->cpe_o) print_sanitized(" %s", MD->cpe_o, 80);
+
               printf(" %s\n", ipaddystr);
             } else
               printf("MATCHED %s:%d %ssvc %s (NO VERSION)%s\n", probename, MD->lineno, fallback_depth_translate(SP, fallbackDepth), MD->serviceName, ipaddystr);
