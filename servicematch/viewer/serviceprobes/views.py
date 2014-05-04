@@ -17,21 +17,32 @@ def default_process(k):
         k[i] = escape(k[i])
     return k
 
-def show_query(sql, args, process=default_process, process_columns=lambda x: x):
+def show_query(sql, args, process=default_process,
+               process_columns=lambda x: x, horizontal=True):
     conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(sql, args)
     ret = ""
     if cur.rowcount != -1:
         ret += "<h1>Got %s rows" % cur.rowcount
-    ret += "<table border=1><tr>\n"
-    for k in process_columns(cur.description):
-        ret += ("<th>" + k[0] + "</th>")
-    ret += "</tr>"
+    columns = process_columns(cur.description)
+    if horizontal:
+        ret += "<table border=1><tr>\n"
+        for k in columns:
+            ret += ("<th>" + k[0] + "</th>")
+        ret += "</tr>"
     for k in cur:
         k = process(k)
-        ret += "<tr><td>" + "</td><td>".join(k) + "</tr>\n"
-    ret += '</table>'
+        if horizontal:
+            ret += "<tr><td>" + "</td><td>".join(k) + "</tr>\n"
+        else:
+            ret += '<table>'
+            for i in range(len(columns)):
+                ret += "<tr><th>%s</th><td>%s</td></tr>" % (columns[i][0],
+                                                            k[i])
+            ret += '</table>'
+    if horizontal:
+        ret += '</table>'
     return ret
 
 def show_ip(request):
