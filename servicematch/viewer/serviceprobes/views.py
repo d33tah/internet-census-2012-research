@@ -90,5 +90,7 @@ def show_fp(request):
     fp = request.GET['fp']
 
     ret = "<form action='show_fp'><input name='fp' /></form>"
-    ret += show_query("SELECT DISTINCT * FROM service_probe_match WHERE fingerprint_md5=%s", (fp,))
+    ret += show_query("""SELECT DISTINCT *
+                         FROM service_probe_match
+                         WHERE fingerprint_md5=%s""", (fp,))
     return HttpResponse(ret)
