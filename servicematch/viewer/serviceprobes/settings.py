@@ -1,5 +1,7 @@
 # Django settings for serviceprobes project.
 
+import os
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -107,6 +109,7 @@ ROOT_URLCONF = 'serviceprobes.urls'
 WSGI_APPLICATION = 'serviceprobes.wsgi.application'
 
 TEMPLATE_DIRS = (
+    os.path.abspath('./templates'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

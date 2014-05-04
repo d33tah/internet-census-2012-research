@@ -1,0 +1,40 @@
+{% include "header.html" %}
+{% load dictionary_extras %}
+
+<form action='show_ip'>
+  <label>Enter IP (optionally, with a CIDR): </label>
+  <input name='ip' value="{{ip}}"/>
+</form>
+
+{% if rows|length != 1 %}
+  <h1>Got {{ rows|length }} rows</h1>
+{% else %}
+  <h1>Got 1 row</h1>
+{% endif %}
+<table>
+<tr>
+<th>rdns</th>
+<th>ip</th>
+<th>portno</th>
+<!--
+<th>time_taken</th>
+<th>probe</th>
+--!>
+<th>fingerprint</th>
+<th>product</th>
+</tr>
+{% for row in rows %}
+  <tr>
+    <td>{{ row.rdns }}</td>
+    <td>{{ row.ip }}</td>
+    <td>{{ row.portno }}</td>
+<!--
+    <td>{{ row.time_taken }}</td>
+    <td>{{ row.probe }}</td>
+--!>
+    <td>{{ row.fingerprint }}</td>
+    <td><a href="/show_fp?fp={{ row.fingerprint_md5|hexed }}">{{ row.product }}</a></tr>
+  </tr>
+{% endfor %}
+</table>
+{% include "footer.html" %}
