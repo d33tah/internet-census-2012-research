@@ -31,6 +31,7 @@ def show_query(sql, args, process=default_process, process_columns=lambda x: x):
     for k in cur:
         k = process(k)
         ret += "<tr><td>" + "</td><td>".join(k) + "</tr>\n"
+    ret += '</table>'
     return ret
 
 def show_ip(request):
