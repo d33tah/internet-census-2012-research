@@ -22,19 +22,40 @@
       <th>portno</th>
       <td>{{ row.portno }}/{% if row.is_tcp %}TCP {% else %}UDP{% endif %}</td>
     </tr>
-    <tr><th>time_taken</th> <td>{{ row.time_taken }}</td></tr>
-    <tr><th>probe</th><td>{{ row.probe }}</td></tr>
 
     <tr>
-      <th>product</th>
+      <th rowspan="{{ row.times_taken|length }}">time_taken</th>
+      {% for time_taken in row.times_taken %}
+      {% if not forloop.first %}
+      <tr>
+      {% endif %}
+      <td>{{ time_taken }}</td></tr>
+      {% endfor %}
+
+    <tr>
+      <th rowspan="{{ row.probes|length }}">probe</th>
+      {% for probe in row.probes %}
+      {% if not forloop.first %}
+      <tr>
+      {% endif %}
+      <td>{{ probe }}</td></tr>
+      {% endfor %}
+
+    <tr>
+      <th rowspan="{{ row.products|length }}">product</th>
+      {% for product in row.products %}
+      {% if not forloop.first %}
+      <tr>
+      {% endif %}
       <td>
       {% if row.product %}
-        <a href="/show_fp?fp={{ row.fingerprint_md5 }}">{{ row.product }}</a>
+        <a href="/show_fp?fp={{ row.fingerprint_md5 }}">{{ product.product }}</a>
       {% else %}
         (unknown)
       {% endif %}
-      </td>
-    </tr>
+      </td></tr>
+      {% endfor %}
+
 
     <tr>
       <th>pcap</th>
@@ -52,7 +73,6 @@
       </td>
     </tr>
 
-  </tr>
 </table>
 {% endfor %}
 {% include "footer.html" %}
