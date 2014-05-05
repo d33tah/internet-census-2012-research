@@ -32,7 +32,7 @@
   <tr>
     <td>{{ row.rdns }}</td>
     <td><a href="/one_ip?ip={{ row.ip }}">{{ row.ip }}</a></td>
-    <td>{{ row.portno }}</td>
+    <td>{{ row.portno }}/{% if row.is_tcp %}TCP {% else %}UDP{% endif %}</td>
 <!--
     <td>{{ row.time_taken }}</td>
     <td>{{ row.probe }}</td>

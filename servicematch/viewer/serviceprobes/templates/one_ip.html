@@ -18,7 +18,10 @@
 {% for row in rows %}
 <table>
 
-    <tr><th>portno</th><td>{{ row.portno }}</td></tr>
+    <tr>
+      <th>portno</th>
+      <td>{{ row.portno }}/{% if row.is_tcp %}TCP {% else %}UDP{% endif %}</td>
+    </tr>
     <tr><th>time_taken</th> <td>{{ row.time_taken }}</td></tr>
     <tr><th>probe</th><td>{{ row.probe }}</td></tr>
 

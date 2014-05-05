@@ -42,7 +42,7 @@ def show_ip(request):
 
     conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn,
-                     """SELECT DISTINCT r.rdns, s.ip, s.portno,
+                     """SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
                           encode(s.fingerprint_md5, 'hex') fingerprint_md5,
                           s.fingerprint, (
                              SELECT product
