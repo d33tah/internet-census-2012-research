@@ -23,6 +23,7 @@
 <th>probe</th>
 --!>
 <th>product</th>
+<th>pcap</th>
 <th>fingerprint</th>
 </tr>
 {% for row in rows %}
@@ -40,6 +41,9 @@
     {% else %}
       (unknown)
     {% endif %}
+    </td>
+    <td>
+      <a href="/get_pcap?fp={{ row.fingerprint_md5 }}">DOWNLOAD</a>
     </td>
     <td class="fingerprint">
     {% if row.fingerprint|isbinary %}
