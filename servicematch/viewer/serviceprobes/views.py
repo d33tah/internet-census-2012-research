@@ -39,7 +39,8 @@ def show_ip(request):
     end_ip = iptools.ipv4.long2ip(iprange.endIp)
 
     rows = run_query("""SELECT DISTINCT r.rdns, s.ip, s.portno,
-                                        s.fingerprint_md5, s.fingerprint, (
+                          encode(s.fingerprint_md5, 'hex') fingerprint_md5,
+                          s.fingerprint, (
                              SELECT product
                              FROM service_probe_match m
                              WHERE m.fingerprint_md5=s.fingerprint_md5
@@ -54,6 +55,6 @@ def show_ip(request):
 def show_fp(request):
     fp = request.GET['fp']
     rows = run_query("""SELECT DISTINCT *
-                                 FROM service_probe_match
-                                 WHERE fingerprint_md5=%s""", (fp,))
+                        FROM service_probe_match
+                        WHERE fingerprint_md5=decode(%s, 'hex')""", (fp,))
     return render(request, 'show_fp.html', {'rows': rows, 'fp': fp})
