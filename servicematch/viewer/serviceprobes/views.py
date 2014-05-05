@@ -27,12 +27,14 @@ def run_query(sql, args):
 
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html',
+                  {'title': 'Service Fingerprint Viewer'})
 
 
 def show_ip(request):
 
     ip = request.GET['ip']
+    title = 'Details about IP range %s' % ip
     iprange = iptools.IpRange(ip)
     if len(iprange) > 256**2:
         return HttpResponse("Sorry, IP range too big.")
@@ -50,15 +52,20 @@ def show_ip(request):
                          JOIN rdns2 r ON s.ip=r.ip
                          WHERE s.ip>=%s AND s.ip<=%s""", (start_ip, end_ip))
 
-    return render(request, 'show_ip.html', {'rows': rows, 'ip': ip})
+    return render(request, 'show_ip.html', {'rows': rows,
+                                            'ip': ip,
+                                            'title': title})
 
 
 def show_fp(request):
     fp = request.GET['fp']
+    title = 'Details about fingerprint ID %s' % fp
     rows = run_query("""SELECT DISTINCT *
                         FROM service_probe_match
                         WHERE fingerprint_md5=decode(%s, 'hex')""", (fp,))
-    return render(request, 'show_fp.html', {'rows': rows, 'fp': fp})
+    return render(request, 'show_fp.html', {'rows': rows,
+                                            'fp': fp,
+                                            'title': title})
 
 def get_pcap(request):
     fp = request.GET['fp']
