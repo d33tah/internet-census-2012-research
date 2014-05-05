@@ -1,5 +1,7 @@
 {% include "header.html" %}
 {% load hexed %}
+{% load hexdump %}
+{% load isbinary %}
 
 <form action='show_ip'>
   <label>Enter IP (optionally, with a CIDR): </label>
@@ -32,8 +34,21 @@
     <td>{{ row.time_taken }}</td>
     <td>{{ row.probe }}</td>
 --!>
-    <td>{{ row.fingerprint }}</td>
-    <td><a href="/show_fp?fp={{ row.fingerprint_md5|hexed }}">{{ row.product }}</a></tr>
+    <td>
+    {% if row.product %}
+      <a href="/show_fp?fp={{ row.fingerprint_md5 }}">{{ row.product }}</a>
+    {% else %}
+      (unknown)
+    {% endif %}
+    </td>
+    <td class="fingerprint">
+    {% if row.fingerprint|isbinary %}
+      <pre>{{ row.fingerprint|hexdump }}</pre>
+    {% else %}
+      {{ row.fingerprint|linebreaks }}
+    {% endif %}
+    </td>
+    </tr>
   </tr>
 {% endfor %}
 </table>
