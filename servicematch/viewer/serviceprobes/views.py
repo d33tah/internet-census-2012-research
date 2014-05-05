@@ -58,6 +58,34 @@ def show_ip(request):
                                             'title': title})
 
 
+def one_ip(request):
+
+    ip = request.GET['ip']
+    title = 'Details about IP address %s' % ip
+
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn,
+                     """SELECT s.*,
+                          encode(s.fingerprint_md5, 'hex') fingerprint_md5,
+                          s.fingerprint, (
+                             SELECT product
+                             FROM service_probe_match m
+                             WHERE m.fingerprint_md5=s.fingerprint_md5
+                             LIMIT 1)
+                         FROM service_probe s
+                         WHERE s.ip=%s""", (ip,))
+
+    rdns_rows = run_query(conn, "SELECT r.rdns FROM rdns2 r WHERE r.ip=%s",
+                          (ip,))
+    if len(rdns_rows) > 0:
+        rdns = rdns_rows[0]['rdns']
+        title += ' (%s)' % rdns
+
+    return render(request, 'one_ip.html', {'rows': rows,
+                                            'ip': ip,
+                                            'title': title})
+
+
 def show_fp(request):
     fp = request.GET['fp']
     title = 'Details about fingerprint ID %s' % fp
@@ -74,7 +102,8 @@ def show_fp(request):
     return render(request, 'show_fp.html', {'rows': rows,
                                             'fp': fp,
                                             'title': title,
-                                            'fingerprint': fingerprint})
+                                            'fingerprint': fingerprint,
+                                            'fingerprint_md5': fp})
 
 def get_pcap(request):
     fp = request.GET['fp']
