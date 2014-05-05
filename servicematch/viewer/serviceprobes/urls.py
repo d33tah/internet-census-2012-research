@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^$', 'serviceprobes.views.index', name='index'),
     url(r'^show_ip$', 'serviceprobes.views.show_ip', name='show_ip'),
     url(r'^show_fp$', 'serviceprobes.views.show_fp', name='show_fp'),
+    url(r'^get_pcap$', 'serviceprobes.views.get_pcap', name='get_pcap'),
     # url(r'^serviceprobes/', include('serviceprobes.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

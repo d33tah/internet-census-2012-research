@@ -1,3 +1,4 @@
+import subprocess
 from django.http import HttpResponse
 from django.shortcuts import render
 import psycopg2
@@ -58,3 +59,24 @@ def show_fp(request):
                         FROM service_probe_match
                         WHERE fingerprint_md5=decode(%s, 'hex')""", (fp,))
     return render(request, 'show_fp.html', {'rows': rows, 'fp': fp})
+
+def get_pcap(request):
+    fp = request.GET['fp']
+    rows = run_query("""SELECT fingerprint, portno
+                        FROM service_probe
+                        WHERE fingerprint_md5=decode(%s, 'hex')
+                        LIMIT 1""", (fp,))
+
+    port = rows[0]['portno']
+    buf = str(rows[0]['fingerprint'])
+
+    p = subprocess.Popen("hexdump -C | text2pcap -T %d,%d - -" % (port, port),
+                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                         shell=True)
+    p.stdin.write(buf)
+    p.stdin.flush()
+    p.stdin.close()
+
+    ret = HttpResponse(p.stdout.read(), content_type='application/cap')
+    ret['Content-disposition'] = 'attachment; filename="%s.pcap"' % fp
+    return ret
