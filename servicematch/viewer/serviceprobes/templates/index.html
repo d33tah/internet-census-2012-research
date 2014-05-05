@@ -1,3 +1,22 @@
 {% include "header.html" %}
-This is index. TODO: make it nicer.
+
+<h1>Welcome to Internet Census 2012 Service Fingerprint Viewer!</h1>
+
+<p>This website allows you to explore Internet Census 2012 service
+fingerprinting data. To learn more about Internet Census 2012, click
+<a href="http://internetcensus2012.bitbucket.org/paper.html">here</a>.</p>
+
+<h2>Here are some sample queries:</h2>
+
+<ul>
+  <li>
+      <a href="/show_ip?ip=195.251.230.96%2F27">Show all fingerprints for
+      IP range 195.251.230.96/27</a>
+  </li>
+  <li>
+      <a href="/show_fp?fp=7107dcefa8da9ce65572a89fa65e2e51">List details
+      about fingerprint identified by MD5 hash
+      \x7107dcefa8da9ce65572a89fa65e2e51</a>
+  </li>
+</ul>
 {% include "footer.html" %}
