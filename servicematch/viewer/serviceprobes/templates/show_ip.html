@@ -8,10 +8,12 @@
   <input name='ip' value="{{ip}}"/>
 </form>
 
+<h1>{{title}}</h1>
+
 {% if rows|length != 1 %}
-  <h1>Got {{ rows|length }} rows</h1>
+  <h2>Got {{ rows|length }} rows</h2>
 {% else %}
-  <h1>Got 1 row</h1>
+  <h2>Got 1 row</h2>
 {% endif %}
 <table>
 <tr>

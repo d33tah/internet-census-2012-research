@@ -6,11 +6,10 @@ import psycopg2.extras
 import iptools
 
 
-def run_query(sql, args):
+def run_query(conn, sql, args):
 
     ret = []
 
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(sql, args)
 
@@ -41,7 +40,9 @@ def show_ip(request):
     start_ip = iptools.ipv4.long2ip(iprange.startIp)
     end_ip = iptools.ipv4.long2ip(iprange.endIp)
 
-    rows = run_query("""SELECT DISTINCT r.rdns, s.ip, s.portno,
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn,
+                     """SELECT DISTINCT r.rdns, s.ip, s.portno,
                           encode(s.fingerprint_md5, 'hex') fingerprint_md5,
                           s.fingerprint, (
                              SELECT product
@@ -60,16 +61,26 @@ def show_ip(request):
 def show_fp(request):
     fp = request.GET['fp']
     title = 'Details about fingerprint ID %s' % fp
-    rows = run_query("""SELECT DISTINCT *
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn,
+                     """SELECT DISTINCT *
                         FROM service_probe_match
                         WHERE fingerprint_md5=decode(%s, 'hex')""", (fp,))
+    fingerprint_rows = run_query(conn,
+                     """SELECT fingerprint from service_probe
+                        WHERE fingerprint_md5=decode(%s, 'hex')
+                        LIMIT 1""", (fp,))
+    fingerprint = fingerprint_rows[0]['fingerprint']
     return render(request, 'show_fp.html', {'rows': rows,
                                             'fp': fp,
-                                            'title': title})
+                                            'title': title,
+                                            'fingerprint': fingerprint})
 
 def get_pcap(request):
     fp = request.GET['fp']
-    rows = run_query("""SELECT fingerprint, portno
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn,
+                     """SELECT fingerprint, portno
                         FROM service_probe
                         WHERE fingerprint_md5=decode(%s, 'hex')
                         LIMIT 1""", (fp,))

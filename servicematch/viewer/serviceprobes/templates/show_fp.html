@@ -1,16 +1,30 @@
 {% include "header.html" %}
 {% load hexed %}
+{% load hexdump %}
+{% load isbinary %}
 
 <form action='show_fp'>
   <label>Enter fingerprint ID: </label>
   <input name='fp' value="{{fp}}" size="40"/>
 </form>
 
+
+<h1>{{title}}</h1>
+
+<h2 id="h2_toc">Table of contents</h2>
+<ul>
+<li><a href="#h2_matches">Matches</a></li>
+<li><a href="#h2_contents">Fingerprint contents</a></li>
+</ul>
+
+<h2 id="h2_matches">
 {% if rows|length != 1 %}
-  <h1>Got {{ rows|length }} rows</h1>
+  Matches - got {{ rows|length }} rows
 {% else %}
-  <h1>Got 1 row</h1>
+  Got 1 match
 {% endif %}
+(<a href="#h2_toc">up</a>)</h2>
+
 <table>
 <tr>
   <th>fingerprint_md5</th>
@@ -37,4 +51,15 @@
   <th>
 {% endfor %}
 </table>
+
+<h2 id="h2_contents">Fingerprint contents (<a href="#h2_toc">up</a>)</h2>
+<blockquote class="fingerprint">
+{% if fingerprint|isbinary %}
+  <pre>{{ fingerprint|hexdump }}</pre>
+{% else %}
+  {{ fingerprint|linebreaks }}
+{% endif %}
+</blockquote>
+
+<p>(<a href="#h2_toc">back to table of contents</a>)</p>
 {% include "footer.html" %}
