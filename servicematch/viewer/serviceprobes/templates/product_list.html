@@ -1,0 +1,27 @@
+{% include "header.html" %}
+{% load hexed %}
+{% load hexdump %}
+{% load isbinary %}
+
+<h1>{{title}}</h1>
+
+{% if rows|length != 1 %}
+  <h2>Got {{ rows|length }} rows</h2>
+{% else %}
+  <h2>Got 1 row</h2>
+{% endif %}
+<table>
+<tr>
+<th>product</th>
+<th>sld_count</th>
+<th>sum</th>
+</tr>
+{% for row in rows %}
+  <tr>
+    <td><a href="/view_product?product={{ row.product|urlencode }}">{{ row.product }}</a></td>
+    <td>{{ row.sld_count }}</td>
+    <td>{{ row.sum }}</td>
+  </tr>
+{% endfor %}
+</table>
+{% include "footer.html" %}

@@ -6,7 +6,7 @@ import psycopg2.extras
 import iptools
 
 
-def run_query(conn, sql, args):
+def run_query(conn, sql, args=()):
 
     ret = []
 
@@ -149,3 +149,21 @@ def get_pcap(request):
     ret = HttpResponse(p.stdout.read(), content_type='application/cap')
     ret['Content-disposition'] = 'attachment; filename="%s.pcap"' % fp
     return ret
+
+def product_list(request):
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn, "SELECT * FROM product_rdns_aggregate")
+    return render(request, 'product_list.html', {'rows': rows,
+                                                 'title': 'Products list'})
+
+def view_product(request):
+    product = request.GET['product']
+    title = '"%s" - product details' % product
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn,
+                     """SELECT * FROM product_rdns_count
+                        WHERE product=%s
+                        ORDER BY count DESC""",
+                     (product, ))
+    return render(request, 'view_product.html', {'rows': rows,
+                                                 'title': title})
