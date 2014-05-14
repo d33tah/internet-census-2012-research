@@ -117,9 +117,9 @@ def show_fp(request):
                         FROM service_probe_match
                         WHERE fingerprint_md5=decode(%s, 'hex')""", (fp,))
     fingerprint_rows = run_query(conn,
-                     """SELECT fingerprint from service_probe
-                        WHERE fingerprint_md5=decode(%s, 'hex')
-                        LIMIT 1""", (fp,))
+                                 """SELECT fingerprint from service_probe
+                                    WHERE fingerprint_md5=decode(%s, 'hex')
+                                    LIMIT 1""", (fp,))
     fingerprint = fingerprint_rows[0]['fingerprint']
     return render(request, 'show_fp.html', {'rows': rows,
                                             'fp': fp,
