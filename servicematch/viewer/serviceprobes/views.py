@@ -11,6 +11,8 @@ def run_query(conn, sql, args=()):
     ret = []
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("SET enable_seqscan = off")
+    cur.execute("SET enable_indexscan = off")
     cur.execute(sql, args)
 
     columns = []
@@ -166,4 +168,30 @@ def view_product(request):
                         ORDER BY count DESC""",
                      (product, ))
     return render(request, 'view_product.html', {'rows': rows,
+                                                 'product': product,
                                                  'title': title})
+
+def show_sld(request):
+
+    sld = request.GET['sld']
+    product = request.GET['product']
+    title = 'Details about SLD %s' % sld
+
+    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
+    rows = run_query(conn,
+                     """SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
+                          encode(s.fingerprint_md5, 'hex') fingerprint_md5,
+                          s.fingerprint, (
+                             SELECT product
+                             FROM service_probe_match m
+                             WHERE m.fingerprint_md5=s.fingerprint_md5
+                             LIMIT 1)
+                         FROM service_probe s
+                         JOIN service_probe_match m
+                             ON m.fingerprint_md5=s.fingerprint_md5
+                         JOIN rdns2 r ON s.ip=r.ip
+                         WHERE r.sld=%s AND m.product=%s""", (sld, product))
+
+    return render(request, 'show_ip.html', {'rows': rows,
+                                            'ip': '',
+                                            'title': title})

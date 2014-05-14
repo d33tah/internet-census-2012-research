@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'serviceprobes.views.index', name='index'),
     url(r'^show_ip$', 'serviceprobes.views.show_ip', name='show_ip'),
+    url(r'^show_sld$', 'serviceprobes.views.show_sld', name='show_sld'),
     url(r'^one_ip$', 'serviceprobes.views.one_ip', name='one_ip'),
     url(r'^show_fp$', 'serviceprobes.views.show_fp', name='show_fp'),
     url(r'^get_pcap$', 'serviceprobes.views.get_pcap', name='get_pcap'),
