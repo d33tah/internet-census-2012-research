@@ -546,7 +546,7 @@ def parse_test(test):
 
 
 def explain_fp(probe_dict, _known_tests):
-  """Print an explaantion of a given fingerprint to the standard output.
+  """Print an explantion of a given fingerprint to the standard output.
 
   Args:
     probe_dict (dict): a dictionary with the tests result
