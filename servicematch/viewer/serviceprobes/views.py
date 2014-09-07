@@ -26,6 +26,12 @@ def run_query(conn, sql, args=()):
         ret += [row_dict]
     return ret
 
+def do_hexdump(buf):
+    p = subprocess.Popen(["hexdump", "-C"], stdin=subprocess.PIPE,
+                                            stdout=subprocess.PIPE)
+    p.stdin.write(buf)
+    p.stdin.close()
+    return p.stdout.read()
 
 def index(request):
     return render(request, 'index.html',
@@ -141,11 +147,10 @@ def get_pcap(request):
     port = rows[0]['portno']
     buf = str(rows[0]['fingerprint'])
 
-    p = subprocess.Popen("hexdump -C | text2pcap -T %d,%d - -" % (port, port),
-                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                         shell=True)
-    p.stdin.write(buf)
-    p.stdin.flush()
+    p = subprocess.Popen(["text2pcap", "-T", "%d,%d" % (port, port), "-", "-",
+                          "-q"],
+                         stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.stdin.write(do_hexdump(buf))
     p.stdin.close()
 
     ret = HttpResponse(p.stdout.read(), content_type='application/cap')
