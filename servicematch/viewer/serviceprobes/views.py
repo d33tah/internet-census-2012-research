@@ -48,7 +48,6 @@ def show_ip(request):
     start_ip = iptools.ipv4.long2ip(iprange.startIp)
     end_ip = iptools.ipv4.long2ip(iprange.endIp)
 
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn,
                      """SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
                           encode(s.fingerprint_md5, 'hex') fingerprint_md5,
@@ -162,7 +161,6 @@ def product_list(request):
 def view_product(request):
     product = request.GET['product']
     title = '"%s" - product details' % product
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn,
                      """SELECT * FROM product_rdns_count
                         WHERE product=%s
