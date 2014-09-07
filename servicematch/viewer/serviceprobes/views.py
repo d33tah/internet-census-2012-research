@@ -1,16 +1,16 @@
 import subprocess
+import iptools
+
 from django.http import HttpResponse
 from django.shortcuts import render
-import psycopg2
-import psycopg2.extras
-import iptools
+from django.db import connection as conn
 
 
 def run_query(conn, sql, args=()):
 
     ret = []
 
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur = conn.cursor()
     cur.execute("SET enable_seqscan = off")
     cur.execute("SET enable_indexscan = off")
     cur.execute(sql, args)
@@ -71,7 +71,6 @@ def one_ip(request):
     ip = request.GET['ip']
     title = 'Details about IP address %s' % ip
 
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     fingerprint_rows = run_query(conn,
                      """SELECT s.*, m.*,
                           encode(s.fingerprint_md5, 'hex') fingerprint_md5
@@ -119,7 +118,6 @@ def one_ip(request):
 def show_fp(request):
     fp = request.GET['fp']
     title = 'Details about fingerprint ID %s' % fp
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn,
                      """SELECT DISTINCT *
                         FROM service_probe_match
@@ -137,7 +135,6 @@ def show_fp(request):
 
 def get_pcap(request):
     fp = request.GET['fp']
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn,
                      """SELECT fingerprint, portno
                         FROM service_probe
@@ -158,7 +155,6 @@ def get_pcap(request):
     return ret
 
 def product_list(request):
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn, "SELECT * FROM product_rdns_aggregate")
     return render(request, 'product_list.html', {'rows': rows,
                                                  'title': 'Products list'})
@@ -182,7 +178,6 @@ def show_sld(request):
     product = request.GET['product']
     title = 'Details about SLD %s' % sld
 
-    conn = psycopg2.connect(user="d33tah", port=5432, host="localhost")
     rows = run_query(conn,
                      """SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
                           encode(s.fingerprint_md5, 'hex') fingerprint_md5,
