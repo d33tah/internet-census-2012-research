@@ -19,12 +19,12 @@
 <table>
 
     <tr>
-      <th>portno</th>
+      <th>Port no.</th>
       <td>{{ row.portno }}/{% if row.is_tcp %}TCP {% else %}UDP{% endif %}</td>
     </tr>
 
     <tr>
-      <th rowspan="{{ row.times_taken|length }}">time_taken</th>
+      <th rowspan="{{ row.times_taken|length }}">Time taken</th>
       {% for time_taken in row.times_taken %}
       {% if not forloop.first %}
       <tr>
@@ -33,7 +33,7 @@
       {% endfor %}
 
     <tr>
-      <th rowspan="{{ row.probes|length }}">probe</th>
+      <th rowspan="{{ row.probes|length }}">Probe used</th>
       {% for probe in row.probes %}
       {% if not forloop.first %}
       <tr>
@@ -42,7 +42,7 @@
       {% endfor %}
 
     <tr>
-      <th rowspan="{{ row.products|length }}">product</th>
+      <th rowspan="{{ row.products|length }}">Product name</th>
       {% for product in row.products %}
       {% if not forloop.first %}
       <tr>
@@ -58,12 +58,12 @@
 
 
     <tr>
-      <th>pcap</th>
+      <th>PCAP file</th>
       <td><a href="/get_pcap?fp={{ row.fingerprint_md5 }}">DOWNLOAD</a></td>
     </tr>
 
     <tr>
-      <th>fingerprint</th>
+      <th>Fingerprint data</th>
       <td class="fingerprint">
       {% if row.fingerprint|isbinary %}
         <pre>{{ row.fingerprint|hexdump }}</pre>
