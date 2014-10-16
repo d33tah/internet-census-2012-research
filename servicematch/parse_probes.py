@@ -2,6 +2,7 @@
 
 import StringIO
 import os
+import sys
 
 def get_whitespace(f):
   while True:
@@ -73,12 +74,14 @@ def parse_line(line):
   return pattern_name, found_regex
 
 def main(filename):
+  key = sys.argv[2] if len(sys.argv) > 1 else None
   with open(filename) as f:
     for line_raw in f:
       if line_raw.startswith("match"):
         line = line_raw.rstrip("\r\n")
-        print("Processing line %s" % line)
         pattern_name, found_regex = parse_line(line)
+        if key in found_regex:
+          print found_regex[key]
 
 if __name__ == "__main__":
-  main("../nmap-service-probes")
+  main(sys.argv[1])
