@@ -155,7 +155,11 @@ def get_pcap(request):
 
 def product_list(request):
     rows = run_query(conn, "SELECT * FROM product_rdns_aggregate")
-    return render(request, 'product_list.html', {'rows': rows,
+    result = []
+    for row in rows:
+        if not (row['product'] and row['product'].startswith("Konica Minolta bizhub BT")):
+            result += [row]
+    return render(request, 'product_list.html', {'rows': result,
                                                  'title': 'Products list'})
 
 def view_product(request):

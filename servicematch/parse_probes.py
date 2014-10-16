@@ -39,6 +39,7 @@ def get_regex(f):
   return ret
 
 def get_pattern_name(f):
+  ret = ""
   while True:
     b = f.read(1)
     if b == "":
@@ -46,26 +47,30 @@ def get_pattern_name(f):
     if b == " ":
       break
     assert(b.isalnum() or b in ['-', '_', '.', '/'])
+    ret += b
+  return ret
 
 def parse_line(line):
   f = StringIO.StringIO(line)
   assert(f.read(5) == "match")
   get_whitespace(f)
-  get_pattern_name(f)
-  found_regex = []
+  pattern_name = get_pattern_name(f)
+  found_regex = {}
   while True:
     regex_type = f.read(1)
     assert(regex_type in ['m', 'p', 'v', 'i', 'c', 'o', 'h', 'd'])
     if regex_type == "c":
       assert(f.read(3) == "pe:")
-    if regex_type in found_regex:
+    if regex_type in found_regex and regex_type != 'c':
       raise ValueError("Found redefinition of regex %s in line %s" %
         (regex_type, repr(line)))
     regex = get_regex(f)
+    found_regex[regex_type] = regex
     try:
       get_whitespace(f)
     except EOFError:
       break
+  return pattern_name, found_regex
 
 def main(filename):
   with open(filename) as f:
@@ -73,7 +78,7 @@ def main(filename):
       if line_raw.startswith("match"):
         line = line_raw.rstrip("\r\n")
         print("Processing line %s" % line)
-        parse_line(line)
+        pattern_name, found_regex = parse_line(line)
 
 if __name__ == "__main__":
   main("../nmap-service-probes")
