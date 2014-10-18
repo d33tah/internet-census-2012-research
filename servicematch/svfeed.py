@@ -92,7 +92,9 @@ class Worker():
     def handle_record(self, fp_reply, fp_md5, probe_type, is_tcp):
         # we don't escape spaces, slashes and " because re.sub() already took
         # care of making input uniform.
-        fp_reply_len = hex(len(fp_reply)).upper()[2:]
+
+        # we divide the length by 4 because each byte is encoded as \xHEX.
+        fp_reply_len = hex(len(fp_reply)/4).upper()[2:]
         proto = "TCP" if int(is_tcp) else "UDP"
         fp = '%s%s(%s,%s,"%s");' % (self.fp_start1 % proto, self.fp_start2,
                                   probe_type, fp_reply_len, fp_reply)
