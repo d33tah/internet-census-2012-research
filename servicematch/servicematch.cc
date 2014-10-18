@@ -280,7 +280,7 @@ int doMatch(AllProbes *AP, char *fprint, int fplen, char *ipaddystr) {
     currentprobe = strstr(p, "%r(");
   }
 
-  if (trunc) printf("WARNING:  At least one probe response was truncated\n");
+  if (trunc) printf("WARNING:  At least one probe response was truncated (%lu vs %u)\n", fullrlen, resptextlen);
   if (!found) printf("FAILED to match%s\n", ipaddystr);
   printf("DONE\n");
 
