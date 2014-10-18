@@ -315,7 +315,7 @@ int main(int argc, char *argv[]) {
   char fprint[sizeof(line)*32];
   unsigned int linelen;
   char *dst = NULL;
-  int lineno;
+  int lineno = 0;
   char *p, *q;
   bool isInFP = false; // whether we are currently reading in a fingerprint
   struct in_addr ip;
