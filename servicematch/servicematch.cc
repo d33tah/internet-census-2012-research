@@ -107,11 +107,51 @@ void usage() {
   exit(1);
 }
 
-//see portlist.cc.
-char *cstringSanityCheck(const char* string, int len);
+/* Convert non-printable characters to replchar in the string. Assumes that we
+   already allocated memory for the escaping characters. */
+void replacenonprintableandescape(char *str, int strlength, char replchar, char escape_char) {
+  int i;
 
-int print_sanitized(const char* format, const char* arg1, int len) {
-    char* sanitized = cstringSanityCheck(arg1, len);
+  for (i = 0; i < strlength; i++) {
+    if (!isprint((int)(unsigned char)str[i]))
+      str[i] = replchar;
+    if (str[i] == escape_char) {
+      str[i] = '\\';
+      i++;
+      str[i] = escape_char;
+    }
+  }
+
+  return;
+}
+
+
+char *cstringSanityCheck_escaped(const char* string, int len, char escape_char) {
+  char *result;
+  int slen, i;
+
+  if(!string)
+	  return NULL;
+
+  slen = strlen(string);
+  if (slen > len) slen = len;
+
+  for (i = 0; i < slen; i++) {
+    if (string[i] == escape_char) {
+      slen++;
+    }
+  }
+
+  result = (char *) safe_malloc(slen + 1);
+  memcpy(result, string, slen);
+  result[slen] = '\0';
+  replacenonprintableandescape(result, slen, '.', '|');
+  return result;
+}
+
+
+int print_sanitized(const char* format, const char* arg1, int len, char escape_char) {
+    char* sanitized = cstringSanityCheck_escaped(arg1, len, escape_char);
     int ret = printf(format, sanitized);
     free(sanitized);
     return ret;
@@ -210,16 +250,16 @@ int doMatch(AllProbes *AP, char *fprint, int fplen, char *ipaddystr) {
             if (MD->product || MD->version || MD->info || MD->hostname || MD->ostype || MD->devicetype) {
               printf("MATCHED %s:%d %ssvc %s", probename, MD->lineno, fallback_depth_translate(SP, fallbackDepth), MD->serviceName);
 
-              if (MD->product) print_sanitized(" p|%s|", MD->product, 80);
-              if (MD->version) print_sanitized(" v|%s|", MD->version, 80);
-              if (MD->info) print_sanitized(" i|%s|", MD->info, 256);
-              if (MD->hostname) print_sanitized(" h|%s|", MD->hostname, 80);
-              if (MD->ostype) print_sanitized(" o|%s|", MD->ostype, 32);
-              if (MD->devicetype) print_sanitized(" d|%s|", MD->devicetype, 32);
+              if (MD->product) print_sanitized(" p|%s|", MD->product, 80, '|');
+              if (MD->version) print_sanitized(" v|%s|", MD->version, 80, '|');
+              if (MD->info) print_sanitized(" i|%s|", MD->info, 256, '|');
+              if (MD->hostname) print_sanitized(" h|%s|", MD->hostname, 80, '|');
+              if (MD->ostype) print_sanitized(" o|%s|", MD->ostype, 32, '|');
+              if (MD->devicetype) print_sanitized(" d|%s|", MD->devicetype, 32, '|');
 
-              if (MD->cpe_a) print_sanitized(" %s", MD->cpe_a, 80);
-              if (MD->cpe_h) print_sanitized(" %s", MD->cpe_h, 80);
-              if (MD->cpe_o) print_sanitized(" %s", MD->cpe_o, 80);
+              if (MD->cpe_a) print_sanitized(" %s", MD->cpe_a, 80, '|');
+              if (MD->cpe_h) print_sanitized(" %s", MD->cpe_h, 80, '|');
+              if (MD->cpe_o) print_sanitized(" %s", MD->cpe_o, 80, '|');
 
               printf(" %s\n", ipaddystr);
             } else
