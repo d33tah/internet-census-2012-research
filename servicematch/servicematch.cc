@@ -218,7 +218,12 @@ int doMatch(AllProbes *AP, char *fprint, int fplen, char *ipaddystr) {
     p++;
 
     dst = resptext;
-    while(*p && (*p != '"' || (*(p-1) == '\\' && *(p-2) != '\\'))) {
+    while(*p && *p != '"') {
+      if (*p == '\\') {
+        // if it's an escape, grab this and the next one
+      assert((unsigned int) (dst - resptext) < sizeof(resptext) - 1);
+      *dst++ = *p++;
+    }
       assert((unsigned int) (dst - resptext) < sizeof(resptext) - 1);
       *dst++ = *p++;
     }
