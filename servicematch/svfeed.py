@@ -19,6 +19,7 @@ FP_START1 = "SF-Port110-%s"
 FP_START2 = ":V=6.40%I=7%D=1/20%Time=52DD2F2C%" \
            "P=x86_64-redhat-linux-gnu%r"
 
+# a case when we get empty entries like m|| should not be possible.
 MATCH_PATTERN = ('^MATCHED [^ :]+?:(?P<lineno>\\d+)' +
                  '( \\(FALLBACK: [^ ]+\\))?' +
                  ' svc (?P<service>[^ ]+)' +
@@ -89,9 +90,8 @@ class Worker():
         return ret
 
     def handle_record(self, fp_reply, fp_md5, probe_type, is_tcp):
-        #fp_reply = fp_reply.replace('\\', '\\x5c')
-        #fp_reply = fp_reply.replace('=', '\\x')
-        #fp_reply = fp_reply.replace('"', '\\x22')
+        # we don't escape spaces, slashes and " because re.sub() already took
+        # care of making input uniform.
         fp_reply_len = hex(len(fp_reply)).upper()[2:]
         proto = "TCP" if int(is_tcp) else "UDP"
         fp = '%s%s(%s,%s,"%s");' % (self.fp_start1 % proto, self.fp_start2,
