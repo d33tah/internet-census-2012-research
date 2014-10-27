@@ -363,14 +363,13 @@ class Fingerprint:
     self.probes = {}
 
 
-class PrettyLambda:
-  """A class that wraps around a lambda object, allowing the user to decide
-  how will it be displayed by __repr__. Indended for a readable
-  get_matchpoints.
+class ReprWrapper:
+  """A class that wraps around an object, allowing the user to decide how will
+  it be displayed by __repr__. Indended for a readable get_matchpoints.
 
   Usage:
 
-  >>> l = PrettyLambda('lambda: 3', 'spam')
+  >>> l = ReprWrapper(lambda: 3, 'spam')
   >>> l
   'spam'
   >>> l()
@@ -378,14 +377,14 @@ class PrettyLambda:
   """
 
   def __init__(self, expr, str_show):
-    self.l = eval(expr)
+    self.l = expr
     self.expr = expr
     self.str_show = repr(str_show)
 
   def __getattr__(self, arg):
-    """This is called whenever a method unknown to PrettyLambda is called. This
-    includes __call__, so an attempt to call PrettyLambda object will result
-    in actually calling the lambda."""
+    """This is called whenever a method unknown to ReprWrapper is called. This
+    includes __call__, so an attempt to call ReprWrapper object will result in
+    actually calling the lambda."""
     return getattr(self.l, arg)
 
   def __str__(self):
@@ -500,12 +499,12 @@ def is_hex(x):
 
 def parse_test(test):
   """Parses a test expression. Returns a list with the test names, the value
-  expression and PrettyLambda that matches the expression.
+  expression and ReprWrapper that matches the expression.
 
   Args:
     test (str): the test expression. Example: W1|W2=0|5B40
 
-  Returns list, str, PrettyLambda
+  Returns list, str, ReprWrapper
   """
   # find all the test names
   test_names = []
@@ -522,7 +521,7 @@ def parse_test(test):
       i += 1
       start += 1
 
-  # build a PrettyLambda based on the test expression
+  # build a ReprWrapper based on the test expression
   test_exp = test[i + 1:]
   exps = test_exp.split('|')
   lambda_code = 'lambda x: '
@@ -541,7 +540,7 @@ def parse_test(test):
     else:
       lambda_exps += ['x == "%s"' % exp]
   lambda_code += ' or '.join(lambda_exps)
-  test_lambda = PrettyLambda(lambda_code, test_exp)
+  test_lambda = ReprWrapper(eval(lambda_code), test_exp)
   return test_names, test_exp, test_lambda
 
 
