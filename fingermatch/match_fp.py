@@ -497,7 +497,7 @@ def is_hex(x):
     return False
 
 
-def parse_test(test):
+def parse_test_expr(test):
   """Parses a test expression. Returns a list with the test names, the value
   expression and ReprWrapper that matches the expression.
 
@@ -630,7 +630,7 @@ def load_fingerprints():
         if test == '':  # treat lines like 'OPS()' as 'OPS(R=N)'
           fp.probes[group_name] = None
           continue
-        test_names, test_exp, test_lambda = parse_test(test)
+        test_names, test_exp, test_lambda = parse_test_expr(test)
         for test_name in test_names:
           # make sure it's not a redefinition of a test. Commented out because
           # nmap-os-db currently contains redefinitions.
@@ -653,6 +653,43 @@ def load_fingerprints():
 
   print_stderr("Loaded %d fingerprints." % len(fingerprints))
   return fingerprints, matchpoints, max_points
+
+def parse_test(test, fp, group_name):
+  if test == '':
+    fp.probes[group_name] = None
+    return
+  test_name, value = test.split('=')
+  if test_name == 'R' and value == "N":
+    fp.probes[group_name] = None
+  elif test_name in ['W0', 'W7', 'W8', 'W9']:
+    pass
+  else:
+    assert(test_name in fp_known_tests[group_name])
+    fp.probes[group_name][test_name] = value
+  if group_name == 'SCAN':
+    return
+  for fingerprint in fingerprints:
+    points = matchpoints[group_name][test_name]
+    if fingerprint.probes[group_name] is None:
+      if test_name == 'R' and value == 'N':
+        fingerprint.score += sum(matchpoints[group_name].values())
+    elif not test_name in fingerprint.probes[group_name]:
+      return
+    elif fingerprint.probes[group_name][test_name](value):
+      fingerprint.score += points
+
+def parse_fp_line(line, fp):
+  line_ok = any(line.startswith(k + "(") for k in fp_known_tests)
+  if not line_ok:
+    print_stderr("WARNING: weird line: %s" % line)
+    return
+  group_name, tests = line.split('(')
+  assert(group_name not in fp.probes)
+  assert(group_name in fp_known_tests)
+  fp.probes[group_name] = {}
+  for test in tests.rstrip(')\n').split('%'):
+    parse_test(test, fp, group_name)
+
 
 if __name__ == "__main__":
 
@@ -677,36 +714,7 @@ if __name__ == "__main__":
                             'PV', 'DS', 'DC', 'G', 'TM', 'P']
   fp = Fingerprint()
   for line in sys.stdin.xreadlines():
-    if any(line.startswith(k + "(") for k in fp_known_tests):
-      group_name, tests = line.split('(')
-      assert(group_name not in fp.probes)
-      assert(group_name in fp_known_tests)
-      fp.probes[group_name] = {}
-      for test in tests.rstrip(')\n').split('%'):
-        if test == '':
-          fp.probes[group_name] = None
-          continue
-        test_name, value = test.split('=')
-        if test_name == 'R' and value == "N":
-          fp.probes[group_name] = None
-        elif test_name in ['W0', 'W7', 'W8', 'W9']:
-          pass
-        else:
-          assert(test_name in fp_known_tests[group_name])
-          fp.probes[group_name][test_name] = value
-        if group_name == 'SCAN':
-          continue
-        for fingerprint in fingerprints:
-          points = matchpoints[group_name][test_name]
-          if fingerprint.probes[group_name] is None:
-            if test_name == 'R' and value == 'N':
-              fingerprint.score += sum(matchpoints[group_name].values())
-          elif not test_name in fingerprint.probes[group_name]:
-            continue
-          elif fingerprint.probes[group_name][test_name](value):
-            fingerprint.score += points
-    else:
-      print_stderr("WARNING: weird line: %s" % line)
+    parse_fp_line(line, fp)
 
   if args.match:
     fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
