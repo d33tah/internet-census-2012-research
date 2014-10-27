@@ -294,7 +294,7 @@ test_explanations = {
     'CC': ['Explicit congestion control', None],
     'Q': quirks_explanation,
   }],
-  'T1': ['TCP probe no. 1 - window scale (10), NOP, MSS (1460),'
+  'T1': ['TCP probe no. 1 - window scale (10), NOP, MSS (1460), '
          'timestamp (TSval: 0xFFFFFFFF; TSecr: 0), SACK permitted. '
          'The window field is 1.', t1_explanation],
   'T2': ['TCP probe no. 2 - no flags set, IP DF set, '
@@ -303,7 +303,7 @@ test_explanations = {
          'window=256 to open port, IP DF not set', t2_t7_explanation],
   'T4': ['TCP probe no. 4 - TCP ACK with IP DF and '
          'window=1024 to an open port', t2_t7_explanation],
-  'T5': ['TCP probe no. 5 - TCP SYN without IP DF and'
+  'T5': ['TCP probe no. 5 - TCP SYN without IP DF and '
          'window=31337 to a closed port', t2_t7_explanation],
   'T6': ['TCP probe no. 6 - TCP ACK with IP DF and'
          'window=32768 to a closed port', t2_t7_explanation],
@@ -569,7 +569,7 @@ def explain_fp(probe_dict, _known_tests):
       print("\t(test group not found)")
       continue
     if probe_dict[k] is None:
-      print("\t(probe did not respond)")
+      print("\t(no response to the probe)")
       continue
     for test in _known_tests[k]:
       test_explanation = test_explanations[k][1][test]
