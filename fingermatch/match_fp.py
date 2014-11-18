@@ -713,7 +713,7 @@ if __name__ == "__main__":
 
   fp_known_tests = copy.copy(known_tests)
   fp_known_tests['SCAN'] = ['V', 'E', 'D', 'OT', 'CT', 'CU',
-                            'PV', 'DS', 'DC', 'G', 'TM', 'P']
+                            'PV', 'DS', 'DC', 'G', 'TM', 'P', 'M']
   fp = Fingerprint()
   for line in sys.stdin.xreadlines():
     parse_fp_line(line, fp)
