@@ -6,6 +6,8 @@ input and prints the matches.
 
 Currently it's quite slow and not completely compatible with Nmap. It already
 proved useful in finding errors in nmap-os-db database.
+
+TODO: make it less strict about whitespaces
 """
 
 import sys
