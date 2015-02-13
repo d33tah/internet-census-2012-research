@@ -3,28 +3,9 @@ import iptools
 
 from django.http import HttpResponse
 from django.shortcuts import render
+from serviceprobes.models import run_query
 from django.db import connection as conn
 
-
-def run_query(conn, sql, args=()):
-
-    ret = []
-
-    cur = conn.cursor()
-    cur.execute("SET enable_seqscan = off")
-    cur.execute("SET enable_indexscan = off")
-    cur.execute(sql, args)
-
-    columns = []
-    for col in cur.description:
-        columns += [col[0]]
-
-    for row in cur:
-        row_dict = {}
-        for i in range(len(columns)):
-            row_dict[columns[i]] = row[i]
-        ret += [row_dict]
-    return ret
 
 def do_hexdump(buf):
     p = subprocess.Popen(["hexdump", "-C"], stdin=subprocess.PIPE,
