@@ -33,12 +33,12 @@
       {% endfor %}
 
     <tr>
-      <th rowspan="{{ row.probes|length }}">Probe used</th>
-      {% for probe in row.probes %}
+      <th rowspan="{{ row.payloads|length }}">Probe used</th>
+      {% for payload in row.payloads %}
       {% if not forloop.first %}
       <tr>
       {% endif %}
-      <td>{{ probe }}</td></tr>
+      <td>{{ payload }}</td></tr>
       {% endfor %}
 
     <tr>

@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+
+{% load admin_static %}
+{% block extrastyle %}{{ block.super }}
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static "admin/css/forms.css" %}" />
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+    <input type="hidden" name="action" value="apply_regex" />
+    <fieldset class="module aligned ">
+        <table>
+            {{ form.as_table }}
+        </table>
+    </fieldset>
+    <div class="submit-row">
+        <input class="default" type="submit" name="apply" value="Apply"/>
+    </div>
+</form>
+{% endblock %}

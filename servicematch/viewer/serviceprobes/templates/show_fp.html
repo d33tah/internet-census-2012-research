@@ -36,6 +36,7 @@
   <th>OS</th>
   <th>Hostname</th>
   <th>Device type</th>
+  <th>nmap-service-probes line number</th>
 </tr>
 {% for row in rows %}
   <tr>
@@ -48,6 +49,7 @@
     <td>{{ row.os }}</td>
     <td>{{ row.hostname }}</td>
     <td>{{ row.devicetype }}</td>
+    <td>{{ row.lineno }}</td>
   <th>
 {% endfor %}
 </table>

@@ -12,19 +12,13 @@
 {% endif %}
 <table>
 <tr>
-<th>Product name</th>
-<th>Entity domain count</th>
-<th>Total instances</th>
+<th>Device type</th>
+<th>Count</th>
 </tr>
 {% for row in rows %}
   <tr>
-    <td>
-        <a href="/view_product?product_id={{ row.product_id }}">
-            {{ row.product }}
-        </a>
-    </td>
-    <td>{{ row.sld_count }}</td>
-    <td>{{ row.sum }}</td>
+    <td>{{ row.devicetype }}</a></td>
+    <td>{{ row.eld_count }}</td>
   </tr>
 {% endfor %}
 </table>

@@ -14,6 +14,8 @@ urlpatterns = patterns('',
     url(r'^get_pcap$', 'serviceprobes.views.get_pcap', name='get_pcap'),
     url(r'^product_list$', 'serviceprobes.views.product_list', name='product_list'),
     url(r'^view_product$', 'serviceprobes.views.view_product', name='view_product'),
+    url(r'^by_eld$', 'serviceprobes.views.by_eld', name='by_eld'),
+    url(r'^devicetypes_by_eld$', 'serviceprobes.views.devicetypes_by_eld', name='devicetypes_by_eld'),
     # url(r'^serviceprobes/', include('serviceprobes.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
