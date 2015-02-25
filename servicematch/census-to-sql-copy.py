@@ -34,7 +34,7 @@ def handle_line(line, is_tcp, port, probe):
     # The fingerprints are stripped to a hard limit of 4500 bytes. This might
     # lead to corrupt entries at the end, like '=a' or even just '='. Let's
     # detect and strip that.
-    last_escape_pos = fingerprint.find('=')
+    last_escape_pos = fingerprint.rfind('=')
     if last_escape_pos != -1 and len(fingerprint) - last_escape_pos < 3:
         fingerprint = fingerprint[:last_escape_pos]
 
