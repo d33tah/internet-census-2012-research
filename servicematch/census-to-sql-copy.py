@@ -38,7 +38,7 @@ def handle_line(line, is_tcp, port, probe):
     if last_escape_pos != -1 and len(fingerprint) - last_escape_pos < 3:
         fingerprint = fingerprint[:last_escape_pos]
 
-    if statuscode != 3 and fingerprint == '':
+    if statuscode != '3' and fingerprint == '':
         return
     fingerprint = fingerprint.replace('\\', '\\\\')
     fingerprint = fingerprint.replace('=', '\\x')
