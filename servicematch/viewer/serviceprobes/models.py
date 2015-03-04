@@ -4,16 +4,21 @@ from django.db import connection as conn
 import logging
 logger = logging.getLogger(__name__)
 
-def run_query(conn, sql, args=()):
+def run_query(conn, sql, args=(), disable_seqscan=True):
 
     logger.error("run_query(sql=%s, args=%s)" % (sql, repr(args)))
 
     ret = []
 
     cur = conn.cursor()
-    cur.execute("SET enable_seqscan = off")
-    cur.execute("SET enable_indexscan = off")
-    cur.execute(sql, args)
+    if disable_seqscan:
+        cur.execute("SET enable_seqscan = off")
+        cur.execute("SET enable_indexscan = off")
+        cur.execute(sql, args)
+    else:
+        cur.execute("SET enable_seqscan = on")
+        cur.execute("SET enable_indexscan = on")
+        cur.execute(sql, args)
 
     columns = []
     for col in cur.description:
@@ -24,6 +29,7 @@ def run_query(conn, sql, args=()):
         for i in range(len(columns)):
             row_dict[columns[i]] = row[i]
         ret += [row_dict]
+    logger.error("run_query(sql=%s, args=%s) done" % (sql, repr(args)))
     return ret
 
 class OperatingSystem(models.Model):
