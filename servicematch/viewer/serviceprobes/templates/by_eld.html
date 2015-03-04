@@ -17,7 +17,7 @@
 </tr>
 {% for row in rows %}
   <tr>
-    <td><a href="/show_sld?sld={{ eld|urlencode }}&product={{ row.product_id }}">{{ row.product }}</a></td>
+    <td><a href="/show_sld?sld={{ eld|urlencode }}&product_id={{ row.product_id }}">{{ row.product }}</a></td>
     <td>{{ row.count }}</td>
   </tr>
 {% endfor %}
