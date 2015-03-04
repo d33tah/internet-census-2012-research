@@ -35,7 +35,9 @@ def show_ip(request):
                           f.fingerprint, (
                              SELECT p.product
                              FROM match m
-                             JOIN product p ON m.product_id=p.product_id
+                             JOIN product_proxy pp
+                                 ON m.product_proxy_id=pp.product_proxy_id
+                             JOIN product p ON pp.product_id=p.product_id
                              WHERE m.fingerprint_md5=s.fingerprint_md5
                              LIMIT 1)
                          FROM probe s
@@ -49,6 +51,8 @@ def show_ip(request):
                                             'title': title})
 
 
+# TODO: test what happens if we hit a product_proxy item that has a null
+# product_id
 def one_ip(request):
 
     ip = request.GET['ip']
@@ -64,7 +68,9 @@ def one_ip(request):
                      LEFT JOIN fingerprint f
                        ON probe.fingerprint_md5=f.fingerprint_md5
                      LEFT JOIN service s ON m.service_id=s.service_id
-                     LEFT JOIN product p ON m.product_id=p.product_id
+                     LEFT JOIN product_proxy pp
+                         ON m.product_proxy_id=pp.product_proxy_id
+                     LEFT JOIN product p ON pp.product_id=p.product_id
                      LEFT JOIN os o ON m.os_id=o.os_id
                      LEFT JOIN devicetype d ON p.devicetype_id=d.devicetype_id
                      LEFT JOIN payload pld ON probe.payload_id=pld.payload_id
@@ -105,7 +111,7 @@ def one_ip(request):
                                             'ip': ip,
                                             'title': title})
 
-
+# TODO: see the query above.
 def show_fp(request):
     fp = request.GET['fp']
     title = 'Details about fingerprint ID %s' % fp
@@ -114,7 +120,9 @@ def show_fp(request):
                      SELECT DISTINCT *
                      FROM match m
                      LEFT JOIN service s ON m.service_id=s.service_id
-                     LEFT JOIN product p ON m.product_id=p.product_id
+                     LEFT JOIN product_proxy pp
+                         ON m.product_proxy_id=pp.product_proxy_id
+                     LEFT JOIN product p ON pp.product_id=p.product_id
                      LEFT JOIN os o ON m.os_id=o.os_id
                      LEFT JOIN devicetype d ON p.devicetype_id=d.devicetype_id
                      WHERE fingerprint_md5=decode(%s, 'hex')
@@ -213,6 +221,7 @@ def devicetypes_by_eld(request):
                                            'title': title})
 
 
+# TODO: see a TODO above
 def show_sld(request):
 
     sld = request.GET['sld']
@@ -227,6 +236,7 @@ SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
                           f.fingerprint, (
                              SELECT p.product
                              FROM match m
+                             JOIN product_proxy pp
                              JOIN product p ON m.product_id=p.product_id
                              WHERE m.fingerprint_md5=s.fingerprint_md5
                              LIMIT 1)

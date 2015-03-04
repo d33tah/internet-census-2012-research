@@ -116,7 +116,7 @@ class Product(models.Model):
        extract_values = lambda x: x.values()
        lines = map(extract_values, run_query(conn, """SELECT DISTINCT lineno
                                                       FROM match
-                                                      WHERE product_id=%s""",
+                                                      WHERE product_proxy_id=%s""",
                                              [self.product_id]))
        lines_flattened = map(sum, lines)
        return lines_flattened
