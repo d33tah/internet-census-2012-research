@@ -252,3 +252,26 @@ SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
     return render(request, 'show_ip.html', {'rows': rows,
                                             'ip': '',
                                             'title': title})
+
+def distinct_products_for_rdns_by_kw(request):
+
+    kw = request.GET['kw']
+    title = 'Top 100 domains with distinct product types for keyword "%s"' % kw
+    kw_wildcard = "%%%s%%" % kw
+
+    rows = run_query(conn,
+                     """
+                     SELECT
+                       sld
+                     , count ( distinct p.product_id )
+                     FROM precomputed_product_rdns_count pr
+                     JOIN product p
+                      ON pr.product_id=p.product_id
+                     WHERE p.product ILIKE %s
+                     GROUP BY pr.sld
+                     ORDER BY count ( distinct p.product_id ) DESC
+                     LIMIT 100;
+                     """, (kw_wildcard, ), disable_seqscan=False)
+
+    return render(request, 'distinct_products_for_rdns_by_kw.html',
+                  {'rows': rows, 'title': title})

@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^view_product$', 'serviceprobes.views.view_product', name='view_product'),
     url(r'^by_eld$', 'serviceprobes.views.by_eld', name='by_eld'),
     url(r'^devicetypes_by_eld$', 'serviceprobes.views.devicetypes_by_eld', name='devicetypes_by_eld'),
+    url(r'^distinct_products_for_rdns_by_kw$', 'serviceprobes.views.distinct_products_for_rdns_by_kw', name='distinct_products_for_rdns_by_kw'),
     # url(r'^serviceprobes/', include('serviceprobes.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

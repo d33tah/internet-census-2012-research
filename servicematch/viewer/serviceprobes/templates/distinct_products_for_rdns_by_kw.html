@@ -1,0 +1,25 @@
+{% include "header.html" %}
+{% load hexed %}
+{% load hexdump %}
+{% load isbinary %}
+
+<h1>{{title}}</h1>
+
+{% if rows|length != 1 %}
+  <h2>Got {{ rows|length }} rows</h2>
+{% else %}
+  <h2>Got 1 row</h2>
+{% endif %}
+<table>
+<tr>
+<th>Device type</th>
+<th>Count</th>
+</tr>
+{% for row in rows %}
+  <tr>
+    <td><a href="by_eld?eld={{ row.sld}}">{{ row.sld }}</a></td>
+    <td>{{ row.count }}</td>
+  </tr>
+{% endfor %}
+</table>
+{% include "footer.html" %}
