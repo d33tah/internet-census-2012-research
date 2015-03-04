@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from serviceprobes.models import OperatingSystem, Vendor, DeviceType, Service, Payload, Product
 from django.db import models
-from apply_regex import apply_regex_global
+
 #from serviceprobes.apply_regex import apply_regex_global
 
 make_textarea_use_textinput = {
@@ -12,28 +12,27 @@ make_textarea_use_textinput = {
 class OperatingSystemAdmin(admin.ModelAdmin):
     list_display = ('os', )
     formfield_overrides = make_textarea_use_textinput
-admin.site.register(OperatingSystem, OperatingSystemAdmin)
 
 class VendorAdmin(admin.ModelAdmin):
     list_display = ('vendor', )
     formfield_overrides = make_textarea_use_textinput
-admin.site.register(Vendor, VendorAdmin)
 
 class DeviceTypeAdmin(admin.ModelAdmin):
     list_display = ('devicetype', )
     formfield_overrides = make_textarea_use_textinput
-admin.site.register(DeviceType, DeviceTypeAdmin)
 
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('service', )
     formfield_overrides = make_textarea_use_textinput
-admin.site.register(Service, ServiceAdmin)
 
 class PayloadAdmin(admin.ModelAdmin):
     list_display = ('payload', )
     formfield_overrides = make_textarea_use_textinput
-admin.site.register(Payload, PayloadAdmin)
 
+from apply_regex import apply_regex_global
+from django.db import transaction
+from django.db import connection as conn
+from serviceprobes.models import run_query
 class ProductAdmin(admin.ModelAdmin):
     list_per_page = 100
     list_display = ('product', 'vendor', 'devicetype', 'domains_with_product',
@@ -69,4 +68,8 @@ class ProductAdmin(admin.ModelAdmin):
         # remove remaining
         return None
 
+admin.site.register(Vendor, VendorAdmin)
+admin.site.register(DeviceType, DeviceTypeAdmin)
+#admin.site.register(Service, ServiceAdmin)
+#admin.site.register(Payload, PayloadAdmin)
 admin.site.register(Product, ProductAdmin)
