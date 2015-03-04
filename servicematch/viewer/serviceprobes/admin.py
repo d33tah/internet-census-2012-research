@@ -62,11 +62,61 @@ class ProductAdmin(admin.ModelAdmin):
     pattern_lines.allow_tags = True
 
     def merge(self, request, queryset):
-        # take first ID
-        #   update match
-        #   sum precomputed_product_eld_count and precomputed_product_eld_agg
-        # remove remaining
-        return None
+        product_ids = map(str, queryset.values_list('product_id', flat=True))
+        first_product_id = product_ids[0]
+        remaining_product_ids = product_ids[1:]
+        with transaction.commit_manually():
+            try:
+                cur = conn.cursor()
+                cur.execute("""UPDATE precomputed_product_rdns_count p
+                                   SET count=(SELECT SUM(count)
+                                              FROM precomputed_product_rdns_count
+                                              WHERE product_id IN %s
+                                             )
+                                   WHERE product_id=%s""",
+                          (tuple(product_ids),
+                           first_product_id)
+                         )
+                cur.execute("""DELETE FROM precomputed_product_rdns_count
+                                   WHERE product_id IN %s""",
+                          (tuple(remaining_product_ids),)
+                         )
+                cur.execute("""UPDATE precomputed_product_rdns_aggregate p
+                                   SET sum=(SELECT SUM(sum)
+                                              FROM precomputed_product_rdns_aggregate
+                                              WHERE product_id IN %s
+                                             )
+                                   WHERE product_id=%s""",
+                          (tuple(product_ids),
+                           first_product_id)
+                         )
+                cur.execute("""UPDATE precomputed_product_rdns_aggregate p
+                                   SET sld_count=(SELECT SUM(sld_count)
+                                              FROM precomputed_product_rdns_aggregate
+                                              WHERE product_id IN %s
+                                             )
+                                   WHERE product_id=%s""",
+                          (tuple(product_ids),
+                           first_product_id)
+                         )
+                cur.execute("""DELETE FROM precomputed_product_rdns_aggregate
+                                 WHERE product_id in %s""",
+                          (tuple(remaining_product_ids),)
+                         )
+                cur.execute("""UPDATE product_proxy
+                                   SET product_id=%s
+                                   WHERE product_id IN %s""",
+                          (first_product_id, tuple(remaining_product_ids),)
+                         )
+                cur.execute("""DELETE FROM product
+                                 WHERE product_id in %s""",
+                          (tuple(remaining_product_ids),)
+                         )
+                transaction.commit()
+                self.message_user(request, "Product merging successful.")
+            finally:
+                transaction.rollback()
+
 
 admin.site.register(Vendor, VendorAdmin)
 admin.site.register(DeviceType, DeviceTypeAdmin)
