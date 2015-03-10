@@ -237,7 +237,8 @@ SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
                              SELECT p.product
                              FROM match m
                              JOIN product_proxy pp
-                             JOIN product p ON m.product_id=p.product_id
+                                 ON m.product_proxy_id=pp.product_proxy_id
+                             JOIN product p ON pp.product_id=p.product_id
                              WHERE m.fingerprint_md5=s.fingerprint_md5
                              LIMIT 1)
                          FROM probe s
@@ -246,7 +247,7 @@ SELECT DISTINCT r.rdns, s.ip, s.portno, s.is_tcp,
                          LEFT JOIN match m
                              ON m.fingerprint_md5=s.fingerprint_md5
                          LEFT JOIN rdns r ON s.ip=r.ip
-                         WHERE r.sld=%s AND m.product_id=%s
+                         WHERE r.sld=%s AND m.product_proxy_id=%s
 """, (sld, product_id))
 
     return render(request, 'show_ip.html', {'rows': rows,
