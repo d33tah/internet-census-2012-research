@@ -18,18 +18,13 @@ int main(int argc, char** argv) {
   const char *probefile = "../nmap-service-probes";
   parse_nmap_service_probe_file(AP, (char *)probefile);
 
-  const char *probename = "GenericLines";
-  const int proto = IPPROTO_TCP;
-  ServiceProbe *SP = AP->getProbeByName(probename, proto);
-  if (!SP)
-    fatal("Unable to find probe named %s in given probe file.", probename);
-
   char resptext[2048];
 
   FILE *fpfile;
   int resptextlen;
   bool do_close = false;
-
+  char *probename;
+  size_t size;
 
 try_again:
 
@@ -39,6 +34,19 @@ try_again:
   fpfile = fopen(argv[1], "r");
   if (!fpfile)
     fatal("No fpfile given.");
+
+  probename = NULL;
+  size = 0;
+  getline(&probename, &size, fpfile);
+  if (strlen(probename) > 0)
+    probename[strlen(probename)-1] = '\0';
+
+  const int proto = IPPROTO_TCP;
+  ServiceProbe *SP = AP->getProbeByName(probename, proto);
+  if (!SP) {
+    printf("Unable to find probe named %s in given probe file.\n", probename);
+    exit(1);
+  }
 
   resptextlen = fread(resptext, 1, 2048, fpfile);
 
@@ -50,14 +58,14 @@ try_again:
             (const u8 *)resptext, resptextlen, n)) != NULL;
         n++) {
       if (MD->serviceName != NULL) {
-        printf("Found\n");
+        printf("Found %s\n", MD->serviceName);
       }
     }
     for (n = 0; (MD = SP->fallbacks[fallbackDepth]->testMatch(
             (const u8 *)resptext, resptextlen, n)) != NULL;
         n++) {
       if (MD->serviceName != NULL) {
-        printf("Found\n");
+        printf("Found %s\n", MD->serviceName);
       }
     }
   }
