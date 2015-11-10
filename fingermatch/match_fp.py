@@ -16,6 +16,7 @@ import copy
 import datetime
 import re
 import argparse
+from io import StringIO
 from fputils import print_stderr
 
 # A dictionary of tables with known tests. Any test not listed here is
@@ -656,11 +657,9 @@ def load_fingerprints():
   print_stderr("Loaded %d fingerprints." % len(fingerprints))
   return fingerprints, matchpoints, max_points
 
-def parse_test(test, fp, group_name):
-  if test == '':
-    fp.probes[group_name] = None
+def handle_test(fp, group_name, test_name, value):
+  if group_name == 'SCAN':
     return
-  test_name, value = test.split('=')
   if test_name == 'R' and value == "N":
     fp.probes[group_name] = None
   elif test_name in ['W0', 'W7', 'W8', 'W9']:
@@ -668,8 +667,6 @@ def parse_test(test, fp, group_name):
   else:
     assert(test_name in fp_known_tests[group_name])
     fp.probes[group_name][test_name] = value
-  if group_name == 'SCAN':
-    return
   for fingerprint in fingerprints:
     points = matchpoints[group_name][test_name]
     if fingerprint.probes[group_name] is None:
@@ -680,18 +677,40 @@ def parse_test(test, fp, group_name):
     elif fingerprint.probes[group_name][test_name](value):
       fingerprint.score += points
 
-def parse_fp_line(line, fp):
-  line_ok = any(line.startswith(k + "(") for k in fp_known_tests)
-  if not line_ok:
-    print_stderr("WARNING: weird line: %s" % line)
-    return
-  group_name, tests = line.split('(')
-  assert(group_name not in fp.probes)
-  assert(group_name in fp_known_tests)
-  fp.probes[group_name] = {}
-  for test in tests.rstrip(')\n').split('%'):
-    parse_test(test, fp, group_name)
+def read_until(chars, f, error_if=None, skip_whitespace=True):
+    ret = StringIO()
+    while True:
+        c = f.read(1)
+        if c == '':
+            raise ValueError("Caught an end of file while "
+                             "reading until '%s'" % chars)
+        if c in chars:
+            break
+        if c.isspace() and skip_whitespace:
+            continue
+        if error_if and error_if(c):
+            raise RuntimeError("Unexpected %s at byte %d" % (repr(c),
+                                                             f.tell()))
+        ret.write(unicode(c))
+    return str(ret.getvalue()), c
 
+def parse_fp(f, fp):
+    while True:
+        try:
+            group_name, _ = read_until(['('], f, lambda c: not c.isalnum())
+            if group_name in fp.probes:
+                raise RuntimeError("Redefined group: %s" % group_name)
+            if group_name not in fp_known_tests:
+                raise RuntimeError("Unknown group: %s" % group_name)
+            fp.probes[group_name] = {}
+        except ValueError:
+            break
+        while True:
+            test_name, _ = read_until(['='], f, lambda c: not c.isalnum())
+            value, sep = read_until(['%', ')'], f, lambda c: c in ['('])
+            handle_test(fp, group_name, test_name, value)
+            if sep == ')':
+                break
 
 if __name__ == "__main__":
 
@@ -715,8 +734,7 @@ if __name__ == "__main__":
   fp_known_tests['SCAN'] = ['V', 'E', 'D', 'OT', 'CT', 'CU',
                             'PV', 'DS', 'DC', 'G', 'TM', 'P', 'M']
   fp = Fingerprint()
-  for line in sys.stdin.xreadlines():
-    parse_fp_line(line, fp)
+  parse_fp(sys.stdin, fp)
 
   if args.match:
     fps = list(reversed(sorted(fingerprints, key=lambda x: x.score)))
