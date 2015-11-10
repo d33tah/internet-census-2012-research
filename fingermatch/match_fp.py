@@ -307,7 +307,7 @@ test_explanations = {
          'window=1024 to an open port', t2_t7_explanation],
   'T5': ['TCP probe no. 5 - TCP SYN without IP DF and '
          'window=31337 to a closed port', t2_t7_explanation],
-  'T6': ['TCP probe no. 6 - TCP ACK with IP DF and'
+  'T6': ['TCP probe no. 6 - TCP ACK with IP DF and '
          'window=32768 to a closed port', t2_t7_explanation],
   'T7': ['TCP probe no. 7 - FIN, PSH and URG set, window=63535 '
          'to a closed port, IP DF not set', t2_t7_explanation],
